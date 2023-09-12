@@ -1,4 +1,4 @@
 # Minishell_42
-Nazar loh
+Nazar loh \n
 a Viktor ne
 
