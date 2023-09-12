@@ -1,2 +1,4 @@
 # Minishell_42
-vitya lox
+Nazar loh
+a Viktor ne
+
