@@ -14,7 +14,7 @@ OBJS = $(addprefix obj/, $(SRCS:.c=.o))
 all: $(EXECUTABLE)
 
 $(EXECUTABLE): $(OBJS) $(LIBFT)
-	@$(CC) $(CFLAGS) $(OBJS) $(LIBFT) -o $(EXECUTABLE)
+	@$(CC) $(CFLAGS) $(OBJS) $(LIBFT) -lreadline -o $(EXECUTABLE)
 	@echo "$(COLOR_GREEN)\n✅---COMPILING IS DONE---✅\n$(COLOR_END)"
 
 obj/%.o: %.c
