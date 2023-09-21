@@ -1,32 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
+/*   ft_strcmp.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: viktortr <viktortr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/09/20 18:40:49 by viktortr          #+#    #+#             */
-/*   Updated: 2023/09/21 18:04:11 by viktortr         ###   ########.fr       */
+/*   Created: 2023/09/21 18:26:10 by viktortr          #+#    #+#             */
+/*   Updated: 2023/09/21 18:55:37 by viktortr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# ifndef MINISHELL_H
-# define MINISHELL_H
+#include "../libft.h"
 
-# include "./libft/libft.h"
-#include <readline/readline.h>
-#include <readline/history.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/wait.h>
-#include <fcntl.h>
-#include <dirent.h>
-#include <signal.h>
-#include <sys/ioctl.h>
-#include <termios.h>
-#include <termcap.h>
+int	ft_strcmp(char *str1, char *str2)
+{
+	int	i;
 
-#endif
+	i = 0;
+	while (str1[i] && str2[i])
+	{
+		if (str1[i] != str2[i])
+			return ((unsigned char)str1[i] - (unsigned char)str2[i]);
+		i++;
+	}
+	return ((unsigned char)str1[i] - (unsigned char)str2[i]);
+}
