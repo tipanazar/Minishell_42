@@ -6,7 +6,7 @@
 /*   By: viktortr <viktortr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/20 18:40:19 by viktortr          #+#    #+#             */
-/*   Updated: 2023/09/21 18:28:42 by viktortr         ###   ########.fr       */
+/*   Updated: 2023/09/23 18:38:13 by viktortr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,25 +14,37 @@
 
 int	main(void)
 {
-	char *command;
+	char *input;
+	pid_t pid;
+	int status = 0;
 
 	while (1)
 	{
-		command = readline("minishell$ ");
-		if (!command || ft_strlen(command) == 0)
+		input = readline("minishell> ");
+		if (!input)
 		{
-			free(command);
-			continue ;
-		}
-		add_history(command);
-		if (ft_strcmp(command, "exit") == 0)
-		{
-			free(command);
+			free(input);
 			break ;
 		}
-		else
-			free(command);
-	}
 
+		add_history(input);
+		pid = fork();
+
+		if (pid == 0)
+		{
+			char *args[] = {"/bin/sh", "-c", input, NULL};
+			execve(args[0], args, NULL);
+			perror("execve");
+			exit(1);
+		}
+		else if (pid < 0)
+			perror("fork");
+		else
+		{
+			if (waitpid(pid, &status, WUNTRACED) == -1)
+				perror("waitpid");
+		}
+		free(input);
+	}
 	return (0);
 }
