@@ -64,7 +64,7 @@ char	**ft_split(char const *s, char c)
 
 	s_copy = (char *)s;
 	words_count = ft_word_count(s_copy, c);
-	str = malloc(sizeof(char *) * (words_count + 1));
+	str = (char **)malloc(sizeof(char *) * (words_count + 1));
 	if (!str)
 		return (0);
 	str[words_count] = 0;

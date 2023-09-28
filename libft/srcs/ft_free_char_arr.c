@@ -1,20 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_isascii.c                                       :+:      :+:    :+:   */
+/*   ft_free_char_arr.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nkarpeko <nkarpeko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/04/12 19:51:59 by marvin            #+#    #+#             */
-/*   Updated: 2023/04/21 17:16:50 by nkarpeko         ###   ########.fr       */
+/*   Created: 2023/07/13 17:59:19 by nkarpeko          #+#    #+#             */
+/*   Updated: 2023/07/17 17:35:33 by nkarpeko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../libft.h"
 
-int	ft_isascii(int num)
+void	ft_free_char_arr(char **arr)
 {
-	if (num >= 0 && num <= 127)
-		return (1);
-	return (0);
+	int	idx;
+
+	idx = -1;
+	if (*arr)
+	{
+		while (arr[++idx])
+			free(arr[idx]);
+		free(arr);
+	}
 }

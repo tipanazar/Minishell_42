@@ -55,7 +55,8 @@ SRCS =  $(SRC_FOLDER)ft_isalnum.c      \
 		$(SRC_FOLDER)ft_printf.c		   \
 		$(SRC_FOLDER)ft_type_distributor_middleware.c   \
 		$(SRC_FOLDER)ft_type_identifier.c	\
-		$(SRC_FOLDER)ft_strcmp.c 
+		$(SRC_FOLDER)ft_free_char_arr.c	\
+		$(SRC_FOLDER)ft_char_arr_length.c	\
 
 OBJS = $(SRCS:.c=.o)
 
