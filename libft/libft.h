@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: viktortr <viktortr@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nkarpeko <nkarpeko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/02 09:50:54 by nkarpeko          #+#    #+#             */
-/*   Updated: 2023/09/21 18:56:15 by viktortr         ###   ########.fr       */
+/*   Updated: 2023/10/02 17:12:23 by nkarpeko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ unsigned int		ft_strlcat(char *dest, const char *src, unsigned int size);
 unsigned int		ft_strlcpy(char *dest, const char *src, unsigned int size);
 size_t				ft_strlen(const char *str);
 int					ft_strncmp(const char *s1, const char *s2, size_t n);
+int	ft_strcmp(const char *s1, const char *s2 );
 char				*ft_strnstr(const char *big, const char *little,
 						size_t len);
 char				*ft_strrchr(const char *s, int c);
@@ -88,6 +89,7 @@ int					ft_printf(const char *str, ...);
 int					ft_type_identifier(char ch);
 void				ft_type_distributor_middleware(va_list args, char ch,
 						int *length);
-int					ft_strcmp(char *str1, char *str2);
+void				ft_free_char_arr(char **arr);
+int					ft_char_arr_length(char **arr);
 
 #endif
