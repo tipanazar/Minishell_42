@@ -1,37 +1,29 @@
 CC = cc
-CFLAGS = -Wall -Werror -Wextra
+CFLAGS =  -Wall -Werror -Wextra -lreadline
 RM = rm -f
 
-EXECUTABLE = minishell
+NAME = minishell
 COLOR_GREEN=\033[0;32m
 COLOR_END = \033[0m
 LIBFTDIR = ./libft
 LIBFT = $(LIBFTDIR)/libft.a
+SRCS = srcs/*.c 
+	
+all: $(NAME)
 
-SRCS = main.c
-OBJS = $(addprefix obj/, $(SRCS:.c=.o))
-
-all: $(EXECUTABLE)
-
-$(EXECUTABLE): $(OBJS) $(LIBFT)
-	@$(CC) $(CFLAGS) $(OBJS) $(LIBFT) -lreadline -o $(EXECUTABLE)
+$(NAME): $(LIBFT) 
+	@cp $(LIBFT) $@
+	@$(CC) $(CFLAGS) $(SRCS) $(LIBFT) -o $(NAME)
 	@echo "$(COLOR_GREEN)\n✅---COMPILING IS DONE---✅\n$(COLOR_END)"
-
-obj/%.o: %.c
-	@mkdir -p obj
-	@$(CC) $(CFLAGS) -c $< -o $@
 
 $(LIBFT):
 	@make -sC $(LIBFTDIR)
 
 clean:
-	@$(RM) $(OBJS)
+	@$(RM) $(LIBFT)
 	@make -sC $(LIBFTDIR) clean
 
 fclean: clean
-	@$(RM) $(EXECUTABLE)
-	@rm -rf obj
+	@$(RM) $(NAME)
 
 re: fclean all
-
-.PHONY: all clean fclean re
