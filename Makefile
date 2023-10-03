@@ -8,7 +8,7 @@ COLOR_END = \033[0m
 LIBFTDIR = ./libft
 LIBFT = $(LIBFTDIR)/libft.a
 
-SRCS = main.c
+SRCS = main.c set_flags.c pipex/pipex.c
 OBJS = $(addprefix obj/, $(SRCS:.c=.o))
 
 all: $(EXECUTABLE)
@@ -18,7 +18,7 @@ $(EXECUTABLE): $(OBJS) $(LIBFT)
 	@echo "$(COLOR_GREEN)\n✅---COMPILING IS DONE---✅\n$(COLOR_END)"
 
 obj/%.o: %.c
-	@mkdir -p obj
+	@mkdir -p $(dir $@)
 	@$(CC) $(CFLAGS) -c $< -o $@
 
 $(LIBFT):
