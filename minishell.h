@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: viktortr <viktortr@student.42.fr>          +#+  +:+       +#+        */
+/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/20 18:40:49 by viktortr          #+#    #+#             */
-/*   Updated: 2023/09/30 21:27:15 by viktortr         ###   ########.fr       */
+/*   Updated: 2023/10/07 22:05:23 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,25 +29,50 @@
 # include <termios.h>
 # include <unistd.h>
 
-typedef struct s_shell_flags
-{
-	int is_input_redirected;  // (<)
-	int is_output_redirected; // (>)
-	int is_output_append;     // (>>)
-	int is_heredoc;           // (<<)
-	int is_single_quoted;     // (')
-	int is_double_quoted;     // (")
-	int is_piped;             // (|)
-}		t_shell_flags;
+#define MAXARGS 10
 
-//? Pipex
-void    execute_pipex(char *input, char **envp);
-void    error(void);
-void    child_process(char **av, char **envp, int *fd);
-void    parent_process(char **av, char **envp, int *fd);
-//? pipexc
+// All commands have at least a type. Have looked at the type, the code
+// typically casts the *cmd to some specific cmd type.
+struct cmd {
+  int type;          //  ' ' (exec), | (pipe), '<' or '>' for redirection
+};
 
+struct execcmd {
+  int type;              // ' '
+  char *argv[MAXARGS];   // arguments to the command to be exec-ed
+};
 
-void	set_flags(char *str);
+struct redircmd {
+  int type;          // < or > 
+  struct cmd *cmd;   // the command to be run (e.g., an execcmd)
+  char *file;        // the input/output file
+  int mode;          // the mode to open the file with
+  int fd;            // the file descriptor number to use for the file
+};
 
-#endif
+struct pipecmd {
+  int type;          // |
+  struct cmd *left;  // left side of pipe
+  struct cmd *right; // right side of pipe
+};
+
+int fork1(void);  // Fork but exits on failure.
+struct cmd *parsecmd(char*);
+void runcmd(struct cmd *cmd);
+int getcmd(char *buf, int nbuf);
+struct cmd* execcmd(void);
+struct cmd*	redircmd(struct cmd *subcmd, char *file, int type);
+struct cmd*	pipecmd(struct cmd *left, struct cmd *right);
+int	gettoken(char **ps, char *es, char **q, char **eq);
+int	peek(char **ps, char *es, char *toks);
+char *mkcopy(char *s, char *es);
+struct cmd* parsecmd(char *s);
+struct cmd* parseline(char **ps, char *es);
+struct cmd* parsepipe(char **ps, char *es);
+struct cmd* parseredirs(struct cmd *cmd, char **ps, char *es);
+struct cmd* parseexec(char **ps, char *es);
+struct cmd *parseline(char**, char*);
+struct cmd *parsepipe(char**, char*);
+struct cmd *parseexec(char**, char*);
+
+# endif

@@ -1,4 +1,4 @@
-CC = gcc
+CC = cc
 CFLAGS = -Wall -Werror -Wextra
 LDFLAGS = -lreadline
 RM = rm -f
@@ -17,9 +17,6 @@ $(NAME): $(LIBFT) $(OBJS)
 
 $(LIBFT):
 	@make -sC $(LIBFTDIR)
-
-%.o: %.c
-	@$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
 	@$(RM) $(OBJS)
