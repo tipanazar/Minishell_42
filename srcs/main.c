@@ -15,7 +15,7 @@ void runcmd(struct cmd *cmd)
     exit(0);
 
   char type = cmd->type;
-  
+
   if (type == ' ')
   {
     ecmd = (struct execcmd *)cmd;
@@ -163,23 +163,21 @@ int gettoken(char **ps, char *es, char **q, char **eq)
   if (q)
     *q = s;
   ret = *s;
-  switch (*s)
+
+  if (*s == 0)
   {
-  case 0:
-    break;
-  case '|':
-  case '<':
+  }
+  else if (*s == '|' || *s == '<')
     s++;
-    break;
-  case '>':
+  else if (*s == '>')
     s++;
-    break;
-  default:
+  else
+  {
     ret = 'a';
     while (s < es && !ft_strchr(whitespace, *s) && !ft_strchr(symbols, *s))
       s++;
-    break;
   }
+
   if (eq)
     *eq = s;
 
@@ -187,34 +185,6 @@ int gettoken(char **ps, char *es, char **q, char **eq)
     s++;
   *ps = s;
   return ret;
-}
-
-int peek(char **ps, char *es, char *toks)
-{
-  char *s;
-  char whitespace[] = " \t\r\n\v";
-
-  s = *ps;
-  while (s < es && ft_strchr(whitespace, *s))
-    s++;
-  *ps = s;
-  return *s && ft_strchr(toks, *s);
-}
-
-// make a copy of the characters in the input buffer, starting from s through es.
-// null-terminate the copy to make it a string.
-char *mkcopy(char *s, char *es)
-{
-  int n = es - s;
-  char *c = malloc(n + 1);
-  if (c == NULL)
-  {
-    write(2, "Memory allocation failed.\n", 25);
-    exit(1);
-  }
-  strncpy(c, s, n);
-  c[n] = 0;
-  return c;
 }
 
 struct cmd *parsecmd(char *s)
@@ -313,56 +283,62 @@ struct cmd *parseexec(char **ps, char *es)
   return ret;
 }
 
-// int main(void)
-// {
-//   static char buf[100];
-//   int r;
+int peek(char **ps, char *es, char *toks)
+{
+  char *s;
+  char whitespace[] = " \t\r\n\v";
 
-//   while (getcmd(buf, sizeof(buf)) >= 0)
-//   {
-//     if (buf[0] == 'c' && buf[1] == 'd' && buf[2] == ' ')
-//     {
-//       buf[ft_strlen(buf) - 1] = 0;
-//       if (chdir(buf + 3) < 0)
-//         write(2, "cannot cd %s\n", 13);
-//       continue;
-//     }
-//     if (fork1() == 0)
-//       runcmd(parsecmd(buf));
-//     wait(&r);
-//   }
-//   exit(0);
-// }
+  s = *ps;
+  while (s < es && ft_strchr(whitespace, *s))
+    s++;
+  *ps = s;
+  return *s && ft_strchr(toks, *s);
+}
+
+// make a copy of the characters in the input buffer, starting from s through es.
+// null-terminate the copy to make it a string.
+char *mkcopy(char *s, char *es)
+{
+  int n = es - s;
+  char *c = malloc(n + 1);
+  if (c == NULL)
+  {
+    write(2, "Memory allocation failed.\n", 25);
+    exit(1);
+  }
+  strncpy(c, s, n);
+  c[n] = 0;
+  return c;
+}
 
 int main(void)
 {
-    char *buf;
-    int r;
+  char *buf;
+  int r;
 
-    while (1) // Infinite loop, can be broken by certain conditions within
+  while (1)
+  {
+    buf = readline("minishell> ");
+
+    if (!buf)
+      break;
+
+    if (buf[0] == 'c' && buf[1] == 'd' && buf[2] == ' ')
     {
-        buf = readline("minishell> "); // Prompt user and read input
-
-        if (!buf) // If EOF (Ctrl+D) is detected, exit
-            break;
-        
-        if (buf[0] == 'c' && buf[1] == 'd' && buf[2] == ' ')
-        {
-            if (chdir(buf + 3) < 0)
-                write(2, "cannot cd %s\n", 13);
-            free(buf); // Deallocate memory allocated by readline
-            continue;
-        }
-
-        if (fork1() == 0)
-        {
-            runcmd(parsecmd(buf));
-            free(buf); // Deallocate memory allocated by readline in child process
-            exit(0); // Ensure child process exits
-        }
-        wait(&r);
-
-        free(buf); // Deallocate memory allocated by readline
+      if (chdir(buf + 3) < 0)
+        write(2, "cannot cd %s\n", 13);
+      free(buf);
+      continue;
     }
-    return 0;
+
+    if (fork1() == 0)
+    {
+      runcmd(parsecmd(buf));
+      free(buf);
+      exit(0);
+    }
+    wait(&r);
+    free(buf);
+  }
+  return 0;
 }
