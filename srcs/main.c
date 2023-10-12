@@ -1,6 +1,6 @@
 #include "../minishell.h"
 
-#pragma GCC diagnostic ignored "-Winfinite-recursion"
+// #pragma GCC diagnostic ignored "-Winfinite-recursion"
 
 void runcmd(struct cmd *cmd)
 {
@@ -154,8 +154,8 @@ int gettoken(char **ps, char *es, char **q, char **eq)
 {
   char *s;
   int ret;
-  char whitespace[] = " \t\r\n\v";
-  char symbols[] = "<|>";
+  char whitespace[6] = " \t\r\n\v";
+  char symbols[4] = "<|>";
 
   s = *ps;
   while (s < es && ft_strchr(whitespace, *s))
@@ -195,7 +195,7 @@ struct cmd *parsecmd(char *s)
   es = s + ft_strlen(s);
   cmd = parseline(&s, es);
   peek(&s, es, "");
-  if (s != es)
+  if (s != es) 
   {
     write(2, "leftovers: %s\n", 14);
     exit(-1);
@@ -286,7 +286,7 @@ struct cmd *parseexec(char **ps, char *es)
 int peek(char **ps, char *es, char *toks)
 {
   char *s;
-  char whitespace[] = " \t\r\n\v";
+  char whitespace[6] = " \t\r\n\v";
 
   s = *ps;
   while (s < es && ft_strchr(whitespace, *s))
