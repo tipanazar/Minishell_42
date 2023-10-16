@@ -3,13 +3,12 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strcmp.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nkarpeko <nkarpeko@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tipanazar <tipanazar@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/02 16:11:43 by nkarpeko          #+#    #+#             */
-/*   Updated: 2023/10/02 17:12:07 by nkarpeko         ###   ########.fr       */
+/*   Updated: 2023/10/16 14:58:43 by tipanazar        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 
 #include "../libft.h"
 

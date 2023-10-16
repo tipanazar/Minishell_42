@@ -2,7 +2,7 @@
 
 // #pragma GCC diagnostic ignored "-Winfinite-recursion"
 
-void runcmd(struct cmd *cmd)
+int runcmd(struct cmd *cmd)
 {
   int fd_redirect;
   int p_id;
@@ -87,7 +87,8 @@ void runcmd(struct cmd *cmd)
     write(2, "unknown runcmd\n", 15);
     exit(1);
   }
-  exit(0);
+  // exit(0);
+  return 1;
 }
 
 int getcmd(char *buf, int nbuf)
@@ -311,18 +312,34 @@ char *mkcopy(char *s, char *es)
   return c;
 }
 
+void listHistoryEntries() {
+    // Check if history is available
+    if (history_length == 0) {
+        printf("History is empty.\n");
+        return;
+    }
+
+    // Iterate through the history entries
+    for (int i = 0; i < history_length; i++) {
+        HIST_ENTRY* entry = history_get(i);
+        if (entry != NULL) {
+            printf("%d: %s\n", i, entry->line);
+        }
+    }
+}
+
 int main(void)
 {
   char *buf;
   int r;
-
+   rl_initialize();
+   using_history();
   while (1)
   {
     buf = readline("minishell> ");
 
-    if (!buf)
+    if (!buf || ft_strcmp(buf, "exit") == 0)
       break;
-
     if (buf[0] == 'c' && buf[1] == 'd' && buf[2] == ' ')
     {
       if (chdir(buf + 3) < 0)
@@ -330,15 +347,22 @@ int main(void)
       free(buf);
       continue;
     }
-
     if (fork1() == 0)
     {
-      runcmd(parsecmd(buf));
+      
+      if(runcmd(parsecmd(buf))) {
+        add_history(buf);
+      }
       free(buf);
       exit(0);
     }
     wait(&r);
     free(buf);
   }
+
+listHistoryEntries();
+//  rl_cleanup();
   return 0;
 }
+
+

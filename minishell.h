@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: tipanazar <tipanazar@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/20 18:40:49 by viktortr          #+#    #+#             */
-/*   Updated: 2023/10/07 22:05:23 by root             ###   ########.fr       */
+/*   Updated: 2023/10/16 13:22:47 by tipanazar        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ struct pipecmd {
 
 int fork1(void);  // Fork but exits on failure.
 struct cmd *parsecmd(char*);
-void runcmd(struct cmd *cmd);
+int runcmd(struct cmd *cmd);
 int getcmd(char *buf, int nbuf);
 struct cmd* execcmd(void);
 struct cmd*	redircmd(struct cmd *subcmd, char *file, int type);
