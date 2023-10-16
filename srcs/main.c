@@ -196,7 +196,7 @@ struct cmd *parsecmd(char *s)
   es = s + ft_strlen(s);
   cmd = parseline(&s, es);
   peek(&s, es, "");
-  if (s != es) 
+  if (s != es)
   {
     write(2, "leftovers: %s\n", 14);
     exit(-1);
@@ -312,57 +312,56 @@ char *mkcopy(char *s, char *es)
   return c;
 }
 
-void listHistoryEntries() {
-    // Check if history is available
-    if (history_length == 0) {
-        printf("History is empty.\n");
-        return;
+int ft_cd(char *buf)
+{
+  int flag = 0;
+  if (buf[0] == 'c' && buf[1] == 'd' && buf[2] == ' ')
+  {
+    if (chdir(buf + 3) < 0)
+      write(2, "cannot cd %s\n", 13);
+    free(buf);
+  }
+  return flag;
+}
+
+void ft_readHistory(void)
+{
+  HIST_ENTRY* entry;
+    for (int i = history_base; i < history_length; i++) {
+        entry = history_get(i);
+        printf("%d: %s\n", i, entry->line);
     }
 
-    // Iterate through the history entries
-    for (int i = 0; i < history_length; i++) {
-        HIST_ENTRY* entry = history_get(i);
-        if (entry != NULL) {
-            printf("%d: %s\n", i, entry->line);
-        }
-    }
+    // Cleanup and save history
+    // history_end();
+    write_history("history_file.txt");
 }
 
 int main(void)
 {
   char *buf;
   int r;
-   rl_initialize();
-   using_history();
+  rl_initialize();
+  using_history();
   while (1)
   {
     buf = readline("minishell> ");
-
     if (!buf || ft_strcmp(buf, "exit") == 0)
       break;
-    if (buf[0] == 'c' && buf[1] == 'd' && buf[2] == ' ')
-    {
-      if (chdir(buf + 3) < 0)
-        write(2, "cannot cd %s\n", 13);
-      free(buf);
+    if (ft_cd(buf))
       continue;
-    }
     if (fork1() == 0)
     {
-      
-      if(runcmd(parsecmd(buf))) {
-        add_history(buf);
-      }
+      add_history(buf);
+      runcmd(parsecmd(buf));
       free(buf);
       exit(0);
     }
     wait(&r);
     free(buf);
   }
-
-listHistoryEntries();
-//  rl_cleanup();
+  ft_readHistory();
+  // listHistoryEntries();
+  //  rl_cleanup();
   return 0;
 }
-
-
