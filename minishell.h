@@ -56,23 +56,23 @@ struct pipecmd {
   struct cmd *right; // right side of pipe
 };
 
-int fork1(void);  // Fork but exits on failure.
-struct cmd *parsecmd(char*);
 int runcmd(struct cmd *cmd);
+int fork1(void);  // Fork but exits on failure.
 int getcmd(char *buf, int nbuf);
-struct cmd* execcmd(void);
-struct cmd*	redircmd(struct cmd *subcmd, char *file, int type);
-struct cmd*	pipecmd(struct cmd *left, struct cmd *right);
 int	gettoken(char **ps, char *es, char **q, char **eq);
 int	peek(char **ps, char *es, char *toks);
 char *mkcopy(char *s, char *es);
+struct cmd* execcmd(void);
 struct cmd* parsecmd(char *s);
+struct cmd*	redircmd(struct cmd *subcmd, char *file, int type);
+struct cmd*	pipecmd(struct cmd *left, struct cmd *right);
+struct cmd* parseredirs(struct cmd *cmd, char **ps, char *es);
 struct cmd* parseline(char **ps, char *es);
 struct cmd* parsepipe(char **ps, char *es);
-struct cmd* parseredirs(struct cmd *cmd, char **ps, char *es);
 struct cmd* parseexec(char **ps, char *es);
-struct cmd *parseline(char**, char*);
-struct cmd *parsepipe(char**, char*);
-struct cmd *parseexec(char**, char*);
+// struct cmd *parsecmd(char*);
+// struct cmd *parseline(char**, char*);
+// struct cmd *parsepipe(char**, char*);
+// struct cmd *parseexec(char**, char*);
 
 # endif
