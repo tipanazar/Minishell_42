@@ -1,5 +1,6 @@
 *.o
 *.exe
 *.out
+*.a
 minishell
 .vscode/
