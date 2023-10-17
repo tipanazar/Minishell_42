@@ -6,7 +6,13 @@ RM = rm -f
 NAME = minishell
 LIBFTDIR = ./libft
 LIBFT = $(LIBFTDIR)/libft.a
-SRCS = $(wildcard srcs/*.c)
+SRCS = srcs/main.c \
+srcs/parcer/commands-runner.c \
+srcs/parcer/commands-utils.c \
+srcs/parcer/get-token.c \
+srcs/parcer/parcers.c \
+srcs/utils/utils1.c 
+
 OBJS = $(SRCS:.c=.o)
 
 all: $(NAME)
