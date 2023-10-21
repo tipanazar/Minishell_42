@@ -75,10 +75,7 @@ int	runcmd(struct cmd *cmd)
 		return (redirect_cmd((struct redircmd *)cmd));
 	else if (type == '|')
 		return (pipe_cmd((struct pipecmd *)cmd));
-	else
-	{
-		write(2, "unknown runcmd\n", 15);
-		exit(1);
-	}
+    else    
+	    ft_printf("unknown runcmd\n");
 	return (1);
 }

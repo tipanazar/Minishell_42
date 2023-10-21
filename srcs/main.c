@@ -14,9 +14,9 @@ int	main(void)
   while (1)
   {
     buf = readline("minishell> ");
-    add_history(buf);
     if (!buf || ft_strcmp(buf, "exit") == 0)
       break;
+    add_history(buf);
     ft_cd(buf);
     if (fork1() == 0)
     {
