@@ -7,7 +7,7 @@ void ft_cd(char *buf)
       ft_printf("cd: %s: No such file or directory\n", buf + 3);
 }
 
-int main(void)
+int	main(void)
 {
   char *buf;
   int r;
