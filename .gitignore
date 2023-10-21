@@ -4,3 +4,4 @@
 *.a
 minishell
 .vscode/
+myenv/
