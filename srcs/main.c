@@ -16,13 +16,13 @@ int main(void)
   while (1)
   {
     buf = readline("minishell> ");
+    add_history(buf);
     if (!buf || ft_strcmp(buf, "exit") == 0)
       break;
     if (ft_cd(buf))
       continue;
     if (fork1() == 0)
     {
-      add_history(buf);
       runcmd(parsecmd(buf));
       free(buf);
       exit(0);
@@ -30,5 +30,7 @@ int main(void)
     wait(&r);
     free(buf);
   }
+  clear_history();
+
   return 0;
 }
