@@ -1,38 +1,55 @@
 #include "../../minishell.h"
 
-int gettoken(char **ps, char *es, char **q, char **eq)
+char	*move_past_whitespace(char *s, char *es, const char *whitespace)
 {
-  char *s;
-  int ret;
-  char whitespace[6] = " \t\r\n\v";
-  char symbols[4] = "<|>";
+	while (s < es && ft_strchr(whitespace, *s))
+		s++;
+	return (s);
+}
 
-  s = *ps;
-  while (s < es && ft_strchr(whitespace, *s))
-    s++;
-  if (q)
-    *q = s;
-  ret = *s;
+char	get_symbol_token(char **s)
+{
+	char	ret;
 
-  if (*s == 0)
-  {
-  }
-  else if (*s == '|' || *s == '<')
-    s++;
-  else if (*s == '>')
-    s++;
-  else
-  {
-    ret = 'a';
-    while (s < es && !ft_strchr(whitespace, *s) && !ft_strchr(symbols, *s))
-      s++;
-  }
+	ret = **s;
+	(*s)++;
+	return (ret);
+}
 
-  if (eq)
-    *eq = s;
+char	get_alphanumeric_token(char **s, char *es, const char *whitespace,
+		const char *symbols)
+{
+	char	ret;
 
-  while (s < es && ft_strchr(whitespace, *s))
-    s++;
-  *ps = s;
-  return ret;
+	ret = 'a';
+	while (*s < es && !ft_strchr(whitespace, **s) && !ft_strchr(symbols, **s))
+		(*s)++;
+	return (ret);
+}
+
+int	gettoken(char **ps, char *es, char **q, char **eq)
+{
+	char		*s;
+	int			ret;
+	const char	*whitespace;
+	const char	*symbols;
+
+	s = *ps;
+	whitespace = " \t\r\n\v";
+	symbols = "<|>";
+	s = move_past_whitespace(s, es, whitespace);
+	if (q)
+		*q = s;
+	ret = *s;
+	if (*s == 0)
+		(void)s;
+	else if (*s == '|' || *s == '<' || *s == '>')
+		ret = get_symbol_token(&s);
+	else
+		ret = get_alphanumeric_token(&s, es, whitespace, symbols);
+	if (eq)
+		*eq = s;
+	s = move_past_whitespace(s, es, whitespace);
+	*ps = s;
+	return (ret);
 }
