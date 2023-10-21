@@ -2,10 +2,10 @@
 
 int	getcmd(char *buf, int nbuf)
 {
-	if (isatty(fileno(stdin)))
+	if (isatty(ft_fileno(stdin)))
 		write(2, "minishell> ", 11);
 	ft_memset(buf, 0, nbuf);
-	fgets(buf, nbuf, stdin);
+	ft_fgets(buf, nbuf, stdin);
 	if (buf[0] == 0)
 		return (-1);
 	return (0);
