@@ -70,7 +70,7 @@ struct cmd	*parseexec(char **ps, char *es)
 	char			*q;
 	char			*eq;
 	int				tok;
-	int			argc;
+	int				argc;
 
 	ret = execcmd();
 	cmd = (struct execcmd *)ret;
