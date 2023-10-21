@@ -1,6 +1,6 @@
 #include "../../minishell.h"
 
-int runcmd(struct cmd *cmd)
+void runcmd(struct cmd *cmd)
 {
     int fd_redirect;
     int p_id;
@@ -24,25 +24,21 @@ int runcmd(struct cmd *cmd)
     else if (type == '>' || type == '<')
     {
         rcmd = (struct redircmd *)cmd;
-        if (rcmd->type == '>')
+        if (rcmd->type == '>' && (fd_redirect = open(rcmd->file, rcmd->mode, 0666)) < 0)
         {
-            if ((fd_redirect = open(rcmd->file, rcmd->mode, 0666)) < 0)
-            {
-                write(STDERR_FILENO, "open ", 5);
-                write(STDERR_FILENO, rcmd->file, ft_strlen(rcmd->file));
-                write(STDERR_FILENO, " has failed\n", 11);
-                exit(0);
-            }
+
+            write(STDERR_FILENO, "open ", 5);
+            write(STDERR_FILENO, rcmd->file, ft_strlen(rcmd->file));
+            write(STDERR_FILENO, " has failed\n", 11);
+            exit(0);
         }
-        else if (rcmd->type == '<')
+        else if (rcmd->type == '<' && (fd_redirect = open(rcmd->file, rcmd->mode)) < 0)
         {
-            if ((fd_redirect = open(rcmd->file, rcmd->mode)) < 0)
-            {
-                write(STDERR_FILENO, "open ", 5);
-                write(STDERR_FILENO, rcmd->file, ft_strlen(rcmd->file));
-                write(STDERR_FILENO, " has failed\n", 11);
-                exit(0);
-            }
+
+            write(STDERR_FILENO, "open ", 5);
+            write(STDERR_FILENO, rcmd->file, ft_strlen(rcmd->file));
+            write(STDERR_FILENO, " has failed\n", 11);
+            exit(0);
         }
         if (dup2(fd_redirect, rcmd->fd) < 0)
         {
@@ -81,10 +77,5 @@ int runcmd(struct cmd *cmd)
         }
     }
     else
-    {
-        write(2, "unknown runcmd\n", 15);
-        exit(1);
-    }
-    // exit(0);
-    return 1;
+        ft_printf("unknown runcmd\n");
 }

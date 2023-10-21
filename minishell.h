@@ -60,7 +60,7 @@ struct pipecmd
   struct cmd *right; // right side of pipe
 };
 
-int runcmd(struct cmd *cmd);
+void runcmd(struct cmd *cmd);
 int fork1(void); // Fork but exits on failure.
 int getcmd(char *buf, int nbuf);
 int gettoken(char **ps, char *es, char **q, char **eq);

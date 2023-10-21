@@ -1,12 +1,10 @@
 #include "../minishell.h"
 
-int ft_cd(char *buf)
+void ft_cd(char *buf)
 {
-  int flag = 0;
   if (buf[0] == 'c' && buf[1] == 'd' && buf[2] == ' ')
     if (chdir(buf + 3) < 0)
-      write(2, "cannot cd %s\n", 13);
-  return flag;
+      ft_printf("cd: %s: No such file or directory\n", buf + 3);
 }
 
 int main(void)
@@ -19,8 +17,7 @@ int main(void)
     add_history(buf);
     if (!buf || ft_strcmp(buf, "exit") == 0)
       break;
-    if (ft_cd(buf))
-      continue;
+    ft_cd(buf);
     if (fork1() == 0)
     {
       runcmd(parsecmd(buf));
@@ -31,6 +28,5 @@ int main(void)
     free(buf);
   }
   clear_history();
-
   return 0;
 }
