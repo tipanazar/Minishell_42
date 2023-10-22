@@ -11,26 +11,27 @@ int	exec_cmd(struct execcmd *ecmd)
 int	redirect_cmd(struct redircmd *rcmd)
 {
 	int	fd_redirect;
-	int	mode;
+	int	flags;
 
-	fd_redirect = open(rcmd->file, rcmd->mode);
 	if (rcmd->type == '>')
-		mode = 0666;
+		flags = O_WRONLY | O_CREAT | O_TRUNC;
+	else if (rcmd->type == '<')
+		flags = O_RDONLY;
 	else
-		mode = 0;
-	if (fd_redirect < 0 || fd_redirect != mode)
+		flags = O_WRONLY | O_CREAT | O_APPEND;
+	fd_redirect = open(rcmd->file, flags, 0666);
+	if (fd_redirect < 0)
 	{
-		write(STDERR_FILENO, "open ", 5);
-		write(STDERR_FILENO, rcmd->file, ft_strlen(rcmd->file));
-		write(STDERR_FILENO, " has failed\n", 11);
+		perror("open");
 		exit(0);
 	}
 	if (dup2(fd_redirect, rcmd->fd) < 0)
 	{
-		write(2, "dup2 has failed\n", 15);
+		perror("dup2");
 		exit(0);
 	}
 	runcmd(rcmd->cmd);
+	close(fd_redirect);
 	return (1);
 }
 
@@ -75,7 +76,7 @@ int	runcmd(struct cmd *cmd)
 		return (redirect_cmd((struct redircmd *)cmd));
 	else if (type == '|')
 		return (pipe_cmd((struct pipecmd *)cmd));
-    else    
-	    ft_printf("unknown runcmd\n");
+	else
+		ft_printf("unknown runcmd\n");
 	return (1);
 }

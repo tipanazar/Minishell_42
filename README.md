@@ -29,7 +29,7 @@ make
 After launching the minishell, you can enter commands just like you would in any Unix shell:
 
 ```bash
-minishell> ls -l
-minishell> echo Hello World!
-minishell> cat file.txt | grep "search_term"
+minishell# ls -l
+minishell# echo Hello World!
+minishell# cat file.txt | grep "search_term"
 ```
