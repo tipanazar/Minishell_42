@@ -13,7 +13,6 @@ void ctrl_c_handler(int sig)
   rl_on_new_line();
   ft_printf("minishell#\n");
   rl_replace_line("", 0);
-  rl_on_new_line();
   rl_redisplay();
 }
 
