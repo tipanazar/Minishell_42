@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tipanazar <tipanazar@student.42.fr>        +#+  +:+       +#+        */
+/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/02 09:50:54 by nkarpeko          #+#    #+#             */
-/*   Updated: 2023/10/16 14:58:56 by tipanazar        ###   ########.fr       */
+/*   Updated: 2023/10/21 14:18:23 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ unsigned int		ft_strlcat(char *dest, const char *src, unsigned int size);
 unsigned int		ft_strlcpy(char *dest, const char *src, unsigned int size);
 size_t				ft_strlen(const char *str);
 int					ft_strncmp(const char *s1, const char *s2, size_t n);
-int					ft_strcmp(const char *s1, const char *s2 );
+int					ft_strcmp(const char *s1, const char *s2);
 char				*ft_strnstr(const char *big, const char *little,
 						size_t len);
 char				*ft_strrchr(const char *s, int c);
@@ -91,5 +91,7 @@ void				ft_type_distributor_middleware(va_list args, char ch,
 						int *length);
 void				ft_free_char_arr(char **arr);
 int					ft_char_arr_length(char **arr);
+char				*ft_strncpy(char *dest, const char *src, size_t n);
+char				*ft_fgets(char *str, int n, FILE *fp);
 
 #endif

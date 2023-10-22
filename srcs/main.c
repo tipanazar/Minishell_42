@@ -1,10 +1,10 @@
 #include "../minishell.h"
 
-void ft_cd(char *buf)
+void	ft_cd(char *buf)
 {
-  if (buf[0] == 'c' && buf[1] == 'd' && buf[2] == ' ')
-    if (chdir(buf + 3) < 0)
-      ft_printf("cd: %s: No such file or directory\n", buf + 3);
+	if (buf[0] == 'c' && buf[1] == 'd' && buf[2] == ' ')
+		if (chdir(buf + 3) < 0)
+			ft_printf("cd: %s: No such file or directory\n", buf + 3);
 }
 
 void ctrl_c_handler(int sig)
