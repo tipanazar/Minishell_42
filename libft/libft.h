@@ -93,5 +93,7 @@ void				ft_free_char_arr(char **arr);
 int					ft_char_arr_length(char **arr);
 char				*ft_strncpy(char *dest, const char *src, size_t n);
 char				*ft_fgets(char *str, int n, FILE *fp);
+int 				ft_isspace(char ch);
+void 				ft_trim_leading_spaces(char *str);
 
 #endif

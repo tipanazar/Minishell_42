@@ -77,5 +77,6 @@ struct cmd	*parseline(char **ps, char *es);
 struct cmd	*parsepipe(char **ps, char *es);
 struct cmd	*parseexec(char **ps, char *es);
 int			ft_fileno(FILE *stream);
+void		builtins(char *buf);
 
 #endif
