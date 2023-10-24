@@ -61,8 +61,8 @@ SRCS =  $(SRC_FOLDER)ft_isalnum.c      \
 		$(SRC_FOLDER)ft_strncpy.c	\
 		$(SRC_FOLDER)ft_fgets.c	\
 		$(SRC_FOLDER)ft_trim_leading_spaces.c \
-		$(SRC_FOLDER)ft_isspace.c 
-
+		$(SRC_FOLDER)ft_isspace.c \
+		$(SRC_FOLDER)ft_strtok.c
 
 OBJS = $(SRCS:.c=.o)
 
