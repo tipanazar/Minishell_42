@@ -1,10 +1,42 @@
 #include "../../minishell.h"
 
+extern char	**environ;
+
+char* find_command_in_path(const char *command) {
+    char *PATH;
+    char *path;
+    static char abs_path[512];
+    char *temp_PATH;
+
+    PATH = getenv("PATH");
+    temp_PATH = ft_strdup(PATH);  // Duplicate the PATH string
+
+    path = ft_strtok(temp_PATH, ":");
+    while (path != NULL) {
+        snprintf(abs_path, sizeof(abs_path), "%s/%s", path, command);
+        if (access(abs_path, X_OK) == 0) {
+            free(temp_PATH);  // Free the duplicated string
+            return abs_path;
+        }
+        path = ft_strtok(NULL, ":");
+    }
+
+    free(temp_PATH);  // Free the duplicated string
+    return NULL;
+}
+
+
 int	exec_cmd(struct execcmd *ecmd)
 {
+	char	*abs_path;
+
 	if (ecmd->argv[0] == 0)
 		exit(0);
-	execvp(ecmd->argv[0], ecmd->argv);
+	abs_path = find_command_in_path(ecmd->argv[0]);
+	if (abs_path)
+		execve(abs_path, ecmd->argv, environ);
+	else
+		perror("Command not found");
 	return (1);
 }
 

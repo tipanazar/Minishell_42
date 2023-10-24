@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/02 09:50:54 by nkarpeko          #+#    #+#             */
-/*   Updated: 2023/10/21 14:18:23 by root             ###   ########.fr       */
+/*   Updated: 2023/10/23 12:56:42 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,5 +93,6 @@ void				ft_free_char_arr(char **arr);
 int					ft_char_arr_length(char **arr);
 char				*ft_strncpy(char *dest, const char *src, size_t n);
 char				*ft_fgets(char *str, int n, FILE *fp);
+char				*ft_strtok(char *str, const char *delim);
 
 #endif
