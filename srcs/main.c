@@ -9,6 +9,24 @@ void ctrl_c_handler(int sig)
   rl_redisplay();
 }
 
+// int main(void)
+// {
+//   char tmp[] = "     Test      buffer";
+//   char *buf = malloc(sizeof(char) * (23));
+//   int idx = 0;
+//   while (tmp[idx]) 
+//   {
+//     buf[idx] = tmp[idx];
+//     idx++;
+//   }
+//   buf[idx] = '\0';
+//   ft_printf("Before: %s\n", buf);
+//   ft_trim_leading_spaces(buf);
+//   ft_printf("After: %s\n", buf);
+//   free(buf);
+//   return 0;
+// }
+
 int main(void)
 {
   char *buf;
