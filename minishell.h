@@ -6,13 +6,14 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/20 18:40:49 by viktortr          #+#    #+#             */
-/*   Updated: 2023/10/21 15:36:33 by root             ###   ########.fr       */
+/*   Updated: 2023/10/24 17:25:25 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
+#include <stdbool.h>
 # include "./libft/libft.h"
 # include <dirent.h>
 # include <fcntl.h>
@@ -77,5 +78,6 @@ struct cmd	*parseline(char **ps, char *es);
 struct cmd	*parsepipe(char **ps, char *es);
 struct cmd	*parseexec(char **ps, char *es);
 int			ft_fileno(FILE *stream);
+int		builtins(char *buf);
 
 #endif
