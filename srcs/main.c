@@ -16,7 +16,7 @@ bool is_blank(const char *buf)
     return (true);
   while (*buf)
   {
-    if (*buf != ' ' && *buf != '\t')
+    if (!ft_isspace(*buf))
       return (false);
     buf++;
   }
