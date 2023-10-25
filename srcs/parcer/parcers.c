@@ -1,9 +1,9 @@
 #include "../../minishell.h"
 
-struct cmd	*parsecmd(char *s)
+struct s_cmd	*parsecmd(char *s)
 {
-	char		*es;
-	struct cmd	*cmd;
+	char			*es;
+	struct s_cmd	*cmd;
 
 	es = s + ft_strlen(s);
 	cmd = parseline(&s, es);
@@ -16,17 +16,17 @@ struct cmd	*parsecmd(char *s)
 	return (cmd);
 }
 
-struct cmd	*parseline(char **ps, char *es)
+struct s_cmd	*parseline(char **ps, char *es)
 {
-	struct cmd	*cmd;
+	struct s_cmd	*cmd;
 
 	cmd = parsepipe(ps, es);
 	return (cmd);
 }
 
-struct cmd	*parsepipe(char **ps, char *es)
+struct s_cmd	*parsepipe(char **ps, char *es)
 {
-	struct cmd	*cmd;
+	struct s_cmd	*cmd;
 
 	cmd = parseexec(ps, es);
 	if (peek(ps, es, "|"))
@@ -37,7 +37,7 @@ struct cmd	*parsepipe(char **ps, char *es)
 	return (cmd);
 }
 
-struct cmd	*parseredirs(struct cmd *cmd, char **ps, char *es)
+struct s_cmd	*parseredirs(struct s_cmd *cmd, char **ps, char *es)
 {
 	int		tok;
 	char	*q;
@@ -63,17 +63,17 @@ struct cmd	*parseredirs(struct cmd *cmd, char **ps, char *es)
 	return (cmd);
 }
 
-struct cmd	*parseexec(char **ps, char *es)
+struct s_cmd	*parseexec(char **ps, char *es)
 {
-	struct execcmd	*cmd;
-	struct cmd		*ret;
-	char			*q;
-	char			*eq;
-	int				tok;
-	int				argc;
+	struct s_execcmd	*cmd;
+	struct s_cmd		*ret;
+	char				*q;
+	char				*eq;
+	int					tok;
+	int					argc;
 
 	ret = execcmd();
-	cmd = (struct execcmd *)ret;
+	cmd = (struct s_execcmd *)ret;
 	argc = 0;
 	ret = parseredirs(ret, ps, es);
 	while (!peek(ps, es, "|"))
