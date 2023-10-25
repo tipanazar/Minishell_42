@@ -2,31 +2,37 @@
 
 extern char	**environ;
 
-char* find_command_in_path(const char *command) {
-    char *PATH;
-    char *path;
-    static char abs_path[512];
-    char *temp_PATH;
+char	*find_command_in_path(const char *command)
+{
+	char		*PATH;
+	char		*path;
+	static char	abs_path[512];
+	char		*temp_PATH;
 
-    PATH = getenv("PATH");
-    temp_PATH = ft_strdup(PATH);  // Duplicate the PATH string
-
-    path = ft_strtok(temp_PATH, ":");
-    while (path != NULL) {
-        snprintf(abs_path, sizeof(abs_path), "%s/%s", path, command);
-        if (access(abs_path, X_OK) == 0) {
-            free(temp_PATH);  // Free the duplicated string
-            return abs_path;
-        }
-        path = ft_strtok(NULL, ":");
-    }
-
-    free(temp_PATH);  // Free the duplicated string
-    return NULL;
+	if (command[0] == '/' || ft_strchr(command, '/'))
+	{
+		if (access(command, X_OK) == 0)
+			return (ft_strdup(command));
+		return (NULL);
+	}
+	PATH = getenv("PATH");
+	temp_PATH = ft_strdup(PATH);
+	path = ft_strtok(temp_PATH, ":");
+	while (path != NULL)
+	{
+		snprintf(abs_path, sizeof(abs_path), "%s/%s", path, command);
+		if (access(abs_path, X_OK) == 0)
+		{
+			free(temp_PATH);
+			return (abs_path);
+		}
+		path = ft_strtok(NULL, ":");
+	}
+	free(temp_PATH);
+	return (NULL);
 }
 
-
-int	exec_cmd(struct execcmd *ecmd)
+int	exec_cmd(struct s_execcmd *ecmd)
 {
 	char	*abs_path;
 
@@ -40,7 +46,7 @@ int	exec_cmd(struct execcmd *ecmd)
 	return (1);
 }
 
-int	redirect_cmd(struct redircmd *rcmd)
+int	redirect_cmd(struct s_redircmd *rcmd)
 {
 	int	fd_redirect;
 	int	flags;
@@ -67,7 +73,7 @@ int	redirect_cmd(struct redircmd *rcmd)
 	return (1);
 }
 
-int	pipe_cmd(struct pipecmd *pcmd)
+int	pipe_cmd(struct s_pipecmd *pcmd)
 {
 	int	fd_pipe[2];
 	int	p_id;
@@ -95,7 +101,7 @@ int	pipe_cmd(struct pipecmd *pcmd)
 	return (1);
 }
 
-int	runcmd(struct cmd *cmd)
+int	runcmd(struct s_cmd *cmd)
 {
 	char	type;
 
@@ -103,11 +109,11 @@ int	runcmd(struct cmd *cmd)
 		exit(0);
 	type = cmd->type;
 	if (type == ' ')
-		return (exec_cmd((struct execcmd *)cmd));
+		return (exec_cmd((struct s_execcmd *)cmd));
 	else if (type == '>' || type == '<')
-		return (redirect_cmd((struct redircmd *)cmd));
+		return (redirect_cmd((struct s_redircmd *)cmd));
 	else if (type == '|')
-		return (pipe_cmd((struct pipecmd *)cmd));
+		return (pipe_cmd((struct s_pipecmd *)cmd));
 	else
 		ft_printf("unknown runcmd\n");
 	return (1);

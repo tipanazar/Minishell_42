@@ -1,6 +1,6 @@
 #include "../libft.h"
 
-int ft_isspace(char ch)
+int	ft_isspace(char ch)
 {
-    return (ch == ' ' || (ch >= 9 && ch <= 13));
+	return (ch == ' ' || (ch >= 9 && ch <= 13));
 }
