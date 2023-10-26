@@ -52,13 +52,9 @@ struct s_cmd	*parseredirs(struct s_cmd *cmd, char **ps, char *es)
 			exit(-1);
 		}
 		if (tok == '<')
-		{
 			cmd = redircmd(cmd, mkcopy(q, eq), '<');
-		}
 		else if (tok == '>')
-		{
 			cmd = redircmd(cmd, mkcopy(q, eq), '>');
-		}
 	}
 	return (cmd);
 }
@@ -70,11 +66,14 @@ struct s_cmd	*parseexec(char **ps, char *es)
 	char				*q;
 	char				*eq;
 	int					tok;
-	int					argc;
+	int					initial_max_args;
 
+	initial_max_args = 10;
 	ret = execcmd();
 	cmd = (struct s_execcmd *)ret;
-	argc = 0;
+	cmd->argc = 0;
+	cmd->max_args = initial_max_args;
+	cmd->argv = malloc(cmd->max_args * sizeof(char *));
 	ret = parseredirs(ret, ps, es);
 	while (!peek(ps, es, "|"))
 	{
@@ -85,15 +84,15 @@ struct s_cmd	*parseexec(char **ps, char *es)
 			write(2, "syntax error\n", 12);
 			exit(-1);
 		}
-		cmd->argv[argc] = mkcopy(q, eq);
-		argc++;
-		if (argc >= MAXARGS)
+		if (cmd->argc >= cmd->max_args)
 		{
-			write(2, "too many args\n", 14);
-			exit(-1);
+			cmd->max_args *= 2;
+			cmd->argv = realloc(cmd->argv, cmd->max_args * sizeof(char *));
 		}
+		cmd->argv[cmd->argc] = mkcopy(q, eq);
+		cmd->argc++;
 		ret = parseredirs(ret, ps, es);
 	}
-	cmd->argv[argc] = 0;
+	cmd->argv[cmd->argc] = 0;
 	return (ret);
 }
