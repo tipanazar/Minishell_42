@@ -4,6 +4,7 @@
 # include "./libft/libft.h"
 # include <dirent.h>
 # include <fcntl.h>
+# include <limits.h>
 # include <readline/history.h>
 # include <readline/readline.h>
 # include <signal.h>
@@ -16,7 +17,7 @@
 # include <termcap.h>
 # include <unistd.h>
 
-# define MAXARGS 10
+# define INITIAL_MAXARGS 10
 
 struct				s_cmd
 {
@@ -26,7 +27,9 @@ struct				s_cmd
 struct				s_execcmd
 {
 	int				type;
-	char			*argv[MAXARGS];
+	char **argv;  // Dynamically allocated array of arguments
+	int argc;     // Current count of arguments
+	int max_args; // Current capacity of the argv array
 };
 
 struct				s_redircmd
@@ -61,5 +64,6 @@ struct s_cmd		*parsepipe(char **ps, char *es);
 struct s_cmd		*parseexec(char **ps, char *es);
 int					ft_fileno(FILE *stream);
 int					builtins(char *buf);
+void				pwd(void);
 
 #endif
