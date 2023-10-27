@@ -2,6 +2,18 @@
 
 extern char	**environ;
 
+void	env(void)
+{
+	char	**env;
+
+	env = environ;
+	while (*env)
+	{
+		printf("%s\n", *env);
+		env++;
+	}
+}
+
 char	*find_command_in_path(const char *command)
 {
 	char		*PATH;

@@ -33,6 +33,7 @@ void	pwd(void)
 		perror("getcwd() error");
 }
 
+
 int	builtins(char *buf)
 {
 	ft_trim_leading_spaces(buf);
@@ -44,6 +45,11 @@ int	builtins(char *buf)
 	if (ft_strncmp(buf, "pwd", 3) == 0)
 	{
 		pwd();
+		return (1);
+	}
+	if(ft_strncmp(buf, "env", 3) == 0)
+	{
+		env();
 		return (1);
 	}
 	// if (ft_strncmp(buf, "echo ", 5) == 0)
