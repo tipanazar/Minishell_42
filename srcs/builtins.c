@@ -102,7 +102,7 @@ int builtins(char *buf)
 		pwd();
 		return (1);
 	}
-	if (ft_strncmp(buf, "echo ", 4) == 0)
+	if (ft_strncmp(buf, "echo", 4) == 0)
 	{
 		echo(buf + 4);
 		return (1);
