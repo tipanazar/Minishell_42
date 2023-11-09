@@ -35,3 +35,6 @@ fclean: clean
 	@make -sC $(LIBFTDIR) fclean
 
 re: fclean all
+
+v:
+	make && valgrind --leak-check=full --show-leak-kinds=all --suppressions="supp.supp" ./minishell
