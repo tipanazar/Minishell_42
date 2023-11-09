@@ -1,9 +1,9 @@
 #include "../minishell.h"
 
-void ft_cd(char *buf)
+void	ft_cd(const char *buf)
 {
-	char *home_dir;
-	struct stat fileStat;
+	char		*home_dir;
+	struct stat	fileStat;
 
 	ft_trim_leading_spaces(buf + 2);
 	if (ft_strlen(buf) == 2)
@@ -23,9 +23,9 @@ void ft_cd(char *buf)
 		ft_printf("cd: %s: No such file or directory\n", buf + 2);
 }
 
-void pwd(void)
+void	pwd(void)
 {
-	char cwd[PATH_MAX];
+	char	cwd[PATH_MAX];
 
 	if (getcwd(cwd, sizeof(cwd)))
 		printf("%s\n", cwd);
@@ -33,14 +33,21 @@ void pwd(void)
 		perror("getcwd() error");
 }
 
-void echo(char *buf)
+void	echo(const char *buf)
 {
-	int newline = 1;
-	int idx = -1;
-	int s_idx = 1;
-	int sing_quotes = 0;
-	int double_quotes = 0;
-	int inside_sing_quotes = 0;
+	int	newline;
+	int	idx;
+	int	s_idx;
+	int	sing_quotes;
+	int	double_quotes;
+	int	inside_sing_quotes;
+
+	newline = 1;
+	idx = -1;
+	s_idx = 1;
+	sing_quotes = 0;
+	double_quotes = 0;
+	inside_sing_quotes = 0;
 	ft_trim_leading_spaces(buf);
 	if (ft_strncmp(buf, "-n", 2) == 0)
 	{
@@ -59,16 +66,16 @@ void echo(char *buf)
 	if (sing_quotes % 2 != 0 || double_quotes % 2 != 0)
 	{
 		ft_printf("Quotes amount is not even!\n");
-		return;
+		return ;
 	}
 	while (buf[++idx])
 	{
 		if (buf[idx] == '\"')
-			continue;
+			continue ;
 		if (buf[idx] == '\'')
 		{
 			inside_sing_quotes = !inside_sing_quotes;
-			continue;
+			continue ;
 		}
 		if (buf[idx] == '$' && !inside_sing_quotes && !ft_isspace(buf[idx + 1]))
 		{
@@ -76,10 +83,10 @@ void echo(char *buf)
 			// 	ft_printf("%d", g_exit_code);
 			// else
 			// {
-				while (buf[idx + s_idx] && !ft_isspace(buf[idx + s_idx]))
-					s_idx++;
-				ft_printf("%s", getenv(ft_substr(buf, idx + 1, s_idx)));
-				idx += s_idx;
+			while (buf[idx + s_idx] && !ft_isspace(buf[idx + s_idx]))
+				s_idx++;
+			ft_printf("%s", getenv(ft_substr(buf, idx + 1, s_idx)));
+			idx += s_idx;
 			// }
 		}
 		else
@@ -89,7 +96,7 @@ void echo(char *buf)
 		ft_printf("\n");
 }
 
-int builtins(char *buf)
+int	builtins(const char *buf)
 {
 	ft_trim_leading_spaces(buf);
 	if (ft_strncmp(buf, "cd", 2) == 0)
@@ -102,6 +109,13 @@ int builtins(char *buf)
 		pwd();
 		return (1);
 	}
+	if (ft_strncmp(buf, "env", 3) == 0)
+	{
+		env();
+		return (1);
+	}
+	// if (ft_strncmp(buf, "echo ", 5) == 0)
+	//     ft_printf("%s\n", buf + 5);
 	if (ft_strncmp(buf, "echo", 4) == 0)
 	{
 		echo(buf + 4);
