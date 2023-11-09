@@ -68,8 +68,6 @@ int	main(void)
 		}
 		if (strlen(buf) && isspace(buf[0]) == 0)
 			add_history(buf);
-		if (builtins(buf))
-			continue ;
 		if (!buf || is_blank(buf))
 		{
 			free(buf);

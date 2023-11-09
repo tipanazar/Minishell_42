@@ -21,6 +21,7 @@ char	*find_command_in_path(const char *command)
 	static char	abs_path[512];
 	char		*temp_PATH;
 
+	builtins(command);
 	if (command[0] == '/' || ft_strchr(command, '/'))
 	{
 		if (access(command, X_OK) == 0)

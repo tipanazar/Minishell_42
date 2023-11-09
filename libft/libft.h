@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/02 09:50:54 by nkarpeko          #+#    #+#             */
-/*   Updated: 2023/10/26 17:21:21 by root             ###   ########.fr       */
+/*   Updated: 2023/10/31 15:19:11 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,7 @@ int					ft_char_arr_length(char **arr);
 char				*ft_strncpy(char *dest, const char *src, size_t n);
 char				*ft_fgets(char *str, int n, FILE *fp);
 int					ft_isspace(char ch);
-void				ft_trim_leading_spaces(char *str);
+char				*ft_trim_leading_spaces(const char *str);
 char				*ft_strtok(char *str, const char *delim);
 void				*ft_realloc(void *ptr, size_t new_size);
 

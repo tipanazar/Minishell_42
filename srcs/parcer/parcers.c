@@ -48,7 +48,7 @@ struct s_cmd	*parseredirs(struct s_cmd *cmd, char **ps, char *es)
 		tok = gettoken(ps, es, 0, 0);
 		if (gettoken(ps, es, &q, &eq) != 'a')
 		{
-			write(2, "missing file for redirection\n", 28);
+			write(2, "missing file for redirection\n", 29);
 			exit(-1);
 		}
 		if (tok == '<')

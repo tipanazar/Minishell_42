@@ -63,7 +63,7 @@ struct s_cmd		*parseline(char **ps, char *es);
 struct s_cmd		*parsepipe(char **ps, char *es);
 struct s_cmd		*parseexec(char **ps, char *es);
 int					ft_fileno(FILE *stream);
-int					builtins(char *buf);
+int					builtins(const char *buf);
 void				env(void);
 
 #endif
