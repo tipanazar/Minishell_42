@@ -128,6 +128,6 @@ int	runcmd(struct s_cmd *cmd)
 	else if (type == '|')
 		return (pipe_cmd((struct s_pipecmd *)cmd));
 	else
-		ft_printf("unknown runcmd\n");
+		free(cmd);
 	return (1);
 }
