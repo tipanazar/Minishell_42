@@ -76,9 +76,8 @@ int	main(void)
 		if (fork1() == 0)
 		{
 			runcmd(parsecmd(buf));
-			free(buf);
-			buf = NULL;
-			exit(0);
+			// free(buf);
+			// exit(0);
 		}
 		wait(&r);
 		free(buf);

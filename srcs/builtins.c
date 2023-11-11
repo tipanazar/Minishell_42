@@ -1,11 +1,11 @@
 #include "../minishell.h"
 
-void	ft_cd(const char *buf)
+void ft_cd(char *buf)
 {
-	char		*home_dir;
-	struct stat	fileStat;
+	char *home_dir;
+	struct stat fileStat;
 
-	ft_trim_leading_spaces(buf + 2);
+	ft_trim_leading_spaces(buf);
 	if (ft_strlen(buf) == 2)
 	{
 		home_dir = getenv("HOME");
@@ -23,30 +23,29 @@ void	ft_cd(const char *buf)
 		ft_printf("cd: %s: No such file or directory\n", buf + 2);
 }
 
-void	pwd(void)
+void pwd(void)
 {
-	char	cwd[PATH_MAX];
+	char cwd[PATH_MAX];
 
 	if (getcwd(cwd, sizeof(cwd)))
 		printf("%s\n", cwd);
 	else
 		perror("getcwd() error");
+	ft_printf("Return pwd \n");
+	
 }
 
-void	echo(const char *buf)
+void echo(char *buf)
 {
-	int	newline;
-	int	idx;
-	int	s_idx;
-	int	sing_quotes;
-	int	double_quotes;
-	int	inside_sing_quotes;
+	int newline;
+	int idx;
+	int s_idx;
+
+	int inside_sing_quotes;
 
 	newline = 1;
 	idx = -1;
 	s_idx = 1;
-	sing_quotes = 0;
-	double_quotes = 0;
 	inside_sing_quotes = 0;
 	ft_trim_leading_spaces(buf);
 	if (ft_strncmp(buf, "-n", 2) == 0)
@@ -57,25 +56,12 @@ void	echo(const char *buf)
 	}
 	while (buf[++idx])
 	{
-		if (buf[idx] == '\'')
-			sing_quotes++;
 		if (buf[idx] == '\"')
-			double_quotes++;
-	}
-	idx = -1;
-	if (sing_quotes % 2 != 0 || double_quotes % 2 != 0)
-	{
-		ft_printf("Quotes amount is not even!\n");
-		return ;
-	}
-	while (buf[++idx])
-	{
-		if (buf[idx] == '\"')
-			continue ;
+			continue;
 		if (buf[idx] == '\'')
 		{
 			inside_sing_quotes = !inside_sing_quotes;
-			continue ;
+			continue;
 		}
 		if (buf[idx] == '$' && !inside_sing_quotes && !ft_isspace(buf[idx + 1]))
 		{
@@ -96,17 +82,61 @@ void	echo(const char *buf)
 		ft_printf("\n");
 }
 
-int	builtins(const char *buf)
+int check_quotes(char *buf)
+{
+	int idx = 0;
+	int sing_quotes;
+	int double_quotes;
+	sing_quotes = 0;
+	double_quotes = 0;
+
+	while (buf[++idx])
+	{
+		if (buf[idx] == '\'')
+			sing_quotes++;
+		if (buf[idx] == '\"')
+			double_quotes++;
+	}
+	if (sing_quotes % 2 != 0 || double_quotes % 2 != 0)
+	{
+		ft_printf("Quotes amount is not even!\n");
+		return 1;
+	}
+	return 0;
+}
+
+char *concat_args(char **args)
+{
+	int idx = 0;
+	char *str = 0;
+
+	while (args[idx] && ft_strcmp(args[idx], "|") && ft_strcmp(args[idx], "<") && ft_strcmp(args[idx], ">") && ft_strcmp(args[idx], ">>") && ft_strcmp(args[idx], "<<"))
+	{
+		if (!str)
+			str = ft_strdup(args[idx]);
+		else
+			str = ft_strjoin(str, args[idx]);
+		str = ft_strjoin(str, " ");
+		idx++;
+	}
+	return str;
+}
+
+int builtins(char *buf)
 {
 	ft_trim_leading_spaces(buf);
+	if (check_quotes(buf))
+		return 0;
 	if (ft_strncmp(buf, "cd", 2) == 0)
 	{
-		ft_cd(buf);
+		ft_cd(buf + 2);
 		return (1);
 	}
 	if (ft_strncmp(buf, "pwd", 3) == 0)
 	{
 		pwd();
+		ft_printf("Return \n");
+
 		return (1);
 	}
 	if (ft_strncmp(buf, "env", 3) == 0)
@@ -114,8 +144,6 @@ int	builtins(const char *buf)
 		env();
 		return (1);
 	}
-	// if (ft_strncmp(buf, "echo ", 5) == 0)
-	//     ft_printf("%s\n", buf + 5);
 	if (ft_strncmp(buf, "echo", 4) == 0)
 	{
 		echo(buf + 4);

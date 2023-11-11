@@ -1,10 +1,10 @@
 #include "../../minishell.h"
 
-extern char	**environ;
+extern char **environ;
 
-void	env(void)
+void env(void)
 {
-	char	**env;
+	char **env;
 
 	env = environ;
 	while (*env)
@@ -14,12 +14,12 @@ void	env(void)
 	}
 }
 
-char	*find_command_in_path(const char *command)
+char *find_command_in_path(char *command)
 {
-	char		*PATH;
-	char		*path;
-	static char	abs_path[512];
-	char		*temp_PATH;
+	char *PATH;
+	char *path;
+	static char abs_path[512];
+	char *temp_PATH;
 
 	builtins(command);
 	if (command[0] == '/' || ft_strchr(command, '/'))
@@ -45,24 +45,80 @@ char	*find_command_in_path(const char *command)
 	return (NULL);
 }
 
-int	exec_cmd(struct s_execcmd *ecmd)
+// void exec_cmd(struct s_execcmd *ecmd)
+// {
+// 	char *abs_path;
+
+// 	if (ecmd->argv[0] == 0)
+// 		exit(0);
+// 	abs_path = find_command_in_path(ecmd->argv[0]);
+// 	if (abs_path)
+// 		execve(abs_path, ecmd->argv, environ);
+// 	else
+// 		perror("Command not found");
+// }
+
+// void execute_command(struct s_cmd *cmd)
+// {
+// 	struct s_execcmd *ecmd;
+// 	char *full_path;
+
+// 	ecmd = (struct s_execcmd *)cmd;
+// 	if (ecmd->argv[0] == 0)
+// 		exit(0);
+// 	if (builtins(ecmd))
+// 		return;
+// 	full_path = find_in_path(ecmd->argv[0]);
+// 	if (full_path)
+// 	{
+// 		execve(full_path, ecmd->argv, ecmd->envp);
+// 		free(full_path);
+// 	}
+// 	else
+// 	{
+// 		execve(ecmd->argv[0], ecmd->argv, ecmd->envp);
+// 	}
+// }
+
+// void exec_cmd(struct s_execcmd *ecmd)
+// {
+// 	char *abs_path;
+
+// 	if (ecmd->argv[0] == 0)
+// 		exit(0);
+// 	abs_path = find_command_in_path(ecmd->argv[0]);
+// 	if (abs_path)
+// 		execve(abs_path, ecmd->argv, environ);
+// 	else
+// 		perror("Command not found");
+// }
+
+void exec_cmd(struct s_execcmd *ecmd)
 {
-	char	*abs_path;
+	char *abs_path;
 
 	if (ecmd->argv[0] == 0)
 		exit(0);
+
+	ft_print_char_arr(ecmd->argv);	
+
 	abs_path = find_command_in_path(ecmd->argv[0]);
-	if (abs_path)
+	if (builtins(concat_args(ecmd->argv)))
+	{
+		ft_printf("Return exec_cmd \n");
+		return;
+	}
+	else if (abs_path)
 		execve(abs_path, ecmd->argv, environ);
-	else
-		perror("Command not found");
-	return (1);
+	else 
+		execve(ecmd->argv[0], ecmd->argv, environ);
+	ft_printf("WC go\n");
 }
 
-int	redirect_cmd(struct s_redircmd *rcmd)
+int redirect_cmd(struct s_redircmd *rcmd)
 {
-	int	fd_redirect;
-	int	flags;
+	int fd_redirect;
+	int flags;
 
 	if (rcmd->type == '>')
 		flags = O_WRONLY | O_CREAT | O_TRUNC;
@@ -86,10 +142,10 @@ int	redirect_cmd(struct s_redircmd *rcmd)
 	return (1);
 }
 
-int	pipe_cmd(struct s_pipecmd *pcmd)
+int pipe_cmd(struct s_pipecmd *pcmd)
 {
-	int	fd_pipe[2];
-	int	p_id;
+	int fd_pipe[2];
+	int p_id;
 
 	if (pipe(fd_pipe) < 0)
 		exit(0);
@@ -114,20 +170,19 @@ int	pipe_cmd(struct s_pipecmd *pcmd)
 	return (1);
 }
 
-int	runcmd(struct s_cmd *cmd)
+void runcmd(struct s_cmd *cmd)
 {
-	char	type;
+	char type;
 
 	if (cmd == 0)
 		exit(0);
 	type = cmd->type;
 	if (type == ' ')
-		return (exec_cmd((struct s_execcmd *)cmd));
+		exec_cmd((struct s_execcmd *)cmd);
 	else if (type == '>' || type == '<')
-		return (redirect_cmd((struct s_redircmd *)cmd));
+		redirect_cmd((struct s_redircmd *)cmd);
 	else if (type == '|')
-		return (pipe_cmd((struct s_pipecmd *)cmd));
+		pipe_cmd((struct s_pipecmd *)cmd);
 	else
 		free(cmd);
-	return (1);
 }
