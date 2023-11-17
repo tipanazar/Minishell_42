@@ -43,6 +43,16 @@ int	gettoken(char **ps, char *es, char **q, char **eq)
 	ret = *s;
 	if (*s == 0)
 		(void)s;
+	else if (ft_strncmp(s, ">>", 2) == 0)
+	{
+		ret = '+';
+		s += 2;
+	}
+	else if (ft_strncmp(s, "<<", 2) == 0)
+	{
+		ret = '-';
+		s += 2;
+	}
 	else if (*s == '|' || *s == '<' || *s == '>')
 		ret = get_symbol_token(&s);
 	else

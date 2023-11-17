@@ -48,7 +48,7 @@ struct				s_pipecmd
 	struct s_cmd	*right;
 };
 
-void					runcmd(struct s_cmd *cmd);
+int					runcmd(struct s_cmd *cmd, char **env);
 int					fork1(void);
 int					getcmd(char *buf, int nbuf);
 int					gettoken(char **ps, char *es, char **q, char **eq);
@@ -62,8 +62,8 @@ struct s_cmd		*parseredirs(struct s_cmd *cmd, char **ps, char *es);
 struct s_cmd		*parsepipe(char **ps, char *es);
 struct s_cmd		*parseexec(char **ps, char *es);
 int					ft_fileno(FILE *stream);
-int					builtins(char *buf);
 char 				*concat_args(char **args);
-void				env(void);
+int					builtins(const char *buf, char **env);
+void				env(char **env);
 
 #endif

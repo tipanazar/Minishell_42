@@ -35,9 +35,14 @@ struct s_cmd	*redircmd(struct s_cmd *subcmd, char *file, int type)
 		cmd->mode = O_RDONLY;
 		cmd->fd = 0;
 	}
-	else
+	else if(type == '>')
 	{
 		cmd->mode = O_WRONLY | O_CREAT | O_TRUNC;
+		cmd->fd = 1;
+	}
+	else if (type == '+')
+	{
+		cmd->mode = O_WRONLY | O_CREAT | O_APPEND;
 		cmd->fd = 1;
 	}
 	return ((struct s_cmd *)cmd);

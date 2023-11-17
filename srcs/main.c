@@ -49,8 +49,10 @@ void free_arguments(struct s_execcmd *cmd)
     free(cmd->argv);
 }
 
-int	main(void)
+int	main(int ac, char **av, char **env)
 {
+	(void)ac;
+	(void)av;
 	char *buf;
 	int r;
 
@@ -75,9 +77,10 @@ int	main(void)
 		}
 		if (fork1() == 0)
 		{
-			runcmd(parsecmd(buf));
-			// free(buf);
-			// exit(0);
+			runcmd(parsecmd(buf), env);
+			free(buf);
+			buf = NULL;
+			exit(0);
 		}
 		wait(&r);
 		free(buf);
