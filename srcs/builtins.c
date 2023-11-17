@@ -96,7 +96,7 @@ void	echo(const char *buf)
 		ft_printf("\n");
 }
 
-int	builtins(const char *buf)
+int	builtins(const char *buf, char **environ)
 {
 	ft_trim_leading_spaces(buf);
 	if (ft_strncmp(buf, "cd", 2) == 0)
@@ -111,11 +111,9 @@ int	builtins(const char *buf)
 	}
 	if (ft_strncmp(buf, "env", 3) == 0)
 	{
-		env();
+		env(environ);
 		return (1);
 	}
-	// if (ft_strncmp(buf, "echo ", 5) == 0)
-	//     ft_printf("%s\n", buf + 5);
 	if (ft_strncmp(buf, "echo ", 4) == 0)
 	{
 		echo(buf + 4);
