@@ -2,7 +2,7 @@
 
 // extern char	**environ;
 
-void	env(char **environ)
+void env(char **environ)
 {
 	char **env;
 
@@ -46,26 +46,22 @@ char *find_command_in_path(char *command)
 	return (NULL);
 }
 
-int	exec_cmd(struct s_execcmd *ecmd, char **environ)
+int exec_cmd(struct s_execcmd *ecmd, char **environ)
 {
 	char *abs_path;
 
 	if (ecmd->argv[0] == 0)
 		exit(1); // Change to indicate error
+	if (builtins(concat_args(ecmd->argv), environ))
+		exit(0);
 	abs_path = find_command_in_path(ecmd->argv[0]);
-	if (abs_path)
+	if (abs_path && execve(abs_path, ecmd->argv, environ) == -1)
 	{
-		if (execve(abs_path, ecmd->argv, environ) == -1)
-		{
-			perror("execve");
-			exit(1); // Change to indicate error
-		}
+		perror("execve");
+		exit(1); // Change to indicate error
 	}
 	else
-	{
 		perror("Command not found");
-		return (1);
-	}
 	return (1);
 }
 
@@ -99,7 +95,7 @@ int redirect_cmd(struct s_redircmd *rcmd, char **environ)
 	return (1);
 }
 
-int	pipe_cmd(struct s_pipecmd *pcmd, char **env)
+int pipe_cmd(struct s_pipecmd *pcmd, char **env)
 {
 	int fd_pipe[2];
 	int p_id;
@@ -129,7 +125,7 @@ int	pipe_cmd(struct s_pipecmd *pcmd, char **env)
 	return (1);
 }
 
-int	runcmd(struct s_cmd *cmd, char **env)
+int runcmd(struct s_cmd *cmd, char **env)
 {
 	char type;
 
@@ -142,7 +138,7 @@ int	runcmd(struct s_cmd *cmd, char **env)
 		return (redirect_cmd((struct s_redircmd *)cmd, env));
 	else if (type == '|')
 		return (pipe_cmd((struct s_pipecmd *)cmd, env));
-    else
-			ft_printf("unknown runcmd\n");
+	else
+		ft_printf("unknown runcmd\n");
 	return (1);
 }

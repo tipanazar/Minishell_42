@@ -122,7 +122,7 @@ char *concat_args(char **args)
 	return str;
 }
 
-int	builtins(const char *buf, char **environ)
+int	builtins(char *buf, char **environ)
 {
 	ft_trim_leading_spaces(buf);
 	if (check_quotes(buf))
