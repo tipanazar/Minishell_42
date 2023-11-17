@@ -2,9 +2,9 @@
 
 // extern char	**environ;
 
-void	env(char **environ)
+void env(char **environ)
 {
-	char	**env;
+	char **env;
 
 	env = environ;
 	while (*env)
@@ -14,12 +14,12 @@ void	env(char **environ)
 	}
 }
 
-char	*find_command_in_path(const char *command)
+char *find_command_in_path(char *command)
 {
-	char		*PATH;
-	char		*path;
-	static char	abs_path[512];
-	char		*temp_PATH;
+	char *PATH;
+	char *path;
+	static char abs_path[512];
+	char *temp_PATH;
 
 	if (command[0] == '/' || ft_strchr(command, '/'))
 	{
@@ -46,33 +46,29 @@ char	*find_command_in_path(const char *command)
 	return (NULL);
 }
 
-int	exec_cmd(struct s_execcmd *ecmd, char **environ)
+int exec_cmd(struct s_execcmd *ecmd, char **environ)
 {
-	char	*abs_path;
+	char *abs_path;
 
 	if (ecmd->argv[0] == 0)
 		exit(1); // Change to indicate error
+	if (builtins(concat_args(ecmd->argv), environ))
+		exit(0);
 	abs_path = find_command_in_path(ecmd->argv[0]);
-	if (abs_path)
+	if (abs_path && execve(abs_path, ecmd->argv, environ) == -1)
 	{
-		if (execve(abs_path, ecmd->argv, environ) == -1)
-		{
-			perror("execve");
-			exit(1); // Change to indicate error
-		}
+		perror("execve");
+		exit(1); // Change to indicate error
 	}
 	else
-	{
 		perror("Command not found");
-		return (1);
-	}
 	return (1);
 }
 
 int redirect_cmd(struct s_redircmd *rcmd, char **environ)
 {
-	int	fd_redirect;
-	int	flags;
+	int fd_redirect;
+	int flags;
 
 	if (rcmd->type == '>')
 		flags = O_WRONLY | O_CREAT | O_TRUNC;
@@ -99,10 +95,10 @@ int redirect_cmd(struct s_redircmd *rcmd, char **environ)
 	return (1);
 }
 
-int	pipe_cmd(struct s_pipecmd *pcmd, char **env)
+int pipe_cmd(struct s_pipecmd *pcmd, char **env)
 {
-	int	fd_pipe[2];
-	int	p_id;
+	int fd_pipe[2];
+	int p_id;
 
 	int status; // For capturing the exit status
 	if (pipe(fd_pipe) < 0)
@@ -129,9 +125,9 @@ int	pipe_cmd(struct s_pipecmd *pcmd, char **env)
 	return (1);
 }
 
-int	runcmd(struct s_cmd *cmd, char **env)
+int runcmd(struct s_cmd *cmd, char **env)
 {
-	char	type;
+	char type;
 
 	if (cmd == 0)
 		exit(1); // Change to indicate error
@@ -142,7 +138,7 @@ int	runcmd(struct s_cmd *cmd, char **env)
 		return (redirect_cmd((struct s_redircmd *)cmd, env));
 	else if (type == '|')
 		return (pipe_cmd((struct s_pipecmd *)cmd, env));
-    else
-			ft_printf("unknown runcmd\n");
+	else
+		ft_printf("unknown runcmd\n");
 	return (1);
 }

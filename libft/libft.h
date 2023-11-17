@@ -94,8 +94,9 @@ int					ft_char_arr_length(char **arr);
 char				*ft_strncpy(char *dest, const char *src, size_t n);
 char				*ft_fgets(char *str, int n, FILE *fp);
 int					ft_isspace(char ch);
-char				*ft_trim_leading_spaces(const char *str);
+void				ft_trim_leading_spaces(char *str);
 char				*ft_strtok(char *str, const char *delim);
 void				*ft_realloc(void *ptr, size_t new_size);
+void 				ft_print_char_arr(char **str);
 
 #endif

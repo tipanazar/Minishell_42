@@ -12,16 +12,19 @@
 
 #include "../libft.h"
 
-char	*ft_trim_leading_spaces(const char *str)
+void	ft_trim_leading_spaces(char *str)
 {
-	int		f_idx;
-	char	*trimmed_str;
+	int	f_idx;
+	int	s_idx;
 
 	f_idx = 0;
+	s_idx = 0;
 	if (!str)
-		return (NULL);
+		return ;
 	while (str[f_idx] && ft_isspace(str[f_idx]))
 		f_idx++;
-	trimmed_str = ft_strdup(str + f_idx);
-	return (trimmed_str);
+	while (str[f_idx])
+		str[s_idx++] = str[f_idx++];
+	while (str[s_idx])
+		str[s_idx++] = '\0';
 }

@@ -37,4 +37,4 @@ fclean: clean
 re: fclean all
 
 v:
-	make && valgrind --leak-check=full --show-leak-kinds=all --suppressions="supp.supp" ./minishell
+	make re && valgrind --leak-check=full --show-leak-kinds=all --suppressions="supp.supp" ./minishell
