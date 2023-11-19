@@ -1,9 +1,21 @@
 #include "../minishell.h"
 
-void ft_cd(char *buf)
+void env(char **environ)
 {
-	char *home_dir;
-	struct stat fileStat;
+	char **env;
+
+	env = environ;
+	while (*env)
+	{
+		printf("%s\n", *env);
+		env++;
+	}
+}
+
+void	ft_cd(char *buf)
+{
+	char		*home_dir;
+	struct stat	fileStat;
 
 	ft_trim_leading_spaces(buf);
 	if (ft_strlen(buf) == 2)
@@ -23,25 +35,23 @@ void ft_cd(char *buf)
 		ft_printf("cd: %s: No such file or directory\n", buf + 2);
 }
 
-void pwd(void)
+void	pwd(void)
 {
-	char cwd[PATH_MAX];
+	char	cwd[PATH_MAX];
 
 	if (getcwd(cwd, sizeof(cwd)))
 		printf("%s\n", cwd);
 	else
 		perror("getcwd() error");
 	ft_printf("Return pwd \n");
-	
 }
 
-void echo(char *buf)
+void	echo(char *buf)
 {
-	int newline;
-	int idx;
-	int s_idx;
-
-	int inside_sing_quotes;
+	int	newline;
+	int	idx;
+	int	s_idx;
+	int	inside_sing_quotes;
 
 	newline = 1;
 	idx = -1;
@@ -57,11 +67,11 @@ void echo(char *buf)
 	while (buf[++idx])
 	{
 		if (buf[idx] == '\"')
-			continue;
+			continue ;
 		if (buf[idx] == '\'')
 		{
 			inside_sing_quotes = !inside_sing_quotes;
-			continue;
+			continue ;
 		}
 		if (buf[idx] == '$' && !inside_sing_quotes && !ft_isspace(buf[idx + 1]))
 		{
@@ -82,14 +92,15 @@ void echo(char *buf)
 		ft_printf("\n");
 }
 
-int check_quotes(char *buf)
+int	check_quotes(char *buf)
 {
-	int idx = 0;
-	int sing_quotes;
-	int double_quotes;
+	int	idx;
+	int	sing_quotes;
+	int	double_quotes;
+
+	idx = 0;
 	sing_quotes = 0;
 	double_quotes = 0;
-
 	while (buf[++idx])
 	{
 		if (buf[idx] == '\'')
@@ -100,17 +111,21 @@ int check_quotes(char *buf)
 	if (sing_quotes % 2 != 0 || double_quotes % 2 != 0)
 	{
 		ft_printf("Quotes amount is not even!\n");
-		return 1;
+		return (1);
 	}
-	return 0;
+	return (0);
 }
 
-char *concat_args(char **args)
+char	*concat_args(char **args)
 {
-	int idx = 0;
-	char *str = 0;
+	int		idx;
+	char	*str;
 
-	while (args[idx] && ft_strcmp(args[idx], "|") && ft_strcmp(args[idx], "<") && ft_strcmp(args[idx], ">") && ft_strcmp(args[idx], ">>") && ft_strcmp(args[idx], "<<"))
+	idx = 0;
+	str = 0;
+	while (args[idx] && ft_strcmp(args[idx], "|") && ft_strcmp(args[idx], "<")
+		&& ft_strcmp(args[idx], ">") && ft_strcmp(args[idx], ">>")
+		&& ft_strcmp(args[idx], "<<"))
 	{
 		if (!str)
 			str = ft_strdup(args[idx]);
@@ -119,14 +134,14 @@ char *concat_args(char **args)
 		str = ft_strjoin(str, " ");
 		idx++;
 	}
-	return str;
+	return (str);
 }
 
 int	builtins(char *buf, char **environ)
 {
 	ft_trim_leading_spaces(buf);
 	if (check_quotes(buf))
-		return 0;
+		return (0);
 	if (ft_strncmp(buf, "cd", 2) == 0)
 	{
 		ft_cd(buf + 2);
@@ -136,7 +151,6 @@ int	builtins(char *buf, char **environ)
 	{
 		pwd();
 		ft_printf("Return \n");
-
 		return (1);
 	}
 	if (ft_strncmp(buf, "env", 3) == 0)

@@ -1,9 +1,9 @@
 #include "../../minishell.h"
 
-struct s_cmd *parsecmd(char *s)
+struct s_cmd	*parsecmd(char *s)
 {
-	char *es;
-	struct s_cmd *cmd;
+	char			*es;
+	struct s_cmd	*cmd;
 
 	es = s + ft_strlen(s);
 	cmd = parsepipe(&s, es);
@@ -18,9 +18,9 @@ struct s_cmd *parsecmd(char *s)
 	return (cmd);
 }
 
-struct s_cmd *parsepipe(char **ps, char *es)
+struct s_cmd	*parsepipe(char **ps, char *es)
 {
-	struct s_cmd *cmd;
+	struct s_cmd	*cmd;
 
 	cmd = parseexec(ps, es);
 	if (peek(ps, es, "|"))
@@ -31,11 +31,11 @@ struct s_cmd *parsepipe(char **ps, char *es)
 	return (cmd);
 }
 
-struct s_cmd *parseredirs(struct s_cmd *cmd, char **ps, char *es)
+struct s_cmd	*parseredirs(struct s_cmd *cmd, char **ps, char *es)
 {
-	int tok;
-	char *q;
-	char *eq;
+	int		tok;
+	char	*q;
+	char	*eq;
 
 	while (peek(ps, es, "<>"))
 	{
@@ -57,14 +57,14 @@ struct s_cmd *parseredirs(struct s_cmd *cmd, char **ps, char *es)
 	return (cmd);
 }
 
-struct s_cmd *parseexec(char **ps, char *es)
+struct s_cmd	*parseexec(char **ps, char *es)
 {
-	struct s_execcmd *cmd;
-	struct s_cmd *ret;
-	char *q;
-	char *eq;
-	int tok;
-	int initial_max_args;
+	struct s_execcmd	*cmd;
+	struct s_cmd		*ret;
+	char				*q;
+	char				*eq;
+	int					tok;
+	int					initial_max_args;
 
 	initial_max_args = 10;
 	ret = execcmd();
@@ -76,7 +76,7 @@ struct s_cmd *parseexec(char **ps, char *es)
 	while (!peek(ps, es, "|"))
 	{
 		if ((tok = gettoken(ps, es, &q, &eq)) == 0)
-			break;
+			break ;
 		if (tok != 'a')
 		{
 			write(2, "syntax error\n", 12);
@@ -86,7 +86,7 @@ struct s_cmd *parseexec(char **ps, char *es)
 		if (cmd->argc >= cmd->max_args)
 		{
 			cmd->max_args *= 2;
-			cmd->argv = realloc(cmd->argv, cmd->max_args * sizeof(char *));
+			cmd->argv = ft_realloc(cmd->argv, cmd->max_args * sizeof(char *));
 		}
 		cmd->argv[cmd->argc] = mkcopy(q, eq);
 		cmd->argc++;

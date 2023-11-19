@@ -1,25 +1,11 @@
 #include "../../minishell.h"
 
-// extern char	**environ;
-
-void env(char **environ)
+char	*find_command_in_path(char *command)
 {
-	char **env;
-
-	env = environ;
-	while (*env)
-	{
-		printf("%s\n", *env);
-		env++;
-	}
-}
-
-char *find_command_in_path(char *command)
-{
-	char *PATH;
-	char *path;
-	static char abs_path[512];
-	char *temp_PATH;
+	char		*PATH;
+	char		*path;
+	static char	abs_path[512];
+	char		*temp_PATH;
 
 	if (command[0] == '/' || ft_strchr(command, '/'))
 	{
@@ -46,9 +32,9 @@ char *find_command_in_path(char *command)
 	return (NULL);
 }
 
-int exec_cmd(struct s_execcmd *ecmd, char **environ)
+int	exec_cmd(struct s_execcmd *ecmd, char **environ)
 {
-	char *abs_path;
+	char	*abs_path;
 
 	if (ecmd->argv[0] == 0)
 		exit(1); // Change to indicate error
@@ -65,10 +51,10 @@ int exec_cmd(struct s_execcmd *ecmd, char **environ)
 	return (1);
 }
 
-int redirect_cmd(struct s_redircmd *rcmd, char **environ)
+int	redirect_cmd(struct s_redircmd *rcmd, char **environ)
 {
-	int fd_redirect;
-	int flags;
+	int	fd_redirect;
+	int	flags;
 
 	if (rcmd->type == '>')
 		flags = O_WRONLY | O_CREAT | O_TRUNC;
@@ -95,39 +81,55 @@ int redirect_cmd(struct s_redircmd *rcmd, char **environ)
 	return (1);
 }
 
-int pipe_cmd(struct s_pipecmd *pcmd, char **env)
+int	pipe_cmd(struct s_pipecmd *pcmd, char **env)
 {
-	int fd_pipe[2];
-	int p_id;
+	int	fd_pipe[2];
 
-	int status; // For capturing the exit status
+	int p_id_left, p_id_right;
+	int status_left, status_right;
 	if (pipe(fd_pipe) < 0)
-		exit(1); // Change to indicate error
-	p_id = fork();
-	if (p_id < 0)
-		exit(1); // Change to indicate error
-	else if (p_id == 0)
 	{
-		close(fd_pipe[1]);
-		dup2(fd_pipe[0], STDIN_FILENO);
-		runcmd(pcmd->right, env); // Add env as the second argument
-		close(fd_pipe[0]);
-		exit(0);
+		perror("pipe");
+		return (-1);
 	}
-	else
+	p_id_left = fork();
+	if (p_id_left < 0)
+	{
+		perror("fork");
+		return (-1);
+	}
+	else if (p_id_left == 0)
 	{
 		close(fd_pipe[0]);
 		dup2(fd_pipe[1], STDOUT_FILENO);
-		runcmd(pcmd->left, env); // Add env as the second argument
 		close(fd_pipe[1]);
-		wait(&status); // Use status to capture the exit status
+		runcmd(pcmd->left, env);
+		exit(0);
 	}
+	p_id_right = fork();
+	if (p_id_right < 0)
+	{
+		perror("fork");
+		return (-1);
+	}
+	else if (p_id_right == 0)
+	{
+		close(fd_pipe[1]);
+		dup2(fd_pipe[0], STDIN_FILENO);
+		close(fd_pipe[0]);
+		runcmd(pcmd->right, env);
+		exit(0);
+	}
+	close(fd_pipe[0]);
+	close(fd_pipe[1]);
+	waitpid(p_id_left, &status_left, 0);
+	waitpid(p_id_right, &status_right, 0);
 	return (1);
 }
 
-int runcmd(struct s_cmd *cmd, char **env)
+int	runcmd(struct s_cmd *cmd, char **env)
 {
-	char type;
+	char	type;
 
 	if (cmd == 0)
 		exit(1); // Change to indicate error
