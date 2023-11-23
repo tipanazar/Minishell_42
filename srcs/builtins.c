@@ -12,10 +12,10 @@ void env(char **environ)
 	}
 }
 
-void	ft_cd(char *buf)
+void ft_cd(char *buf)
 {
-	char		*home_dir;
-	struct stat	fileStat;
+	char *home_dir;
+	struct stat fileStat;
 
 	ft_trim_leading_spaces(buf);
 	if (ft_strlen(buf) == 2)
@@ -35,9 +35,9 @@ void	ft_cd(char *buf)
 		ft_printf("cd: %s: No such file or directory\n", buf + 2);
 }
 
-void	pwd(void)
+void pwd(void)
 {
-	char	cwd[PATH_MAX];
+	char cwd[PATH_MAX];
 
 	if (getcwd(cwd, sizeof(cwd)))
 		printf("%s\n", cwd);
@@ -46,57 +46,65 @@ void	pwd(void)
 	ft_printf("Return pwd \n");
 }
 
-void	echo(char *buf)
+void echo(char *buf)
 {
-	int	newline;
-	int	idx;
-	int	s_idx;
-	int	inside_sing_quotes;
+	int newline;
+	// int idx;
+	// int s_idx;
+	// int	inside_sing_quotes;
 
-	newline = 1;
-	idx = -1;
-	s_idx = 1;
-	inside_sing_quotes = 0;
+	// newline = 1;
+	// idx = -1;
+	// // s_idx = 1;
+	// // inside_sing_quotes = 0;
+	// ft_trim_leading_spaces(buf);
+	// if (ft_strncmp(buf, "-n", 2) == 0)
+	// {
+	// 	newline = 0;
+	// 	buf += 2;
+	// 	ft_trim_leading_spaces(buf);
+	// }
 	ft_trim_leading_spaces(buf);
-	if (ft_strncmp(buf, "-n", 2) == 0)
+	newline = ft_strncmp(buf, "-n", 2);
+	if (!newline)
 	{
-		newline = 0;
 		buf += 2;
 		ft_trim_leading_spaces(buf);
 	}
-	while (buf[++idx])
-	{
-		if (buf[idx] == '\"')
-			continue ;
-		if (buf[idx] == '\'')
-		{
-			inside_sing_quotes = !inside_sing_quotes;
-			continue ;
-		}
-		if (buf[idx] == '$' && !inside_sing_quotes && !ft_isspace(buf[idx + 1]))
-		{
-			// if (buf[idx + 1] == '?')
-			// 	ft_printf("%d", g_exit_code);
-			// else
-			// {
-			while (buf[idx + s_idx] && !ft_isspace(buf[idx + s_idx]))
-				s_idx++;
-			ft_printf("%s", getenv(ft_substr(buf, idx + 1, s_idx)));
-			idx += s_idx;
-			// }
-		}
-		else
-			ft_printf("%c", buf[idx]);
-	}
+	ft_printf("%s", buf);
+	// while (buf[++idx])
+	// {
+	// 	if (buf[idx] == '\"')
+	// 		continue;
+	// 	if (buf[idx] == '\'')
+	// 	{
+	// 		inside_sing_quotes = !inside_sing_quotes;
+	// 		continue;
+	// 	}
+	// 	if (buf[idx] == '$' && !inside_sing_quotes && !ft_isspace(buf[idx + 1]))
+	// 	{
+	// 		if (buf[idx + 1] == '?')
+	// 			ft_printf("%d", g_exit_code);
+	// 		else
+	// 		{
+	// 			while (buf[idx + s_idx] && !ft_isspace(buf[idx + s_idx]))
+	// 				s_idx++;
+	// 			ft_printf("%s", getenv(ft_substr(buf, idx + 1, s_idx)));
+	// 			idx += s_idx;
+	// 		}
+	// 	}
+	// 	else
+	// 		ft_printf("%c", buf[idx]);
+	// }
 	if (newline)
 		ft_printf("\n");
 }
 
-int	check_quotes(char *buf)
+int check_quotes(char *buf)
 {
-	int	idx;
-	int	sing_quotes;
-	int	double_quotes;
+	int idx;
+	int sing_quotes;
+	int double_quotes;
 
 	idx = 0;
 	sing_quotes = 0;
@@ -116,32 +124,25 @@ int	check_quotes(char *buf)
 	return (0);
 }
 
-char	*concat_args(char **args)
+char *concat_args(char **args)
 {
-	int		idx;
-	char	*str;
+	int idx;
+	char *str;
 
-	idx = 0;
-	str = 0;
-	while (args[idx] && ft_strcmp(args[idx], "|") && ft_strcmp(args[idx], "<")
-		&& ft_strcmp(args[idx], ">") && ft_strcmp(args[idx], ">>")
-		&& ft_strcmp(args[idx], "<<"))
+	idx = -1;
+	str = "";
+	while (args[++idx])
 	{
-		if (!str)
-			str = ft_strdup(args[idx]);
-		else
-			str = ft_strjoin(str, args[idx]);
-		str = ft_strjoin(str, " ");
-		idx++;
+		str = ft_strjoin(str, args[idx]);
+		if (args[idx + 1])
+			str = ft_strjoin(str, " ");
 	}
 	return (str);
 }
 
-int	builtins(char *buf, char **environ)
+int builtins(char *buf, char **environ)
 {
 	ft_trim_leading_spaces(buf);
-	if (check_quotes(buf))
-		return (0);
 	if (ft_strncmp(buf, "cd", 2) == 0)
 	{
 		ft_cd(buf + 2);

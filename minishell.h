@@ -51,7 +51,7 @@ struct				s_pipecmd
 int					runcmd(struct s_cmd *cmd, char **env);
 int					fork1(void);
 int					getcmd(char *buf, int nbuf);
-int					gettoken(char **ps, char *es, char **q, char **eq);
+int					get_token(char **ps, char *es, char **q, char **eq);
 int					peek(char **ps, char *es, char *toks);
 char				*mkcopy(char *s, char *es);
 struct s_cmd		*execcmd(void);
