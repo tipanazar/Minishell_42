@@ -46,24 +46,30 @@ void pwd(void)
 	ft_printf("Return pwd \n");
 }
 
-void echo(char *buf)
+char *getenv_custom(const char *name, char **environ)
+{
+	for (char **env = environ; *env != NULL; env++)
+	{
+		char *env_name = strtok(*env, "=");
+		char *env_value = strtok(NULL, "=");
+
+		if (env_name && env_value && strcmp(env_name, name) == 0)
+			return env_value;
+	}
+
+	return NULL;
+}
+
+void echo(char *buf, char **environ)
 {
 	int newline;
-	// int idx;
-	// int s_idx;
+	int idx;
+	int s_idx;
 	// int	inside_sing_quotes;
 
-	// newline = 1;
-	// idx = -1;
-	// // s_idx = 1;
+	idx = -1;
+	s_idx = 1;
 	// // inside_sing_quotes = 0;
-	// ft_trim_leading_spaces(buf);
-	// if (ft_strncmp(buf, "-n", 2) == 0)
-	// {
-	// 	newline = 0;
-	// 	buf += 2;
-	// 	ft_trim_leading_spaces(buf);
-	// }
 	ft_trim_leading_spaces(buf);
 	newline = ft_strncmp(buf, "-n", 2);
 	if (!newline)
@@ -71,57 +77,34 @@ void echo(char *buf)
 		buf += 2;
 		ft_trim_leading_spaces(buf);
 	}
-	ft_printf("%s", buf);
-	// while (buf[++idx])
-	// {
-	// 	if (buf[idx] == '\"')
-	// 		continue;
-	// 	if (buf[idx] == '\'')
-	// 	{
-	// 		inside_sing_quotes = !inside_sing_quotes;
-	// 		continue;
-	// 	}
-	// 	if (buf[idx] == '$' && !inside_sing_quotes && !ft_isspace(buf[idx + 1]))
-	// 	{
-	// 		if (buf[idx + 1] == '?')
-	// 			ft_printf("%d", g_exit_code);
-	// 		else
-	// 		{
-	// 			while (buf[idx + s_idx] && !ft_isspace(buf[idx + s_idx]))
-	// 				s_idx++;
-	// 			ft_printf("%s", getenv(ft_substr(buf, idx + 1, s_idx)));
-	// 			idx += s_idx;
-	// 		}
-	// 	}
-	// 	else
-	// 		ft_printf("%c", buf[idx]);
-	// }
-	if (newline)
-		ft_printf("\n");
-}
-
-int check_quotes(char *buf)
-{
-	int idx;
-	int sing_quotes;
-	int double_quotes;
-
-	idx = 0;
-	sing_quotes = 0;
-	double_quotes = 0;
+	// ft_printf("%s", buf);
 	while (buf[++idx])
 	{
-		if (buf[idx] == '\'')
-			sing_quotes++;
-		if (buf[idx] == '\"')
-			double_quotes++;
+		// if (buf[idx] == '\"')
+		// 	continue;
+		// if (buf[idx] == '\'')
+		// {
+		// 	inside_sing_quotes = !inside_sing_quotes;
+		// 	continue;
+		// }
+		// if (buf[idx] == '$' && !inside_sing_quotes && !ft_isspace(buf[idx + 1]))
+		if (buf[idx] == '$' && !ft_isspace(buf[idx + 1]))
+		{
+			// if (buf[idx + 1] == '?')
+			// 	ft_printf("%d", g_exit_code);
+			// else
+			// {
+			while (buf[idx + s_idx] && !ft_isspace(buf[idx + s_idx]))
+				s_idx++;
+			ft_printf("%s", getenv_custom(ft_substr(buf, idx + 1, s_idx), environ));
+			idx += s_idx;
+			// }
+		}
+		else
+			ft_printf("%c", buf[idx]);
 	}
-	if (sing_quotes % 2 != 0 || double_quotes % 2 != 0)
-	{
-		ft_printf("Quotes amount is not even!\n");
-		return (1);
-	}
-	return (0);
+	if (newline)
+		ft_printf("\n");
 }
 
 char *concat_args(char **args)
@@ -140,9 +123,41 @@ char *concat_args(char **args)
 	return (str);
 }
 
+int do_variable(char *name, char *value, char **environ)
+{
+	int idx;
+	idx = -1;
+
+	while (name[++idx])
+		if (ft_isspace(name[idx]))
+			return 0;
+	idx = -1;
+	while (environ[++idx])
+	{
+		if (ft_strcmp(ft_split(environ[idx], '=')[0], name) == 0)
+		{
+			free(environ[idx]);
+			environ[idx] = ft_strjoin(ft_strjoin(name, "="), value);
+			return 1;
+		}
+	}
+
+	environ[idx] = ft_strjoin(ft_strjoin(name, "="), value);
+	ft_printf("Done: %s\n", environ[idx]);
+	return 1;
+}
+
 int builtins(char *buf, char **environ)
 {
 	ft_trim_leading_spaces(buf);
+	char **splitted = ft_split(buf, '=');
+	if (ft_strchr(buf, '=') && do_variable(splitted[0], buf + ft_strlen(splitted[0] + 1), environ))
+	{
+		ft_free_char_arr(splitted);
+		return 1;
+	}
+	else
+		ft_free_char_arr(splitted);
 	if (ft_strncmp(buf, "cd", 2) == 0)
 	{
 		ft_cd(buf + 2);
@@ -161,7 +176,7 @@ int builtins(char *buf, char **environ)
 	}
 	if (ft_strncmp(buf, "echo", 4) == 0)
 	{
-		echo(buf + 4);
+		echo(buf + 4, environ);
 		return (1);
 	}
 	return (0);
