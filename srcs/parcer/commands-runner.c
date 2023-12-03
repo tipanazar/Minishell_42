@@ -32,16 +32,16 @@ char	*find_command_in_path(char *command)
 	return (NULL);
 }
 
-int	exec_cmd(struct s_execcmd *ecmd, char **environ)
+int	exec_cmd(struct s_execcmd *ecmd, char **custom_environ)
 {
 	char	*abs_path;
 
 	if (ecmd->argv[0] == 0)
 		exit(1); // Change to indicate error
-	if (builtins(concat_args(ecmd->argv), environ))
+	if (builtins(concat_args(ecmd->argv), custom_environ))
 		exit(0);
 	abs_path = find_command_in_path(ecmd->argv[0]);
-	if (abs_path && execve(abs_path, ecmd->argv, environ) == -1)
+	if (abs_path && execve(abs_path, ecmd->argv, custom_environ) == -1)
 	{
 		perror("execve");
 		exit(1); // Change to indicate error
@@ -51,7 +51,7 @@ int	exec_cmd(struct s_execcmd *ecmd, char **environ)
 	return (1);
 }
 
-int	redirect_cmd(struct s_redircmd *rcmd, char **environ)
+int	redirect_cmd(struct s_redircmd *rcmd, char **custom_environ)
 {
 	int	fd_redirect;
 	int	flags;
@@ -76,7 +76,7 @@ int	redirect_cmd(struct s_redircmd *rcmd, char **environ)
 		close(fd_redirect);
 		exit(1); // Change to indicate error
 	}
-	runcmd(rcmd->cmd, environ);
+	runcmd(rcmd->cmd, custom_environ);
 	close(fd_redirect);
 	return (1);
 }

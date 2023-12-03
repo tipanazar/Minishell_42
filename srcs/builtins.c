@@ -1,10 +1,10 @@
 #include "../minishell.h"
 
-void env(char **environ)
+void env(char **custom_environ)
 {
 	char **env;
 
-	env = environ;
+	env = custom_environ;
 	while (*env)
 	{
 		printf("%s\n", *env);
@@ -46,21 +46,21 @@ void pwd(void)
 	ft_printf("Return pwd \n");
 }
 
-char *getenv_custom(const char *name, char **environ)
+char *getenv_custom(const char *name, char **custom_environ)
 {
-	for (char **env = environ; *env != NULL; env++)
-	{
-		char *env_name = strtok(*env, "=");
-		char *env_value = strtok(NULL, "=");
 
-		if (env_name && env_value && strcmp(env_name, name) == 0)
-			return env_value;
+	int idx = -1;
+	ft_print_char_arr(custom_environ);
+	while (custom_environ[++idx])
+	{
+		if (ft_strcmp(ft_split(custom_environ[idx], '=')[0], name) == 0)
+			return custom_environ[idx] + ft_strlen(name) + 1;
 	}
 
 	return NULL;
 }
 
-void echo(char *buf, char **environ)
+void echo(char *buf, char **custom_environ)
 {
 	int newline;
 	int idx;
@@ -96,7 +96,7 @@ void echo(char *buf, char **environ)
 			// {
 			while (buf[idx + s_idx] && !ft_isspace(buf[idx + s_idx]))
 				s_idx++;
-			ft_printf("%s", getenv_custom(ft_substr(buf, idx + 1, s_idx), environ));
+			ft_printf("%s", getenv_custom(ft_substr(buf, idx + 1, s_idx), custom_environ));
 			idx += s_idx;
 			// }
 		}
@@ -123,7 +123,7 @@ char *concat_args(char **args)
 	return (str);
 }
 
-int do_variable(char *name, char *value, char **environ)
+int do_variable(char *name, char *value, char **custom_environ)
 {
 	int idx;
 	idx = -1;
@@ -132,26 +132,29 @@ int do_variable(char *name, char *value, char **environ)
 		if (ft_isspace(name[idx]))
 			return 0;
 	idx = -1;
-	while (environ[++idx])
+	while (custom_environ[++idx])
 	{
-		if (ft_strcmp(ft_split(environ[idx], '=')[0], name) == 0)
+		if (ft_strcmp(ft_split(custom_environ[idx], '=')[0], name) == 0)
 		{
-			free(environ[idx]);
-			environ[idx] = ft_strjoin(ft_strjoin(name, "="), value);
+			ft_printf("Free: %s\n", custom_environ[idx]);
+			free(custom_environ[idx]);
+			custom_environ[idx] = ft_strjoin(ft_strjoin(name, "="), value);
+			idx++;
 			return 1;
 		}
 	}
-
-	environ[idx] = ft_strjoin(ft_strjoin(name, "="), value);
-	ft_printf("Done: %s\n", environ[idx]);
+	custom_environ[idx] = ft_strjoin(ft_strjoin(name, "="), value);
+	custom_environ[idx + 1] = NULL;
+	// ft_printf("Done:\n\n");
+	// ft_print_char_arr(custom_environ);
 	return 1;
 }
 
-int builtins(char *buf, char **environ)
+int builtins(char *buf, char **custom_environ)
 {
 	ft_trim_leading_spaces(buf);
 	char **splitted = ft_split(buf, '=');
-	if (ft_strchr(buf, '=') && do_variable(splitted[0], buf + ft_strlen(splitted[0] + 1), environ))
+	if (ft_strchr(buf, '=') && do_variable(splitted[0], buf + ft_strlen(splitted[0]) + 1, custom_environ))
 	{
 		ft_free_char_arr(splitted);
 		return 1;
@@ -171,12 +174,12 @@ int builtins(char *buf, char **environ)
 	}
 	if (ft_strncmp(buf, "env", 3) == 0)
 	{
-		env(environ);
+		env(custom_environ);
 		return (1);
 	}
 	if (ft_strncmp(buf, "echo", 4) == 0)
 	{
-		echo(buf + 4, environ);
+		echo(buf + 4, custom_environ);
 		return (1);
 	}
 	return (0);
