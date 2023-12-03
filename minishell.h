@@ -65,5 +65,6 @@ int					ft_fileno(FILE *stream);
 char 				*concat_args(char **args);
 int					builtins(char *buf, char **env);
 void				env(char **env);
+void				ctrl_c_handler(int sig);
 
 #endif
