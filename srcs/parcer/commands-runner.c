@@ -1,11 +1,11 @@
 #include "../../minishell.h"
 
-char	*find_command_in_path(char *command)
+char *find_command_in_path(char *command)
 {
-	char		*PATH;
-	char		*path;
-	static char	abs_path[512];
-	char		*temp_PATH;
+	char *PATH;
+	char *path;
+	static char abs_path[512];
+	char *temp_PATH;
 
 	if (command[0] == '/' || ft_strchr(command, '/'))
 	{
@@ -32,9 +32,9 @@ char	*find_command_in_path(char *command)
 	return (NULL);
 }
 
-int	exec_cmd(struct s_execcmd *ecmd, char **custom_environ)
+int exec_cmd(struct s_execcmd *ecmd, char **custom_environ)
 {
-	char	*abs_path;
+	char *abs_path;
 
 	if (ecmd->argv[0] == 0)
 		exit(1); // Change to indicate error
@@ -51,10 +51,10 @@ int	exec_cmd(struct s_execcmd *ecmd, char **custom_environ)
 	return (1);
 }
 
-int	redirect_cmd(struct s_redircmd *rcmd, char **custom_environ)
+int redirect_cmd(struct s_redircmd *rcmd, char **custom_environ)
 {
-	int	fd_redirect;
-	int	flags;
+	int fd_redirect;
+	int flags;
 
 	if (rcmd->type == '>')
 		flags = O_WRONLY | O_CREAT | O_TRUNC;
@@ -81,9 +81,9 @@ int	redirect_cmd(struct s_redircmd *rcmd, char **custom_environ)
 	return (1);
 }
 
-int	pipe_cmd(struct s_pipecmd *pcmd, char **env)
+int pipe_cmd(struct s_pipecmd *pcmd, char **env)
 {
-	int	fd_pipe[2];
+	int fd_pipe[2];
 
 	int p_id_left, p_id_right;
 	int status_left, status_right;
@@ -127,9 +127,9 @@ int	pipe_cmd(struct s_pipecmd *pcmd, char **env)
 	return (1);
 }
 
-int	runcmd(struct s_cmd *cmd, char **env)
+int runcmd(struct s_cmd *cmd, char **env)
 {
-	char	type;
+	char type;
 
 	if (cmd == 0)
 		exit(1); // Change to indicate error

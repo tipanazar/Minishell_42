@@ -56,14 +56,11 @@ int main(int ac, char **av, char **env)
 	char *buf;
 	int r;
 	char **custom_environ = malloc(sizeof(char *) * (ft_strarrlen(env) + 1));
-	// custom_environ[0] = NULL;
 	int idx = -1;
 	while (env[++idx])
 		custom_environ[idx] = ft_strdup(env[idx]);
 	custom_environ[idx] = NULL;
 	idx = -1;
-	// while (custom_environ[++idx])
-	// 	ft_printf("%s\n", custom_environ[idx]);
 
 	signal(SIGINT, ctrl_c_handler);
 	signal(SIGQUIT, SIG_IGN);
@@ -86,10 +83,14 @@ int main(int ac, char **av, char **env)
 		}
 		if (fork1() == 0)
 		{
-			runcmd(parsecmd(buf), custom_environ);
+			buf = ft_strtrim(buf, "\f\t "); //* possible leak
+			if (ft_strcmp(buf, "export") == 0 || ft_strncmp(buf, "export ", 7) == 0)
+				export(buf + 7, custom_environ);
+			else
+				runcmd(parsecmd(buf), custom_environ);
 			free(buf);
 			buf = NULL;
-			exit(0);
+			exit(0); //* for what??
 		}
 		wait(&r);
 		free(buf);

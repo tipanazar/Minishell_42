@@ -1,17 +1,5 @@
 #include "../minishell.h"
 
-void env(char **custom_environ)
-{
-	char **env;
-
-	env = custom_environ;
-	while (*env)
-	{
-		printf("%s\n", *env);
-		env++;
-	}
-}
-
 void ft_cd(char *buf)
 {
 	char *home_dir;
@@ -50,7 +38,7 @@ char *getenv_custom(const char *name, char **custom_environ)
 {
 
 	int idx = -1;
-	ft_print_char_arr(custom_environ);
+	// ft_print_str_arr(custom_environ);
 	while (custom_environ[++idx])
 	{
 		if (ft_strcmp(ft_split(custom_environ[idx], '=')[0], name) == 0)
@@ -123,61 +111,99 @@ char *concat_args(char **args)
 	return (str);
 }
 
-int do_variable(char *name, char *value, char **custom_environ)
+void export_validator(char *buf)
 {
 	int idx;
+	bool has_equal_sign = false;
+	char inside_quotes = 0;
 	idx = -1;
 
-	while (name[++idx])
-		if (ft_isspace(name[idx]))
-			return 0;
-	idx = -1;
-	while (custom_environ[++idx])
+	while (buf[++idx])
 	{
-		if (ft_strcmp(ft_split(custom_environ[idx], '=')[0], name) == 0)
+		if (!ft_isspace(buf[idx]) && ft_isspace(buf[idx + 1]) && !inside_quotes && has_equal_sign)
 		{
-			ft_printf("Free: %s\n", custom_environ[idx]);
-			free(custom_environ[idx]);
-			custom_environ[idx] = ft_strjoin(ft_strjoin(name, "="), value);
-			idx++;
-			return 1;
+			has_equal_sign = true;
+			ft_printf("Trim\n");
+			while (buf[++idx])
+				buf[idx] = '\0';
+			return;
 		}
+		if (buf[idx] == '\'' || buf[idx] == '\"')
+		{
+			if (!inside_quotes)
+				inside_quotes = buf[idx];
+			else if (inside_quotes == buf[idx])
+				inside_quotes = 0;
+			else if (inside_quotes && inside_quotes != buf[idx] && !buf[idx + 1])
+			{
+				ft_printf("Heredoc??\n");
+				exit(0);
+			}
+		}
+		if (ft_isspace(buf[idx]) && buf[idx + 1] == '=' && !has_equal_sign)
+		{
+			ft_printf("-minishell: export: `%s': not a valid identifier\n", buf + idx + 1);
+			exit(0);
+		}
+		if (buf[idx] == '=')
+			has_equal_sign = true;
 	}
-	custom_environ[idx] = ft_strjoin(ft_strjoin(name, "="), value);
-	custom_environ[idx + 1] = NULL;
-	// ft_printf("Done:\n\n");
-	// ft_print_char_arr(custom_environ);
+	if (!has_equal_sign)
+		exit(0);
+	if (inside_quotes)
+	{
+		ft_printf("Heredoc??\n");
+		exit(0);
+	}
+}
+
+int export(char *buf, char **custom_environ)
+{
+	// int idx;
+	// bool has_equal_sign = false;
+	// idx = -1;
+	(void)custom_environ;
+	ft_trim_leading_spaces(buf);
+	export_validator(buf);
+	ft_printf("Buf: %s\n", buf);
+	ft_printf("Ok\n");
+	// while (custom_environ[++idx])
+	// {
+	// 	if (ft_strcmp(ft_split(custom_environ[idx], '=')[0], name) == 0)
+	// 	{
+	// 		ft_printf("Free: %s\n", custom_environ[idx]);
+	// 		free(custom_environ[idx]);
+	// 		custom_environ[idx] = ft_strjoin(ft_strjoin(name, "="), value);
+	// 		idx++;
+	// 		return 1;
+	// 	}
+	// }
+	// custom_environ[idx] = ft_strjoin(ft_strjoin(name, "="), value);
+	// custom_environ[idx + 1] = NULL;
+	// // ft_printf("Done:\n\n");
+	// // ft_print_str_arr(custom_environ);
 	return 1;
 }
 
 int builtins(char *buf, char **custom_environ)
 {
-	ft_trim_leading_spaces(buf);
-	char **splitted = ft_split(buf, '=');
-	if (ft_strchr(buf, '=') && do_variable(splitted[0], buf + ft_strlen(splitted[0]) + 1, custom_environ))
-	{
-		ft_free_char_arr(splitted);
-		return 1;
-	}
-	else
-		ft_free_char_arr(splitted);
-	if (ft_strncmp(buf, "cd", 2) == 0)
+	if ((ft_strncmp(buf, "cd", 2) == 0 && ft_strlen(buf) == 2) || ft_strncmp(buf, "cd ", 3) == 0)
 	{
 		ft_cd(buf + 2);
 		return (1);
 	}
-	if (ft_strncmp(buf, "pwd", 3) == 0)
+	if (ft_strncmp(buf, "pwd", 3) == 0 && ft_strlen(buf) == 3)
 	{
 		pwd();
 		ft_printf("Return \n");
 		return (1);
 	}
-	if (ft_strncmp(buf, "env", 3) == 0)
+	if (ft_strncmp(buf, "env", 3) == 0 && ft_strlen(buf) == 3) //!!
 	{
-		env(custom_environ);
+		ft_print_str_arr(custom_environ);
 		return (1);
 	}
-	if (ft_strncmp(buf, "echo", 4) == 0)
+	if (ft_strncmp(buf, "echo ", 5) == 0)
 	{
 		echo(buf + 4, custom_environ);
 		return (1);
