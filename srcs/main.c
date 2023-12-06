@@ -49,6 +49,16 @@ void free_arguments(struct s_execcmd *cmd)
 	free(cmd->argv);
 }
 
+// int main(void) {
+//     char *test = strdup("test \"strin'g'");
+//     printf("before: %s\n", test);
+//     ft_str_remove_chars(&test, "\"'");
+//     printf("after: %s\n", test);
+//     free(test);
+
+//     return 0;
+// } //* to test ft_str_remove_chars
+
 int main(int ac, char **av, char **env)
 {
 	(void)ac;
@@ -81,13 +91,17 @@ int main(int ac, char **av, char **env)
 			free(buf);
 			continue;
 		}
-		if (fork1() == 0)
+		buf = ft_strtrim(buf, "\f\t "); //* possible leak
+		if (ft_strcmp(buf, "export") == 0 || ft_strncmp(buf, "export ", 7) == 0)
 		{
-			buf = ft_strtrim(buf, "\f\t "); //* possible leak
-			if (ft_strcmp(buf, "export") == 0 || ft_strncmp(buf, "export ", 7) == 0)
-				export(buf + 7, custom_environ);
-			else
-				runcmd(parsecmd(buf), custom_environ);
+			export(buf + 7, &custom_environ);
+			free(buf);
+			buf = NULL;
+			continue;
+		}
+		else if (fork1() == 0)
+		{
+			runcmd(parsecmd(buf), custom_environ);
 			free(buf);
 			buf = NULL;
 			exit(0); //* for what??

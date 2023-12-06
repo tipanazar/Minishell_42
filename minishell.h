@@ -65,7 +65,7 @@ int					ft_fileno(FILE *stream);
 char 				*concat_args(char **args);
 int					builtins(char *buf, char **env);
 void				env(char **env);
-int 				export(char *buf, char **custom_environ);
+void 				export(char *buf, char ***custom_environ);
 
 
 #endif

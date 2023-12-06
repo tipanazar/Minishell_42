@@ -111,11 +111,12 @@ char *concat_args(char **args)
 	return (str);
 }
 
-void export_validator(char *buf)
+char *export_validator(char *buf)
 {
 	int idx;
 	bool has_equal_sign = false;
 	char inside_quotes = 0;
+	char *quote_type = malloc(sizeof(char) * 2);
 	idx = -1;
 
 	while (buf[++idx])
@@ -126,14 +127,18 @@ void export_validator(char *buf)
 			ft_printf("Trim\n");
 			while (buf[++idx])
 				buf[idx] = '\0';
-			return;
+			return quote_type;
 		}
 		if (buf[idx] == '\'' || buf[idx] == '\"')
 		{
 			if (!inside_quotes)
 				inside_quotes = buf[idx];
 			else if (inside_quotes == buf[idx])
+			{
+				quote_type[0] = buf[idx];
+				quote_type[1] = '\0';
 				inside_quotes = 0;
+			}
 			else if (inside_quotes && inside_quotes != buf[idx] && !buf[idx + 1])
 			{
 				ft_printf("Heredoc??\n");
@@ -155,34 +160,66 @@ void export_validator(char *buf)
 		ft_printf("Heredoc??\n");
 		exit(0);
 	}
+	return quote_type;
+	// ft_str_remove_chars(&buf, quote_type); //* possible leak
+	// ft_printf("Buf: %s\n", buf);
+	// ft_printf("Quote type: %s\n", quote_type);
+	// free(quote_type);
 }
 
-int export(char *buf, char **custom_environ)
+// void export(char *buf, char **custom_environ)
+// {
+// 	char *quote_type;
+// 	int idx;
+// 	idx = -1;
+// 	ft_trim_leading_spaces(buf);
+// 	quote_type = export_validator(buf);
+// 	ft_str_remove_chars(&buf, quote_type); //* possible leak
+// 	free(quote_type);
+// 	ft_printf("Buf: %s\n", buf);
+
+// 	while (custom_environ[++idx])
+// 	{
+// 		if (ft_strcmp(ft_split(custom_environ[idx], '=')[0], ft_split(buf, '=')[0]) == 0)
+// 		{
+// 			ft_printf("Free: %s\n", custom_environ[idx]);
+// 			free(custom_environ[idx]);
+// 			custom_environ[idx] = ft_strdup(buf);
+// 			return;
+// 		}
+// 	}
+// 	custom_environ[idx] = ft_strdup(buf);
+// 	custom_environ[idx + 1] = NULL;
+// 	ft_printf("Done: %s\n", custom_environ[idx]);
+// 	ft_print_str_arr(custom_environ);
+// }
+
+void export(char *buf, char ***custom_environ)
 {
-	// int idx;
-	// bool has_equal_sign = false;
-	// idx = -1;
-	(void)custom_environ;
+	char *quote_type;
+	int idx;
+	idx = -1;
 	ft_trim_leading_spaces(buf);
-	export_validator(buf);
+	quote_type = export_validator(buf);
+	ft_str_remove_chars(&buf, quote_type); //* possible leak
+	free(quote_type);
 	ft_printf("Buf: %s\n", buf);
-	ft_printf("Ok\n");
-	// while (custom_environ[++idx])
-	// {
-	// 	if (ft_strcmp(ft_split(custom_environ[idx], '=')[0], name) == 0)
-	// 	{
-	// 		ft_printf("Free: %s\n", custom_environ[idx]);
-	// 		free(custom_environ[idx]);
-	// 		custom_environ[idx] = ft_strjoin(ft_strjoin(name, "="), value);
-	// 		idx++;
-	// 		return 1;
-	// 	}
-	// }
-	// custom_environ[idx] = ft_strjoin(ft_strjoin(name, "="), value);
-	// custom_environ[idx + 1] = NULL;
-	// // ft_printf("Done:\n\n");
-	// // ft_print_str_arr(custom_environ);
-	return 1;
+
+	while ((*custom_environ)[++idx])
+	{
+		if (ft_strcmp(ft_split((*custom_environ)[idx], '=')[0], ft_split(buf, '=')[0]) == 0)
+		{
+			ft_printf("Free: %s\n", (*custom_environ)[idx]);
+			free((*custom_environ)[idx]);
+			(*custom_environ)[idx] = ft_strdup(buf);
+			return;
+		}
+	}
+	(*custom_environ)[idx] = ft_strdup(buf);
+	(*custom_environ)[idx + 1] = NULL;
+	// ft_printf("Done: %s\n", (*custom_environ)[idx]);
+	// ft_print_str_arr((*custom_environ));
+	// exit(0); //* didn't help...
 }
 
 int builtins(char *buf, char **custom_environ)
