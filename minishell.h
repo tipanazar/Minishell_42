@@ -66,6 +66,6 @@ char 				*concat_args(char **args);
 int					builtins(char *buf, char **env);
 void				env(char **env);
 void 				export(char *buf, char ***custom_environ);
-
+void				ctrl_c_handler(int sig); //* WHY??
 
 #endif

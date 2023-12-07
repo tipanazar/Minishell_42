@@ -1,6 +1,42 @@
 #include "../../minishell.h"
 
-char *find_command_in_path(char *command)
+int	double_redirect_left(struct s_redircmd *rcmd)
+{
+	char	buffer[1024];
+	int		pipefd[2];
+	size_t	delimiter_length;
+	size_t	read_len;
+
+	if (rcmd == NULL || rcmd->file == NULL)
+	{
+		fprintf(stderr, "Invalid command\n");
+		return (-1);
+	}
+	if (pipe(pipefd) == -1)
+	{
+		perror("pipe");
+		return (-1);
+	}
+	delimiter_length = (ssize_t)ft_strlen(rcmd->file);
+	while (1)
+	{
+		fprintf(stderr, ">");
+		read_len = read(STDIN_FILENO, buffer, sizeof(buffer) - 1);
+		if (read_len <= 0)
+			break ;
+		buffer[read_len] = '\0';
+		if (ft_strncmp(buffer, rcmd->file, (size_t)delimiter_length) == 0 &&
+			(read_len == delimiter_length || buffer[delimiter_length] == '\n'))
+			break ;
+		write(pipefd[1], buffer, (size_t)read_len);
+	}
+	close(pipefd[1]);
+	dup2(pipefd[0], STDIN_FILENO);
+	close(pipefd[0]);
+	return (1);
+}
+
+char	*find_command_in_path(char *command)
 {
 	char *PATH;
 	char *path;
@@ -44,7 +80,7 @@ int exec_cmd(struct s_execcmd *ecmd, char **custom_environ)
 	if (abs_path && execve(abs_path, ecmd->argv, custom_environ) == -1)
 	{
 		perror("execve");
-		exit(1); // Change to indicate error
+		exit(1);
 	}
 	else
 		perror("Command not found");
@@ -53,8 +89,9 @@ int exec_cmd(struct s_execcmd *ecmd, char **custom_environ)
 
 int redirect_cmd(struct s_redircmd *rcmd, char **custom_environ)
 {
-	int fd_redirect;
-	int flags;
+	int	fd_redirect;
+	int	flags;
+	int	pipe_read_end;
 
 	if (rcmd->type == '>')
 		flags = O_WRONLY | O_CREAT | O_TRUNC;
@@ -62,19 +99,30 @@ int redirect_cmd(struct s_redircmd *rcmd, char **custom_environ)
 		flags = O_RDONLY;
 	else if (rcmd->type == '+')
 		flags = O_WRONLY | O_CREAT | O_APPEND;
+	else if (rcmd->type == '-')
+	{
+		pipe_read_end = double_redirect_left(rcmd);
+		if (pipe_read_end < 0)
+		{
+			perror("double_redirect_left");
+			return (-1);
+		}
+		runcmd(rcmd->cmd, environ);
+		return (1);
+	}
 	else
 		return (-1);
 	fd_redirect = open(rcmd->file, flags, 0666);
 	if (fd_redirect < 0)
 	{
 		perror("open");
-		exit(1); // Change to indicate error
+		return (-1);
 	}
 	if (dup2(fd_redirect, rcmd->fd) < 0)
 	{
 		perror("dup2");
 		close(fd_redirect);
-		exit(1); // Change to indicate error
+		return (-1);
 	}
 	runcmd(rcmd->cmd, custom_environ);
 	close(fd_redirect);
@@ -132,7 +180,7 @@ int runcmd(struct s_cmd *cmd, char **env)
 	char type;
 
 	if (cmd == 0)
-		exit(1); // Change to indicate error
+		exit(1);
 	type = cmd->type;
 	if (type == ' ')
 		return (exec_cmd((struct s_execcmd *)cmd, env));

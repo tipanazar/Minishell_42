@@ -30,7 +30,8 @@ struct s_cmd *parsepipe(char **ps, char *es)
 	return (cmd);
 }
 
-struct s_cmd *parseredirs(struct s_cmd *cmd, char **ps, char *es)
+
+struct s_cmd	*parseredirs(struct s_cmd *cmd, char **ps, char *es)
 {
 	int tok;
 	char *q;

@@ -2,7 +2,7 @@
 
 int	getcmd(char *buf, int nbuf)
 {
-	if (isatty(fileno(stdin)))
+	if (isatty(ft_fileno(stdin)))
 		write(2, "minishell# ", 11);
 	ft_memset(buf, 0, nbuf);
 	ft_fgets(buf, nbuf, stdin);
@@ -16,6 +16,11 @@ struct s_cmd	*execcmd(void)
 	struct s_execcmd	*cmd;
 
 	cmd = malloc(sizeof(*cmd));
+	if (cmd == NULL)
+	{
+		perror("malloc");
+		return (NULL);
+	}
 	ft_memset(cmd, 0, sizeof(*cmd));
 	cmd->type = ' ';
 	return ((struct s_cmd *)cmd);
@@ -35,7 +40,7 @@ struct s_cmd	*redircmd(struct s_cmd *subcmd, char *file, int type)
 		cmd->mode = O_RDONLY;
 		cmd->fd = 0;
 	}
-	else if(type == '>')
+	else if (type == '>')
 	{
 		cmd->mode = O_WRONLY | O_CREAT | O_TRUNC;
 		cmd->fd = 1;
@@ -44,6 +49,11 @@ struct s_cmd	*redircmd(struct s_cmd *subcmd, char *file, int type)
 	{
 		cmd->mode = O_WRONLY | O_CREAT | O_APPEND;
 		cmd->fd = 1;
+	}
+	else if (type == '-')
+	{
+		cmd->mode = O_RDONLY;
+		cmd->fd = 0;
 	}
 	return ((struct s_cmd *)cmd);
 }
