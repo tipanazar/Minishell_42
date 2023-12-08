@@ -1,26 +1,29 @@
 #include "../minishell.h"
 
-void ft_cd(char *buf)
+void ft_cd(char *buf, char **custom_environ)
 {
 	char *home_dir;
+	char *new_buf;
 	struct stat fileStat;
 
-	ft_trim_leading_spaces(buf);
-	if (ft_strlen(buf) == 2)
+	new_buf = ft_str_remove_chars(buf, " ");
+	if (!ft_strlen(new_buf))
 	{
-		home_dir = getenv("HOME");
+		home_dir = custom_getenv("HOME", custom_environ);
 		if (home_dir)
 			chdir(home_dir);
+		free(home_dir);
 	}
-	else if (stat(buf + 2, &fileStat) == 0)
+	else if (stat(new_buf, &fileStat) == 0)
 	{
-		if (S_ISDIR(fileStat.st_mode) && chdir(buf + 2) < 0)
-			ft_printf("cd: %s: No such file or directory\n", buf + 2);
+		if (S_ISDIR(fileStat.st_mode) && chdir(new_buf) < 0)
+			ft_printf("-minishell: cd: %s: No such file or directory\n", new_buf);
 		else if (!S_ISDIR(fileStat.st_mode))
-			ft_printf("cd: %s: Not a directory\n", buf + 2);
+			ft_printf("-minishell: cd: %s: Not a directory\n", new_buf);
 	}
 	else
-		ft_printf("cd: %s: No such file or directory\n", buf + 2);
+		ft_printf("-minishell: cd: %s: No such file or directory\n", new_buf); //* in case of cd in a non-existing directory
+	free(new_buf);
 }
 
 void pwd(void)
@@ -31,7 +34,6 @@ void pwd(void)
 		printf("%s\n", cwd);
 	else
 		perror("getcwd() error");
-	ft_printf("Return pwd \n");
 }
 
 char *getenv_custom(const char *name, char **custom_environ)
@@ -145,7 +147,7 @@ char *export_validator(char *buf)
 				exit(0);
 			}
 		}
-		if (ft_isspace(buf[idx]) && buf[idx + 1] == '=' && !has_equal_sign)
+		if ((ft_isspace(buf[idx]) || ft_isdigit(buf[idx])) && buf[idx + 1] == '=' && !has_equal_sign)
 		{
 			ft_printf("-minishell: export: `%s': not a valid identifier\n", buf + idx + 1);
 			exit(0);
@@ -161,88 +163,56 @@ char *export_validator(char *buf)
 		exit(0);
 	}
 	return quote_type;
-	// ft_str_remove_chars(&buf, quote_type); //* possible leak
-	// ft_printf("Buf: %s\n", buf);
-	// ft_printf("Quote type: %s\n", quote_type);
-	// free(quote_type);
 }
 
-// void export(char *buf, char **custom_environ)
-// {
-// 	char *quote_type;
-// 	int idx;
-// 	idx = -1;
-// 	ft_trim_leading_spaces(buf);
-// 	quote_type = export_validator(buf);
-// 	ft_str_remove_chars(&buf, quote_type); //* possible leak
-// 	free(quote_type);
-// 	ft_printf("Buf: %s\n", buf);
-
-// 	while (custom_environ[++idx])
-// 	{
-// 		if (ft_strcmp(ft_split(custom_environ[idx], '=')[0], ft_split(buf, '=')[0]) == 0)
-// 		{
-// 			ft_printf("Free: %s\n", custom_environ[idx]);
-// 			free(custom_environ[idx]);
-// 			custom_environ[idx] = ft_strdup(buf);
-// 			return;
-// 		}
-// 	}
-// 	custom_environ[idx] = ft_strdup(buf);
-// 	custom_environ[idx + 1] = NULL;
-// 	ft_printf("Done: %s\n", custom_environ[idx]);
-// 	ft_print_str_arr(custom_environ);
-// }
-
-void export(char *buf, char ***custom_environ)
+void export(char *buf, char **custom_environ) //? HOME=lox -> HME=lox
 {
 	char *quote_type;
+	char *new_buf;
 	int idx;
 	idx = -1;
 	ft_trim_leading_spaces(buf);
 	quote_type = export_validator(buf);
-	ft_str_remove_chars(&buf, quote_type); //* possible leak
+	new_buf = ft_str_remove_chars(buf, quote_type); //* possible leak
 	free(quote_type);
-	ft_printf("Buf: %s\n", buf);
 
-	while ((*custom_environ)[++idx])
+	while (custom_environ[++idx])
 	{
-		if (ft_strcmp(ft_split((*custom_environ)[idx], '=')[0], ft_split(buf, '=')[0]) == 0)
+		if (ft_strcmp(ft_split(custom_environ[idx], '=')[0], ft_split(new_buf, '=')[0]) == 0)
 		{
-			ft_printf("Free: %s\n", (*custom_environ)[idx]);
-			free((*custom_environ)[idx]);
-			(*custom_environ)[idx] = ft_strdup(buf);
+			ft_printf("Free: %s\n", custom_environ[idx]);
+			free(custom_environ[idx]);
+			custom_environ[idx] = ft_strdup(new_buf);
+			free(new_buf);
 			return;
 		}
 	}
-	(*custom_environ)[idx] = ft_strdup(buf);
-	(*custom_environ)[idx + 1] = NULL;
-	// ft_printf("Done: %s\n", (*custom_environ)[idx]);
-	// ft_print_str_arr((*custom_environ));
-	// exit(0); //* didn't help...
+	custom_environ[idx] = ft_strdup(new_buf);
+	custom_environ[idx + 1] = NULL;
+	ft_printf("Done: %s\n", custom_environ[idx]);
+	ft_print_str_arr(custom_environ);
+	free(new_buf);
 }
 
 int builtins(char *buf, char **custom_environ)
 {
-	if ((ft_strncmp(buf, "cd", 2) == 0 && ft_strlen(buf) == 2) || ft_strncmp(buf, "cd ", 3) == 0)
-	{
-		ft_cd(buf + 2);
-		return (1);
-	}
+
 	if (ft_strncmp(buf, "pwd", 3) == 0 && ft_strlen(buf) == 3)
 	{
 		pwd();
-		ft_printf("Return \n");
+		free(buf);
 		return (1);
 	}
 	if (ft_strncmp(buf, "env", 3) == 0 && ft_strlen(buf) == 3) //!!
 	{
 		ft_print_str_arr(custom_environ);
+		free(buf);
 		return (1);
 	}
 	if (ft_strncmp(buf, "echo ", 5) == 0)
 	{
 		echo(buf + 4, custom_environ);
+		free(buf);
 		return (1);
 	}
 	return (0);

@@ -107,7 +107,7 @@ int redirect_cmd(struct s_redircmd *rcmd, char **custom_environ)
 			perror("double_redirect_left");
 			return (-1);
 		}
-		runcmd(rcmd->cmd, environ);
+		runcmd(rcmd->cmd, custom_environ);
 		return (1);
 	}
 	else

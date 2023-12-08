@@ -99,6 +99,6 @@ char				*ft_strtok(char *str, const char *delim);
 void				*ft_realloc(void *ptr, size_t new_size);
 void 				ft_print_str_arr(char **str);
 int 				ft_strarrlen(char **arr);
-void 				ft_str_remove_chars(char **str, const char *chars_to_remove);
+char 				*ft_str_remove_chars(char *str, const char *chars_to_remove);
 
 #endif
