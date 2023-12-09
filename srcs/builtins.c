@@ -197,22 +197,19 @@ void export(char *buf, char **custom_environ) //? HOME=lox -> HME=lox
 int builtins(char *buf, char **custom_environ)
 {
 
-	if (ft_strncmp(buf, "pwd", 3) == 0 && ft_strlen(buf) == 3)
+	if (ft_strncmp(buf, "pwd ", 4) == 0 || ft_strcmp(buf, "pwd") == 0)
 	{
 		pwd();
-		free(buf);
 		return (1);
 	}
 	if (ft_strncmp(buf, "env", 3) == 0 && ft_strlen(buf) == 3) //!!
 	{
 		ft_print_str_arr(custom_environ);
-		free(buf);
 		return (1);
 	}
 	if (ft_strncmp(buf, "echo ", 5) == 0)
 	{
 		echo(buf + 4, custom_environ);
-		free(buf);
 		return (1);
 	}
 	return (0);

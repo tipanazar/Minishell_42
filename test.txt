@@ -1,0 +1,11 @@
+Makefile
+README.md
+done
+libft
+minishell
+minishell.h
+srcs
+supp.supp
+test
+test.txt
+tests.txt
