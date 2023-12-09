@@ -12,7 +12,7 @@ Minishell is a simplified Unix shell inspired by the 42 school curriculum projec
 3. **Pipes**: Execute commands in a pipeline using the `|` operator.
 4. **Built-in Commands**: Implement commonly used built-in commands like `cd`, `exit`, etc.
 5. **Signal Handling**: Gracefully handle signals such as `SIGINT` and `SIGQUIT`.
-6. **Environment Variables**: Support for setting, reading, and using environment variables.
+6. **custom_environment Variables**: Support for setting, reading, and using custom_environment variables.
 
 ## How to Build and Run
 
