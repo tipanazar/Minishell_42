@@ -83,6 +83,7 @@ int main(int ac, char **av, char **env)
 {
 	(void)ac;
 	(void)av;
+	struct s_cmd *cmd;
 	char *buf;
 	char *new_buf;
 	int r;
@@ -132,9 +133,10 @@ int main(int ac, char **av, char **env)
 		}
 		if (fork1() == 0)
 		{
-			runcmd(parsecmd(new_buf), custom_environ);
-			// free(new_buf);
-			// exit(0); //* for what??
+			cmd = parsecmd(new_buf);
+			free(new_buf);
+			runcmd(cmd, custom_environ);
+			continue;
 		}
 		wait(&r);
 		free(new_buf);

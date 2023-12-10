@@ -129,27 +129,19 @@ int exec_cmd(struct s_execcmd *ecmd, char **custom_environ)
 	if (builtins(buf, custom_environ))
 	{
 		ft_free_char_arr(ecmd->argv);
+		free(ecmd);
 		ft_free_char_arr(custom_environ);
 		free(buf);
 		exit(0);
 	}
-	free(buf);
 	abs_path = find_command_in_path(ecmd->argv[0]);
 	if (abs_path && execve(abs_path, ecmd->argv, custom_environ) == -1)
 	{
 		perror("execve");
-		// ft_free_char_arr(ecmd->argv);
-		// ft_free_char_arr(custom_environ);
-		// free(abs_path);
 		exit(1);
 	}
 	else
-	{
 		perror("Command not found");
-		// ft_free_char_arr(ecmd->argv);
-		// ft_free_char_arr(custom_environ);
-		// free(abs_path);
-	}
 	return (1);
 }
 

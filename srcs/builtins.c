@@ -202,7 +202,7 @@ int builtins(char *buf, char **custom_environ)
 		pwd();
 		return (1);
 	}
-	if (ft_strncmp(buf, "env", 3) == 0 && ft_strlen(buf) == 3) //!!
+	if (ft_strncmp(buf, "env ", 4) == 0 || ft_strcmp(buf, "pwd") == 0)
 	{
 		ft_print_str_arr(custom_environ);
 		return (1);
