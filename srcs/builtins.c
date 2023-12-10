@@ -113,12 +113,18 @@ char *concat_args(char **args)
 	return (str);
 }
 
-char *export_validator(char *buf)
+char *export_validator(char *buf) //! fix: export das' (should heredoc)
 {
 	int idx;
 	bool has_equal_sign = false;
 	char inside_quotes = 0;
-	char *quote_type = malloc(sizeof(char) * 2);
+	char *quote_type = malloc(2);
+	if (!quote_type)
+	{
+		perror("Memory allocation failed");
+		exit(1);
+	}
+	quote_type[0] = 0;
 	idx = -1;
 
 	while (buf[++idx])
@@ -144,28 +150,34 @@ char *export_validator(char *buf)
 			else if (inside_quotes && inside_quotes != buf[idx] && !buf[idx + 1])
 			{
 				ft_printf("Heredoc??\n");
-				exit(0);
+				free(quote_type);
+				return NULL;
 			}
 		}
 		if ((ft_isspace(buf[idx]) || ft_isdigit(buf[idx])) && buf[idx + 1] == '=' && !has_equal_sign)
 		{
 			ft_printf("-minishell: export: `%s': not a valid identifier\n", buf + idx + 1);
-			exit(0);
+			free(quote_type);
+			return NULL;
 		}
 		if (buf[idx] == '=')
 			has_equal_sign = true;
 	}
 	if (!has_equal_sign)
-		exit(0);
+	{
+		free(quote_type);
+		return NULL;
+	}
 	if (inside_quotes)
 	{
 		ft_printf("Heredoc??\n");
-		exit(0);
+		free(quote_type);
+		return NULL;
 	}
 	return quote_type;
 }
 
-void export(char *buf, char **custom_environ) //? HOME=lox -> HME=lox
+void export(char *buf, char ***custom_environ) 
 {
 	char *quote_type;
 	char *new_buf;
@@ -173,24 +185,40 @@ void export(char *buf, char **custom_environ) //? HOME=lox -> HME=lox
 	idx = -1;
 	ft_trim_leading_spaces(buf);
 	quote_type = export_validator(buf);
-	new_buf = ft_str_remove_chars(buf, quote_type); //* possible leak
+	if (!quote_type)
+		return;
+	if (quote_type[0])
+	{
+		ft_printf("Quote type: %s\n", quote_type);
+		new_buf = ft_str_remove_chars(buf, quote_type);
+	}
+	else
+		new_buf = ft_strdup(buf);
 	free(quote_type);
 
-	while (custom_environ[++idx])
+	char **splitted_environ;
+	char **splitted_new_buf;
+	while ((*custom_environ)[++idx])
 	{
-		if (ft_strcmp(ft_split(custom_environ[idx], '=')[0], ft_split(new_buf, '=')[0]) == 0)
+		splitted_environ = ft_split((*custom_environ)[idx], '=');
+		splitted_new_buf = ft_split(new_buf, '=');
+		if (ft_strcmp(splitted_environ[0], splitted_new_buf[0]) == 0)
 		{
-			ft_printf("Free: %s\n", custom_environ[idx]);
-			free(custom_environ[idx]);
-			custom_environ[idx] = ft_strdup(new_buf);
+			ft_printf("Free: %s\n", (*custom_environ)[idx]);
+			ft_strncpy((*custom_environ)[idx], new_buf, ft_strlen(new_buf));
 			free(new_buf);
+			ft_free_char_arr(splitted_environ);
+			ft_free_char_arr(splitted_new_buf);
 			return;
 		}
+		ft_free_char_arr(splitted_environ);
+		ft_free_char_arr(splitted_new_buf);
 	}
-	custom_environ[idx] = ft_strdup(new_buf);
-	custom_environ[idx + 1] = NULL;
-	ft_printf("Done: %s\n", custom_environ[idx]);
-	ft_print_str_arr(custom_environ);
+
+	(*custom_environ) = realloc((*custom_environ), (idx + 2) * sizeof(char *));
+	(*custom_environ)[idx] = ft_strdup(new_buf);
+	(*custom_environ)[idx + 1] = NULL;
+	ft_printf("Done: %s\n", (*custom_environ)[idx]);
 	free(new_buf);
 }
 

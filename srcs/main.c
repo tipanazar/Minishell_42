@@ -121,7 +121,7 @@ int main(int ac, char **av, char **env)
 			add_history(new_buf);
 		if (ft_strcmp(new_buf, "export") == 0 || ft_strncmp(new_buf, "export ", 7) == 0)
 		{
-			export(new_buf + 7, custom_environ);
+			export(new_buf + 7, &custom_environ);
 			free(new_buf);
 			continue;
 		}
@@ -135,7 +135,7 @@ int main(int ac, char **av, char **env)
 		{
 			cmd = parsecmd(new_buf);
 			free(new_buf);
-			runcmd(cmd, custom_environ);
+			runcmd(cmd, custom_environ); //? волграйнд дивно працює, можливо треба вбити процесс при виході з builtins?
 			continue;
 		}
 		wait(&r);
