@@ -15,6 +15,7 @@ struct s_cmd *parsecmd(char *s)
 		free(cmd);
 		exit(-1);
 	}
+	
 	return (cmd);
 }
 
@@ -30,8 +31,7 @@ struct s_cmd *parsepipe(char **ps, char *es)
 	return (cmd);
 }
 
-
-struct s_cmd	*parseredirs(struct s_cmd *cmd, char **ps, char *es)
+struct s_cmd *parseredirs(struct s_cmd *cmd, char **ps, char *es)
 {
 	int tok;
 	char *q;
@@ -72,6 +72,11 @@ struct s_cmd *parseexec(char **ps, char *es)
 	cmd->argc = 0;
 	cmd->max_args = initial_max_args;
 	cmd->argv = malloc(cmd->max_args * sizeof(char *));
+	if (cmd->argv == NULL)
+	{
+		perror("malloc");
+		exit(-1);
+	}
 	ret = parseredirs(ret, ps, es);
 
 	while (!peek(ps, es, "|"))

@@ -24,6 +24,11 @@ struct				s_cmd
 	int				type;
 };
 
+// typedef struct s_cmd
+// {
+// 	int type;
+// } t_cmd;
+
 struct				s_execcmd
 {
 	int				type;

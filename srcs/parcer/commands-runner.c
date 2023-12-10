@@ -1,9 +1,9 @@
 #include "../../minishell.h"
 
-void	create_pipe_process(struct s_pipecmd *pcmd, int fd_pipe[2], char **env)
+void create_pipe_process(struct s_pipecmd *pcmd, int fd_pipe[2], char **env)
 {
-	int	p_id;
-	int	status;
+	int p_id;
+	int status;
 
 	p_id = fork();
 	if (p_id < 0)
@@ -29,7 +29,7 @@ void	create_pipe_process(struct s_pipecmd *pcmd, int fd_pipe[2], char **env)
 	}
 }
 
-void	setup_pipe(int fd_pipe[2])
+void setup_pipe(int fd_pipe[2])
 {
 	if (pipe(fd_pipe) < 0)
 	{
@@ -38,20 +38,20 @@ void	setup_pipe(int fd_pipe[2])
 	}
 }
 
-void	pipe_command(struct s_pipecmd *pcmd, char **env)
+void pipe_command(struct s_pipecmd *pcmd, char **env)
 {
-	int	fd_pipe[2];
+	int fd_pipe[2];
 
 	setup_pipe(fd_pipe);
 	create_pipe_process(pcmd, fd_pipe, env);
 }
 
-int	double_redirect_left(struct s_redircmd *rcmd)
+int double_redirect_left(struct s_redircmd *rcmd)
 {
-	char	buffer[1024];
-	int		pipefd[2];
-	size_t	delimiter_length;
-	ssize_t	read_len;
+	char buffer[1024];
+	int pipefd[2];
+	size_t delimiter_length;
+	ssize_t read_len;
 
 	if (rcmd == NULL || rcmd->file == NULL)
 	{
@@ -69,12 +69,11 @@ int	double_redirect_left(struct s_redircmd *rcmd)
 		write(STDERR_FILENO, ">", 1);
 		read_len = read(STDIN_FILENO, buffer, sizeof(buffer) - 1);
 		if (read_len <= 0)
-			break ;
+			break;
 		buffer[read_len] = '\0';
 		if (ft_strncmp(buffer, rcmd->file, delimiter_length) == 0 &&
-			(buffer[delimiter_length] == '\n'
-					|| buffer[delimiter_length] == '\0'))
-			break ;
+			(buffer[delimiter_length] == '\n' || buffer[delimiter_length] == '\0'))
+			break;
 		write(pipefd[1], buffer, read_len);
 	}
 	close(pipefd[1]);
@@ -88,7 +87,7 @@ int	double_redirect_left(struct s_redircmd *rcmd)
 	return (1);
 }
 
-char	*find_command_in_path(char *command)
+char *find_command_in_path(char *command)
 {
 	char *PATH;
 	char *path;
@@ -123,12 +122,16 @@ char	*find_command_in_path(char *command)
 int exec_cmd(struct s_execcmd *ecmd, char **custom_environ)
 {
 	char *abs_path;
+	char *buf = concat_args(ecmd->argv);
 
 	if (ecmd->argv[0] == 0)
 		exit(1);
-	if (builtins(concat_args(ecmd->argv), environ))
+	if (builtins(buf, custom_environ))
 	{
 		ft_free_char_arr(ecmd->argv);
+		free(ecmd);
+		ft_free_char_arr(custom_environ);
+		free(buf);
 		exit(0);
 	}
 	abs_path = find_command_in_path(ecmd->argv[0]);
@@ -144,9 +147,9 @@ int exec_cmd(struct s_execcmd *ecmd, char **custom_environ)
 
 int redirect_cmd(struct s_redircmd *rcmd, char **custom_environ)
 {
-	int	fd_redirect;
-	int	flags;
-	int	pipe_read_end;
+	int fd_redirect;
+	int flags;
+	int pipe_read_end;
 
 	if (rcmd->type == '>')
 		flags = O_WRONLY | O_CREAT | O_TRUNC;
@@ -184,7 +187,6 @@ int redirect_cmd(struct s_redircmd *rcmd, char **custom_environ)
 	return (1);
 }
 
-// <<<<<<< nazar
 int pipe_cmd(struct s_pipecmd *pcmd, char **env)
 {
 	int fd_pipe[2];
@@ -232,9 +234,6 @@ int pipe_cmd(struct s_pipecmd *pcmd, char **env)
 }
 
 int runcmd(struct s_cmd *cmd, char **env)
-// =======
-// int	runcmd(struct s_cmd *cmd, char **env)
-// >>>>>>> main
 {
 	char type;
 
