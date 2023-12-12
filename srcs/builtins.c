@@ -40,11 +40,16 @@ char *getenv_custom(const char *name, char **custom_environ)
 {
 
 	int idx = -1;
-	// ft_print_str_arr(custom_environ);
+	char **splitted;
 	while (custom_environ[++idx])
 	{
-		if (ft_strcmp(ft_split(custom_environ[idx], '=')[0], name) == 0)
+		splitted = ft_split(custom_environ[idx], '=');
+		if (ft_strcmp(splitted[0], name) == 0)
+		{
+			ft_free_char_arr(splitted);
 			return custom_environ[idx] + ft_strlen(name) + 1;
+		}
+		ft_free_char_arr(splitted);
 	}
 
 	return NULL;
@@ -113,7 +118,7 @@ char *concat_args(char **args)
 	return (str);
 }
 
-char *export_validator(char *buf) //! fix: export das' (should heredoc)
+char *export_validator(char *buf)
 {
 	int idx;
 	bool has_equal_sign = false;
@@ -163,6 +168,12 @@ char *export_validator(char *buf) //! fix: export das' (should heredoc)
 		if (buf[idx] == '=')
 			has_equal_sign = true;
 	}
+	if (!has_equal_sign && (buf[idx - 1] == '\'' || buf[idx - 1] == '\"'))
+	{
+		ft_printf("Heredoc??\n");
+		free(quote_type);
+		return NULL;
+	}
 	if (!has_equal_sign)
 	{
 		free(quote_type);
@@ -177,7 +188,7 @@ char *export_validator(char *buf) //! fix: export das' (should heredoc)
 	return quote_type;
 }
 
-void export(char *buf, char ***custom_environ) 
+void export(char *buf, char ***custom_environ)
 {
 	char *quote_type;
 	char *new_buf;
