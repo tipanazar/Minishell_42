@@ -23,62 +23,6 @@ bool is_blank(const char *buf)
 	return (true);
 }
 
-// void add_argument(struct s_execcmd *cmd, char *arg)
-// {
-// 	if (cmd->argv == NULL)
-// 	{
-// 		cmd->argv = malloc(INITIAL_MAXARGS * sizeof(char *));
-// 		cmd->max_args = INITIAL_MAXARGS;
-// 		cmd->argc = 0;
-// 	}
-// 	else if (cmd->argc >= cmd->max_args)
-// 	{
-// 		cmd->max_args *= 2;
-// 		cmd->argv = ft_realloc(cmd->argv, cmd->max_args * sizeof(char *));
-// 	}
-// 	cmd->argv[cmd->argc] = ft_strdup(arg);
-// 	cmd->argc++;
-// } //? not used...
-
-// void free_arguments(struct s_execcmd *cmd)
-// {
-// 	for (int i = 0; i < cmd->argc; i++)
-// 	{
-// 		free(cmd->argv[i]);
-// 	}
-// 	free(cmd->argv);
-// } //? not used...
-
-// int main(void) {
-//     char *test = strdup("test \"strin'g'");
-//     printf("before: %s\n", test);
-//     test = ft_str_remove_chars(&test, "\"'");
-//     printf("after: %s\n", test);
-//     free(test);
-
-//     return 0;
-// } //? to test ft_str_remove_chars
-
-// void ft_move(char **str)
-// {
-// 	char *move;
-// 	move = *str;
-// 	move += ft_strlen(*str) ;
-// 	*str = ft_strdup(move);
-// }
-
-// int main(void)
-// {
-// 	char *new;
-// 	new = ft_strtrim("    	test \"strin'g'   ", "\f\t ");
-// 	ft_printf("Before: %s;\n", new);
-// 	ft_move(&new);
-// 	printf("After: %s;\n", new);
-// 	free(new);
-
-// 	return 0;
-// } //? to test ft_strtrim
-
 int main(int ac, char **av, char **env)
 {
 	(void)ac;
@@ -141,7 +85,7 @@ int main(int ac, char **av, char **env)
 		{
 			cmd = parsecmd(new_buf);
 			free(new_buf);
-			runcmd(cmd, custom_environ); //? волграйнд дивно працює, можливо треба вбити процесс при виході з builtins?
+			runcmd(cmd, custom_environ);
 			continue;
 		}
 		wait(&r);

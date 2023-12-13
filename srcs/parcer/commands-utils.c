@@ -2,7 +2,7 @@
 
 int	getcmd(char *buf, int nbuf)
 {
-	if (isatty(ft_fileno(stdin)))
+	if (isatty(0))
 		write(2, "minishell# ", 11);
 	ft_memset(buf, 0, nbuf);
 	ft_fgets(buf, nbuf, stdin);
