@@ -3,26 +3,23 @@
 void ft_cd(char *buf, char **custom_environ)
 {
 	char *home_dir;
-	char *new_buf;
+	char *new_buf = NULL;
 	struct stat fileStat;
 
 	new_buf = ft_str_remove_chars(buf, " ");
-	if (!ft_strlen(new_buf))
+	if (ft_strlen(new_buf) == 0)
 	{
 		home_dir = custom_getenv("HOME", custom_environ);
 		if (home_dir)
 			chdir(home_dir);
-		free(home_dir);
+		else
+			ft_printf("-minishell: cd: HOME not set\n");
+		return;
 	}
-	else if (stat(new_buf, &fileStat) == 0)
-	{
-		if (S_ISDIR(fileStat.st_mode) && chdir(new_buf) < 0)
-			ft_printf("-minishell: cd: %s: No such file or directory\n", new_buf);
-		else if (!S_ISDIR(fileStat.st_mode))
-			ft_printf("-minishell: cd: %s: Not a directory\n", new_buf);
-	}
-	else
-		ft_printf("-minishell: cd: %s: No such file or directory\n", new_buf); //* in case of cd in a non-existing directory
+	if (stat(new_buf, &fileStat) || (S_ISDIR(fileStat.st_mode) && chdir(new_buf) < 0))
+		ft_printf("-minishell: cd: %s: No such file or directory\n", new_buf);
+	else if (!S_ISDIR(fileStat.st_mode))
+		ft_printf("-minishell: cd: %s: Not a directory\n", new_buf);
 	free(new_buf);
 }
 
@@ -36,59 +33,60 @@ void pwd(void)
 		perror("getcwd() error");
 }
 
-char *getenv_custom(const char *name, char **custom_environ)
-{
-
-	int idx = -1;
-	// ft_print_str_arr(custom_environ);
-	while (custom_environ[++idx])
-	{
-		if (ft_strcmp(ft_split(custom_environ[idx], '=')[0], name) == 0)
-			return custom_environ[idx] + ft_strlen(name) + 1;
-	}
-
-	return NULL;
-}
-
-void echo(char *buf, char **custom_environ)
+void echo(char *buf, char **custom_environ) //? echo $$
 {
 	int newline;
 	int idx;
 	int s_idx;
-	// int	inside_sing_quotes;
+	int inside_sing_quotes;
+	char *substr;
+	char *getenv_result;
 
 	idx = -1;
 	s_idx = 1;
-	// // inside_sing_quotes = 0;
+	inside_sing_quotes = 0;
 	ft_trim_leading_spaces(buf);
 	newline = ft_strncmp(buf, "-n", 2);
 	if (!newline)
 	{
-		buf += 2;
+		idx++;
+		while (buf[++idx] == 'n')
+			;
+		if (!ft_isspace(buf[idx]))
+		{
+			newline = 1;
+			idx = -1;
+		}
 		ft_trim_leading_spaces(buf);
 	}
-	// ft_printf("%s", buf);
 	while (buf[++idx])
 	{
-		// if (buf[idx] == '\"')
-		// 	continue;
-		// if (buf[idx] == '\'')
-		// {
-		// 	inside_sing_quotes = !inside_sing_quotes;
-		// 	continue;
-		// }
-		// if (buf[idx] == '$' && !inside_sing_quotes && !ft_isspace(buf[idx + 1]))
-		if (buf[idx] == '$' && !ft_isspace(buf[idx + 1]))
+		if (buf[idx] == '\"')
+			continue;
+		if (buf[idx] == '\'')
 		{
-			// if (buf[idx + 1] == '?')
-			// 	ft_printf("%d", g_exit_code);
-			// else
-			// {
-			while (buf[idx + s_idx] && !ft_isspace(buf[idx + s_idx]))
-				s_idx++;
-			ft_printf("%s", getenv_custom(ft_substr(buf, idx + 1, s_idx), custom_environ));
-			idx += s_idx;
-			// }
+			inside_sing_quotes = !inside_sing_quotes;
+			continue;
+		}
+		if (buf[idx] == '$' && !inside_sing_quotes && buf[idx + 1] && buf[idx + 1] != '$' && !ft_isspace(buf[idx + 1]))
+		{
+			// ft_printf("%d", g_exit_code);
+			if (buf[idx + 1] == '?')
+			{
+				ft_printf("%s", "*g_exit_code*");
+				idx++;
+			}
+			else
+			{
+				while (buf[idx + s_idx] && !ft_isspace(buf[idx + s_idx + 1]))
+					s_idx++;
+				substr = ft_substr(buf, idx, s_idx);
+				getenv_result = custom_getenv(substr + 1, custom_environ);
+				if (getenv_result)
+					ft_printf("%s", getenv_result);
+				free(substr);
+				idx += s_idx;
+			}
 		}
 		else
 			ft_printf("%c", buf[idx]);
@@ -97,23 +95,7 @@ void echo(char *buf, char **custom_environ)
 		ft_printf("\n");
 }
 
-char *concat_args(char **args)
-{
-	int idx;
-	char *str;
-
-	idx = -1;
-	str = "";
-	while (args[++idx])
-	{
-		str = ft_strjoin(str, args[idx]);
-		if (args[idx + 1])
-			str = ft_strjoin(str, " ");
-	}
-	return (str);
-}
-
-char *export_validator(char *buf) //! fix: export das' (should heredoc)
+char *export_validator(char *buf)
 {
 	int idx;
 	bool has_equal_sign = false;
@@ -163,6 +145,12 @@ char *export_validator(char *buf) //! fix: export das' (should heredoc)
 		if (buf[idx] == '=')
 			has_equal_sign = true;
 	}
+	if (!has_equal_sign && (buf[idx - 1] == '\'' || buf[idx - 1] == '\"'))
+	{
+		ft_printf("Heredoc??\n");
+		free(quote_type);
+		return NULL;
+	}
 	if (!has_equal_sign)
 	{
 		free(quote_type);
@@ -177,11 +165,13 @@ char *export_validator(char *buf) //! fix: export das' (should heredoc)
 	return quote_type;
 }
 
-void export(char *buf, char ***custom_environ) 
+void export(char *buf, char ***custom_environ)
 {
 	char *quote_type;
 	char *new_buf;
 	int idx;
+	char **splitted_environ;
+	char **splitted_new_buf;
 	idx = -1;
 	ft_trim_leading_spaces(buf);
 	quote_type = export_validator(buf);
@@ -196,15 +186,12 @@ void export(char *buf, char ***custom_environ)
 		new_buf = ft_strdup(buf);
 	free(quote_type);
 
-	char **splitted_environ;
-	char **splitted_new_buf;
 	while ((*custom_environ)[++idx])
 	{
 		splitted_environ = ft_split((*custom_environ)[idx], '=');
 		splitted_new_buf = ft_split(new_buf, '=');
 		if (ft_strcmp(splitted_environ[0], splitted_new_buf[0]) == 0)
 		{
-			ft_printf("Free: %s\n", (*custom_environ)[idx]);
 			ft_strncpy((*custom_environ)[idx], new_buf, ft_strlen(new_buf));
 			free(new_buf);
 			ft_free_char_arr(splitted_environ);
@@ -222,6 +209,20 @@ void export(char *buf, char ***custom_environ)
 	free(new_buf);
 }
 
+void unset(char *buf, char ***custom_environ)
+{
+	int f_idx = -1;
+	int s_idx = 0;
+	char *new_buf = ft_str_remove_chars(buf, "\"\'");
+	ft_trim_leading_spaces(new_buf);
+	// char **splitted_buf = ft_strtok(new_buf, "\t\n\v\f ");
+	// ft_print_str_arr(splitted_buf);
+	// while()
+	(void)custom_environ;
+	(void)f_idx;
+	(void)s_idx;
+}
+
 int builtins(char *buf, char **custom_environ)
 {
 
@@ -235,7 +236,7 @@ int builtins(char *buf, char **custom_environ)
 		ft_print_str_arr(custom_environ);
 		return (1);
 	}
-	if (ft_strncmp(buf, "echo ", 5) == 0)
+	if (ft_strncmp(buf, "echo ", 5) == 0 || ft_strcmp(buf, "echo") == 0)
 	{
 		echo(buf + 4, custom_environ);
 		return (1);

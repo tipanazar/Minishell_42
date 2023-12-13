@@ -85,7 +85,7 @@ struct s_cmd *parseexec(char **ps, char *es)
 			break;
 
 		if (tok == '\'' || tok == '\"')
-			cmd->argv[cmd->argc] = mkcopy(q + 1, eq);
+			cmd->argv[cmd->argc] = mkcopy(q, eq);
 		else if (tok != 'a')
 		{
 			write(2, "syntax error\n", 12);

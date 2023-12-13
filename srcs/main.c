@@ -125,6 +125,12 @@ int main(int ac, char **av, char **env)
 			free(new_buf);
 			continue;
 		}
+		if (ft_strcmp(new_buf, "unset") == 0 || ft_strncmp(new_buf, "unset ", 6) == 0)
+		{
+			unset(new_buf + 5, &custom_environ);
+			free(new_buf);
+			continue;
+		}
 		if (ft_strcmp(new_buf, "cd") == 0 || ft_strncmp(new_buf, "cd ", 3) == 0)
 		{
 			ft_cd(new_buf + 2, custom_environ);
