@@ -6,6 +6,9 @@ char *ft_str_remove_chars(char *str, const char *chars_to_remove)
     int s_idx = 0;
     char *new_str;
 
+    if (ft_strlen(str) == 0 || ft_strlen(chars_to_remove) == 0)
+        return (NULL);
+
     while (str[++idx])
         if (!ft_strchr(chars_to_remove, str[idx]))
             s_idx++;

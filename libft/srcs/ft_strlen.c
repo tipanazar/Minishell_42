@@ -12,11 +12,13 @@
 
 #include "../libft.h"
 
-int	ft_strlen(const char *str)
+int ft_strlen(const char *str)
 {
-	int	idx;
+	int idx;
 
 	idx = 0;
+	if (!str)
+		return (0);
 	while (str[idx])
 		idx++;
 	return (idx);

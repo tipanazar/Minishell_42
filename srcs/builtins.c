@@ -3,26 +3,21 @@
 void ft_cd(char *buf, char **custom_environ)
 {
 	char *home_dir;
-	char *new_buf;
+	char *new_buf = NULL;
 	struct stat fileStat;
 
 	new_buf = ft_str_remove_chars(buf, " ");
-	if (!ft_strlen(new_buf))
+	if (ft_strlen(new_buf) == 0)
 	{
 		home_dir = custom_getenv("HOME", custom_environ);
 		if (home_dir)
 			chdir(home_dir);
-		free(home_dir);
+		return;
 	}
-	else if (stat(new_buf, &fileStat) == 0)
-	{
-		if (S_ISDIR(fileStat.st_mode) && chdir(new_buf) < 0)
-			ft_printf("-minishell: cd: %s: No such file or directory\n", new_buf);
-		else if (!S_ISDIR(fileStat.st_mode))
-			ft_printf("-minishell: cd: %s: Not a directory\n", new_buf);
-	}
-	else
-		ft_printf("-minishell: cd: %s: No such file or directory\n", new_buf); //* in case of cd in a non-existing directory
+	if (stat(new_buf, &fileStat) || (S_ISDIR(fileStat.st_mode) && chdir(new_buf) < 0))
+		ft_printf("-minishell: cd: %s: No such file or directory\n", new_buf);
+	else if (!S_ISDIR(fileStat.st_mode))
+		ft_printf("-minishell: cd: %s: Not a directory\n", new_buf);
 	free(new_buf);
 }
 
