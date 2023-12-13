@@ -72,24 +72,25 @@ int get_token(char **ps, char *es, char **q, char **eq)
 
 	ret = *s;
 
-	if (*s == '\'' || *s == '\"')
-	{
-		char quote = *s;
-		s++;
-		while (s < es && *s != quote)
-			s++;
-		if (s < es)
-		{
-			*s = '\0';   // Replace closing quote with null terminator
-			ret = quote; // Return the quote type as the token
-		}
-		else
-		{
-			ft_printf("Missing closing quote\n");
-			exit(-1);
-		}
-	}
-	else if (*s == 0)
+	// if (*s == '\'' || *s == '\"')
+	// {
+	// 	char quote = *s;
+	// 	s++;
+	// 	while (s < es && *s != quote)
+	// 		s++;
+	// 	if (s < es)
+	// 	{
+	// 		*s = '\0';   // Replace closing quote with null terminator
+	// 		ret = quote; // Return the quote type as the token
+	// 	}
+	// 	else
+	// 	{
+	// 		ft_printf("Missing closing quote\n");
+	// 		exit(-1);
+	// 	}
+	// }
+	// else
+	 if (*s == 0)
 		(void)s;
 	else if (ft_strncmp(s, ">>", 2) == 0)
 	{

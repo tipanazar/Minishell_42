@@ -55,62 +55,58 @@ void echo(char *buf, char **custom_environ)
 	int newline;
 	int idx;
 	int s_idx;
-	// int	inside_sing_quotes;
+	int inside_sing_quotes;
+	char *substr;
 
 	idx = -1;
 	s_idx = 1;
-	// // inside_sing_quotes = 0;
+	inside_sing_quotes = 0;
 	ft_trim_leading_spaces(buf);
 	newline = ft_strncmp(buf, "-n", 2);
 	if (!newline)
 	{
-		buf += 2;
+		idx++;
+		while (buf[++idx] == 'n')
+			;
+		if (!ft_isspace(buf[idx]))
+		{
+			newline = 1;
+			idx = -1;
+		}
 		ft_trim_leading_spaces(buf);
 	}
-	// ft_printf("%s", buf);
 	while (buf[++idx])
 	{
-		// if (buf[idx] == '\"')
-		// 	continue;
-		// if (buf[idx] == '\'')
-		// {
-		// 	inside_sing_quotes = !inside_sing_quotes;
-		// 	continue;
-		// }
-		// if (buf[idx] == '$' && !inside_sing_quotes && !ft_isspace(buf[idx + 1]))
-		if (buf[idx] == '$' && !ft_isspace(buf[idx + 1]))
+		if (buf[idx] == '\"')
+			continue;
+		if (buf[idx] == '\'')
 		{
-			// if (buf[idx + 1] == '?')
-			// 	ft_printf("%d", g_exit_code);
-			// else
-			// {
-			while (buf[idx + s_idx] && !ft_isspace(buf[idx + s_idx]))
-				s_idx++;
-			ft_printf("%s", getenv_custom(ft_substr(buf, idx + 1, s_idx), custom_environ));
-			idx += s_idx;
-			// }
+			inside_sing_quotes = !inside_sing_quotes;
+			continue;
+		}
+		if (buf[idx] == '$' && !inside_sing_quotes && !ft_isspace(buf[idx + 1]))
+		{
+			// ft_printf("%d", g_exit_code);
+			if (buf[idx + 1] == '?')
+			{
+				ft_printf("%s", "*g_exit_code*");
+				idx++;
+			}
+			else
+			{
+				while (buf[idx + s_idx] && !ft_isspace(buf[idx + s_idx + 1]))
+					s_idx++;
+				substr = ft_substr(buf, idx + 1, s_idx);
+				ft_printf("%s", getenv_custom(substr, custom_environ));
+				free(substr);
+				idx += s_idx;
+			}
 		}
 		else
 			ft_printf("%c", buf[idx]);
 	}
 	if (newline)
 		ft_printf("\n");
-}
-
-char *concat_args(char **args)
-{
-	int idx;
-	char *str;
-
-	idx = -1;
-	str = "";
-	while (args[++idx])
-	{
-		str = ft_strjoin(str, args[idx]);
-		if (args[idx + 1])
-			str = ft_strjoin(str, " ");
-	}
-	return (str);
 }
 
 char *export_validator(char *buf)
@@ -241,7 +237,7 @@ int builtins(char *buf, char **custom_environ)
 		ft_print_str_arr(custom_environ);
 		return (1);
 	}
-	if (ft_strncmp(buf, "echo ", 5) == 0)
+	if (ft_strncmp(buf, "echo ", 5) == 0 || ft_strcmp(buf, "echo") == 0)
 	{
 		echo(buf + 4, custom_environ);
 		return (1);
