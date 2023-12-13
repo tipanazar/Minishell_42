@@ -43,21 +43,6 @@ char *mkcopy(char *s, char *es)
 	return (c);
 }
 
-char *custom_getenv(char *name, char **custom_environ)
-{
-	int idx;
-	int len;
-
-	idx = -1;
-	len = ft_strlen(name);
-	while (custom_environ[++idx])
-	{
-		if (ft_strncmp(custom_environ[idx], name, len) == 0)
-			return (ft_strchr(custom_environ[idx], '=') + 1);
-	}
-	return (NULL);
-}
-
 char *concat_args(char **args)
 {
 	int idx;
@@ -80,4 +65,19 @@ char *concat_args(char **args)
 		}
 	}
 	return (str);
+}
+
+char *custom_getenv(char *name, char **custom_environ)
+{
+	int idx;
+	int len;
+
+	idx = -1;
+	len = ft_strlen(name);
+	while (custom_environ[++idx])
+	{
+		if (ft_strncmp(custom_environ[idx], name, len) == 0)
+			return (ft_strchr(custom_environ[idx], '=') + 1);
+	}
+	return (NULL);
 }

@@ -73,6 +73,6 @@ void				env(char **env);
 void 				export(char *buf, char ***custom_environ);
 char 				*custom_getenv(char *name, char **custom_environ);
 void 				ft_cd(char *buf, char **custom_environ);
-
+void 				unset(char *buf, char ***custom_environ);
 
 #endif

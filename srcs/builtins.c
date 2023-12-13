@@ -12,6 +12,8 @@ void ft_cd(char *buf, char **custom_environ)
 		home_dir = custom_getenv("HOME", custom_environ);
 		if (home_dir)
 			chdir(home_dir);
+		else
+			ft_printf("-minishell: cd: HOME not set\n");
 		return;
 	}
 	if (stat(new_buf, &fileStat) || (S_ISDIR(fileStat.st_mode) && chdir(new_buf) < 0))
@@ -31,32 +33,14 @@ void pwd(void)
 		perror("getcwd() error");
 }
 
-char *getenv_custom(const char *name, char **custom_environ)
-{
-
-	int idx = -1;
-	char **splitted;
-	while (custom_environ[++idx])
-	{
-		splitted = ft_split(custom_environ[idx], '=');
-		if (ft_strcmp(splitted[0], name) == 0)
-		{
-			ft_free_char_arr(splitted);
-			return custom_environ[idx] + ft_strlen(name) + 1;
-		}
-		ft_free_char_arr(splitted);
-	}
-
-	return NULL;
-}
-
-void echo(char *buf, char **custom_environ)
+void echo(char *buf, char **custom_environ) //? echo $$
 {
 	int newline;
 	int idx;
 	int s_idx;
 	int inside_sing_quotes;
 	char *substr;
+	char *getenv_result;
 
 	idx = -1;
 	s_idx = 1;
@@ -84,7 +68,7 @@ void echo(char *buf, char **custom_environ)
 			inside_sing_quotes = !inside_sing_quotes;
 			continue;
 		}
-		if (buf[idx] == '$' && !inside_sing_quotes && !ft_isspace(buf[idx + 1]))
+		if (buf[idx] == '$' && !inside_sing_quotes && buf[idx + 1] && buf[idx + 1] != '$' && !ft_isspace(buf[idx + 1]))
 		{
 			// ft_printf("%d", g_exit_code);
 			if (buf[idx + 1] == '?')
@@ -96,8 +80,10 @@ void echo(char *buf, char **custom_environ)
 			{
 				while (buf[idx + s_idx] && !ft_isspace(buf[idx + s_idx + 1]))
 					s_idx++;
-				substr = ft_substr(buf, idx + 1, s_idx);
-				ft_printf("%s", getenv_custom(substr, custom_environ));
+				substr = ft_substr(buf, idx, s_idx);
+				getenv_result = custom_getenv(substr + 1, custom_environ);
+				if (getenv_result)
+					ft_printf("%s", getenv_result);
 				free(substr);
 				idx += s_idx;
 			}
@@ -184,6 +170,8 @@ void export(char *buf, char ***custom_environ)
 	char *quote_type;
 	char *new_buf;
 	int idx;
+	char **splitted_environ;
+	char **splitted_new_buf;
 	idx = -1;
 	ft_trim_leading_spaces(buf);
 	quote_type = export_validator(buf);
@@ -198,15 +186,12 @@ void export(char *buf, char ***custom_environ)
 		new_buf = ft_strdup(buf);
 	free(quote_type);
 
-	char **splitted_environ;
-	char **splitted_new_buf;
 	while ((*custom_environ)[++idx])
 	{
 		splitted_environ = ft_split((*custom_environ)[idx], '=');
 		splitted_new_buf = ft_split(new_buf, '=');
 		if (ft_strcmp(splitted_environ[0], splitted_new_buf[0]) == 0)
 		{
-			ft_printf("Free: %s\n", (*custom_environ)[idx]);
 			ft_strncpy((*custom_environ)[idx], new_buf, ft_strlen(new_buf));
 			free(new_buf);
 			ft_free_char_arr(splitted_environ);
@@ -222,6 +207,20 @@ void export(char *buf, char ***custom_environ)
 	(*custom_environ)[idx + 1] = NULL;
 	ft_printf("Done: %s\n", (*custom_environ)[idx]);
 	free(new_buf);
+}
+
+void unset(char *buf, char ***custom_environ)
+{
+	int f_idx = -1;
+	int s_idx = 0;
+	char *new_buf = ft_str_remove_chars(buf, "\"\'");
+	ft_trim_leading_spaces(new_buf);
+	// char **splitted_buf = ft_strtok(new_buf, "\t\n\v\f ");
+	// ft_print_str_arr(splitted_buf);
+	// while()
+	(void)custom_environ;
+	(void)f_idx;
+	(void)s_idx;
 }
 
 int builtins(char *buf, char **custom_environ)
