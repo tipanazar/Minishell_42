@@ -67,7 +67,7 @@ char *concat_args(char **args)
 	return (str);
 }
 
-char *custom_getenv(char *name, char **custom_environ)
+char *custom_getenv(char *name, char **custom_environ, bool full_str)
 {
 	int idx;
 	int len;
@@ -77,7 +77,12 @@ char *custom_getenv(char *name, char **custom_environ)
 	while (custom_environ[++idx])
 	{
 		if (ft_strncmp(custom_environ[idx], name, len) == 0)
-			return (ft_strchr(custom_environ[idx], '=') + 1);
+		{
+			if (full_str)
+				return (custom_environ[idx]);
+			else
+				return (ft_strchr(custom_environ[idx], '=') + 1);
+		}
 	}
 	return (NULL);
 }

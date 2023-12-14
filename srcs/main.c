@@ -129,7 +129,7 @@ int main(int ac, char **av, char **env)
 		buf = readline("minishell# ");
 		if (!buf)
 			break;
-		new_buf = ft_strtrim(buf, "\f\t ");
+		new_buf = ft_strtrim(buf, "\t\n\v\f ");
 		free(buf);
 		if (ft_strncmp(new_buf, "exit ", 5) == 0 || ft_strcmp(new_buf, "exit") == 0)
 		{

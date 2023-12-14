@@ -9,7 +9,7 @@ void ft_cd(char *buf, char **custom_environ)
 	new_buf = ft_str_remove_chars(buf, " ");
 	if (ft_strlen(new_buf) == 0)
 	{
-		home_dir = custom_getenv("HOME", custom_environ);
+		home_dir = custom_getenv("HOME", custom_environ, 0);
 		if (home_dir)
 			chdir(home_dir);
 		else
@@ -33,7 +33,7 @@ void pwd(void)
 		perror("getcwd() error");
 }
 
-void echo(char *buf, char **custom_environ) //? echo $$
+void echo(char *buf, char **custom_environ)
 {
 	int newline;
 	int idx;
@@ -81,7 +81,7 @@ void echo(char *buf, char **custom_environ) //? echo $$
 				while (buf[idx + s_idx] && !ft_isspace(buf[idx + s_idx + 1]))
 					s_idx++;
 				substr = ft_substr(buf, idx, s_idx);
-				getenv_result = custom_getenv(substr + 1, custom_environ);
+				getenv_result = custom_getenv(substr + 1, custom_environ, 0);
 				if (getenv_result)
 					ft_printf("%s", getenv_result);
 				free(substr);
@@ -205,55 +205,39 @@ void export(char *buf, char ***custom_environ)
 	free(new_buf);
 }
 
-// void unset(char *buf, char ***custom_environ)
-// {
-// 	char *arr_element = NULL;
-// 	char *env_value = NULL;
-// 	char *token;
-
-// 	ft_trim_leading_spaces(buf);
-// 	token = ft_strtok(buf, "\t\n\v\f ");
-
-// 	while (token != NULL)
-// 	{
-// 		ft_printf("Token: %s\n", token);
-// 		ft_printf("Unsetting\n");
-// 		env_value = custom_getenv(token, *custom_environ);
-// 		if (!env_value)
-// 			continue;
-// 		arr_element = ft_strjoin(ft_strjoin(token, "="), env_value);
-// 		ft_remove_str_from_char_arr(custom_environ, arr_element);
-// 		free(arr_element);
-// 		token = ft_strtok(NULL, "\t\n\v\f ");
-// 	}
-// }
-
-void unset(char *buf, char ***custom_environ)
+char **create_unset_arr(char *buf, char **custom_environ)
 {
-	char *env_value = NULL;
-	char **to_delete = NULL;
 	char *token;
+	char *env_value;
+	char **to_delete = NULL;
 	int idx = 0;
 
-	ft_trim_leading_spaces(buf);
 	token = ft_strtok(buf, "\t\n\v\f ");
 
-	while (token != NULL)
+	while (token)
 	{
-		// ft_printf("Token: %s\n", token);
-		env_value = custom_getenv(token, *custom_environ);
+		env_value = custom_getenv(token, custom_environ, 1);
 		if (env_value)
 		{
-			ft_printf("Strarrlen: %d\n", ft_strarrlen(to_delete));
-			printf("Size: %ld\n", sizeof(char *));
-			to_delete = (char **)realloc(to_delete, sizeof(char *) * (ft_strarrlen(to_delete) + 1));
-			to_delete[idx++] = ft_strjoin(ft_strjoin(token, "="), env_value);
-			to_delete[idx++] = NULL;
+			to_delete = (char **)realloc(to_delete, sizeof(char *) * (ft_strarrlen(to_delete) + 2));
+			to_delete[idx++] = ft_strdup(env_value);
+			to_delete[idx] = NULL;
 		}
 		token = ft_strtok(NULL, "\t\n\v\f ");
 	}
-	ft_printf("To delete:\n");
-	ft_print_str_arr(to_delete);
+	return (to_delete);
+}
+
+void unset(char *buf, char ***custom_environ)
+{
+	char **to_delete;
+	int idx = -1;
+
+	to_delete = create_unset_arr(buf, *custom_environ);
+	
+	while (to_delete[++idx])
+		ft_remove_str_from_char_arr(custom_environ, to_delete[idx]);
+	ft_free_char_arr(to_delete);
 }
 
 int builtins(char *buf, char **custom_environ)
