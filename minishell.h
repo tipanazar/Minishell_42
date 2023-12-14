@@ -71,7 +71,7 @@ char 				*concat_args(char **args);
 int					builtins(char *buf, char **env);
 void				env(char **env);
 void 				export(char *buf, char ***custom_environ);
-char 				*custom_getenv(char *name, char **custom_environ);
+char 				*custom_getenv(char *name, char **custom_environ, bool full_str);
 void 				ft_cd(char *buf, char **custom_environ);
 void 				unset(char *buf, char ***custom_environ);
 

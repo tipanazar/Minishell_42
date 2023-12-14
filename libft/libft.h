@@ -100,5 +100,6 @@ void				*ft_realloc(void *ptr, size_t new_size);
 void 				ft_print_str_arr(char **str);
 int 				ft_strarrlen(char **arr);
 char 				*ft_str_remove_chars(char *str, const char *chars_to_remove);
+void 				ft_remove_str_from_char_arr(char ***arr, const char *target);
 
 #endif
