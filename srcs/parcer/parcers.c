@@ -15,6 +15,7 @@ struct s_cmd *parsecmd(char *s)
 		free(cmd);
 		exit(-1);
 	}
+	
 	return (cmd);
 }
 

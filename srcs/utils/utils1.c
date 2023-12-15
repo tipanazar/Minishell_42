@@ -1,8 +1,8 @@
 #include "../../minishell.h"
 
-int	fork1(void)
+int fork1(void)
 {
-	int	pid;
+	int pid;
 
 	pid = fork();
 	if (pid == -1)
@@ -10,10 +10,10 @@ int	fork1(void)
 	return (pid);
 }
 
-int	peek(char **ps, char *es, char *toks)
+int peek(char **ps, char *es, char *toks)
 {
-	char	*s;
-	char	*whitespace;
+	char *s;
+	char *whitespace;
 
 	whitespace = " \t\r\n\v";
 	s = *ps;
@@ -23,10 +23,13 @@ int	peek(char **ps, char *es, char *toks)
 	return (*s && ft_strchr(toks, *s));
 }
 
-char	*mkcopy(char *s, char *es)
+// make a copy of the characters in the input buffer,
+//	starting from s through es.
+// null-terminate the copy to make it a string.
+char *mkcopy(char *s, char *es)
 {
-	int		n;
-	char	*c;
+	int n;
+	char *c;
 
 	n = es - s;
 	c = malloc(n + 1);
@@ -40,11 +43,11 @@ char	*mkcopy(char *s, char *es)
 	return (c);
 }
 
-char	*concat_args(char **args)
+char *concat_args(char **args)
 {
-	int		idx;
-	char	*str;
-	char	*temp;
+	int idx;
+	char *str;
+	char *temp;
 
 	idx = -1;
 	str = "";
@@ -66,7 +69,7 @@ char	*concat_args(char **args)
 
 char *custom_getenv(char *name, char **custom_environ, bool full_str)
 {
-	int	idx;
+	int idx;
 	int len;
 
 	idx = -1;

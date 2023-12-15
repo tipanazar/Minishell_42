@@ -66,6 +66,7 @@ struct s_cmd		*pipecmd(struct s_cmd *left, struct s_cmd *right);
 struct s_cmd		*parseredirs(struct s_cmd *cmd, char **ps, char *es);
 struct s_cmd		*parsepipe(char **ps, char *es);
 struct s_cmd		*parseexec(char **ps, char *es);
+int					ft_fileno(FILE *stream);
 char 				*concat_args(char **args);
 int					builtins(char *buf, char **env);
 void				env(char **env);
@@ -73,7 +74,5 @@ void 				export(char *buf, char ***custom_environ);
 char 				*custom_getenv(char *name, char **custom_environ, bool full_str);
 void 				ft_cd(char *buf, char **custom_environ);
 void 				unset(char *buf, char ***custom_environ);
-char				*find_command_in_path(char *command);
-void				free_cmd(struct s_cmd *command);
 
 #endif

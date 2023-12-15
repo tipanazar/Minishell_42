@@ -2,7 +2,7 @@
 
 int	getcmd(char *buf, int nbuf)
 {
-	if (isatty(0))
+	if (isatty(ft_fileno(stdin)))
 		write(2, "minishell# ", 11);
 	ft_memset(buf, 0, nbuf);
 	ft_fgets(buf, nbuf, stdin);
@@ -68,36 +68,4 @@ struct s_cmd	*pipecmd(struct s_cmd *left, struct s_cmd *right)
 	cmd->left = left;
 	cmd->right = right;
 	return ((struct s_cmd *)cmd);
-}
-
-char	*find_command_in_path(char *command)
-{
-	char		*PATH;
-	char		*path;
-	static char	abs_path[512];
-	char		*temp_PATH;
-
-	if (command[0] == '/' || ft_strchr(command, '/'))
-	{
-		if (access(command, X_OK) == 0)
-			return (ft_strdup(command));
-		return (NULL);
-	}
-	PATH = getenv("PATH");
-	if (!PATH) // Check if PATH is NULL
-		return (NULL);
-	temp_PATH = ft_strdup(PATH);
-	path = ft_strtok(temp_PATH, ":");
-	while (path != NULL)
-	{
-		snprintf(abs_path, sizeof(abs_path), "%s/%s", path, command);
-		if (access(abs_path, X_OK) == 0)
-		{
-			free(temp_PATH);
-			return (abs_path);
-		}
-		path = ft_strtok(NULL, ":");
-	}
-	free(temp_PATH);
-	return (NULL);
 }
