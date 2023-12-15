@@ -73,5 +73,7 @@ void 				export(char *buf, char ***custom_environ);
 char 				*custom_getenv(char *name, char **custom_environ);
 void 				ft_cd(char *buf, char **custom_environ);
 void 				unset(char *buf, char ***custom_environ);
+char				*find_command_in_path(char *command);
+void				free_cmd(struct s_cmd *command);
 
 #endif

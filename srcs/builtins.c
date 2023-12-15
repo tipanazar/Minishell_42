@@ -27,12 +27,12 @@ void	ft_cd(char *buf, char **custom_environ)
 
 void	pwd(void)
 {
-	char	cwd[PATH_MAX];
+	char	dir[2000];
 
-	if (getcwd(cwd, sizeof(cwd)))
-		printf("%s\n", cwd);
+	if (getcwd(dir, sizeof(dir)) != NULL)
+		ft_printf("%s\n", dir);
 	else
-		perror("getcwd() error");
+		perror("pwd");
 }
 
 void	echo(char *buf, char **custom_environ) //? echo $$
@@ -243,7 +243,7 @@ int	builtins(char *buf, char **custom_environ)
 		pwd();
 		return (1);
 	}
-	if (ft_strncmp(buf, "env ", 4) == 0 || ft_strcmp(buf, "pwd") == 0)
+	if (ft_strncmp(buf, "env ", 4) == 0 || ft_strcmp(buf, "env") == 0)
 	{
 		ft_print_str_arr(custom_environ);
 		return (1);

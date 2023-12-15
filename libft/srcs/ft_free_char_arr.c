@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_free_char_arr.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nkarpeko <nkarpeko@student.42.fr>          +#+  +:+       +#+        */
+/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/13 17:59:19 by nkarpeko          #+#    #+#             */
-/*   Updated: 2023/07/17 17:35:33 by nkarpeko         ###   ########.fr       */
+/*   Updated: 2023/12/15 17:12:30 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,4 +23,5 @@ void	ft_free_char_arr(char **arr)
 			free(arr[idx]);
 		free(arr);
 	}
+	arr = NULL;
 }

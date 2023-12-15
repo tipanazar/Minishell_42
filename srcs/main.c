@@ -1,6 +1,6 @@
 #include "../minishell.h"
 
-void ctrl_c_handler(int sig)
+void	ctrl_c_handler(int sig)
 {
 	(void)sig;
 	rl_on_new_line();
@@ -10,7 +10,7 @@ void ctrl_c_handler(int sig)
 	rl_redisplay();
 }
 
-bool is_blank(const char *buf)
+bool	is_blank(const char *buf)
 {
 	if (!buf)
 		return (true);
@@ -23,74 +23,103 @@ bool is_blank(const char *buf)
 	return (true);
 }
 
-int main(int ac, char **av, char **env)
+int	handle_built_in_commands(char *new_buf, char ***custom_environ)
 {
-	(void)ac;
-	(void)av;
-	struct s_cmd *cmd;
-	char *buf;
-	char *new_buf;
-	int r;
-	int idx = -1;
-	char **custom_environ = (char **)malloc(sizeof(char *) * (ft_strarrlen(env) + 1));
+	if (ft_strncmp(new_buf, "exit ", 5) == 0 || ft_strcmp(new_buf, "exit") == 0)
+		return (1);
+	if (is_blank(new_buf))
+		return (1);
+	if (ft_strlen(new_buf) && ft_isspace(new_buf[0]) == 0)
+	{
+		add_history(new_buf);
+	}
+	if (ft_strcmp(new_buf, "export") == 0 || ft_strncmp(new_buf, "export ",
+			7) == 0)
+	{
+		export(new_buf + 7, custom_environ);
+		return (1);
+	}
+	if (ft_strcmp(new_buf, "unset") == 0 || ft_strncmp(new_buf, "unset ",
+			6) == 0)
+	{
+		unset(new_buf + 5, custom_environ);
+		return (1);
+	}
+	if (ft_strcmp(new_buf, "cd") == 0 || ft_strncmp(new_buf, "cd ", 3) == 0)
+	{
+		ft_cd(new_buf + 2, *custom_environ);
+		return (1);
+	}
+	return (0); // Not a built-in command
+}
+
+char	**init_custom_environment(char **env)
+{
+	int		idx;
+	char	**custom_environ;
+
+	idx = -1;
+	custom_environ = (char **)malloc(sizeof(char *) * (ft_strarrlen(env) + 1));
 	if (!custom_environ)
 	{
 		perror("Memory allocation failed");
-		return (1);
+		return (NULL);
 	}
 	while (env[++idx])
 		custom_environ[idx] = ft_strdup(env[idx]);
 	custom_environ[idx] = NULL;
+	return (custom_environ);
+}
 
-	signal(SIGINT, ctrl_c_handler);
-	signal(SIGQUIT, SIG_IGN);
+void	process_commands(char **custom_environ)
+{
+	struct s_cmd	*cmd;
+	int				r;
+
+	char *buf, *new_buf;
 	while (1)
 	{
 		buf = readline("minishell# ");
 		if (!buf)
-			break;
+			break ;
 		new_buf = ft_strtrim(buf, "\f\t ");
 		free(buf);
-		if (ft_strncmp(new_buf, "exit ", 5) == 0 || ft_strcmp(new_buf, "exit") == 0)
+		if (handle_built_in_commands(new_buf, &custom_environ))
 		{
 			free(new_buf);
-			break;
-		}
-		if (is_blank(new_buf))
-		{
-			free(new_buf);
-			continue;
-		}
-		if (ft_strlen(new_buf) && ft_isspace(new_buf[0]) == 0)
-			add_history(new_buf);
-		if (ft_strcmp(new_buf, "export") == 0 || ft_strncmp(new_buf, "export ", 7) == 0)
-		{
-			export(new_buf + 7, &custom_environ);
-			free(new_buf);
-			continue;
-		}
-		if (ft_strcmp(new_buf, "unset") == 0 || ft_strncmp(new_buf, "unset ", 6) == 0)
-		{
-			unset(new_buf + 5, &custom_environ);
-			free(new_buf);
-			continue;
-		}
-		if (ft_strcmp(new_buf, "cd") == 0 || ft_strncmp(new_buf, "cd ", 3) == 0)
-		{
-			ft_cd(new_buf + 2, custom_environ);
-			free(new_buf);
-			continue;
+			continue ;
 		}
 		if (fork1() == 0)
 		{
 			cmd = parsecmd(new_buf);
 			free(new_buf);
 			runcmd(cmd, custom_environ);
-			continue;
+				ft_free_char_arr(custom_environ);
+			free_cmd(cmd);
+			exit(1);
 		}
 		wait(&r);
 		free(new_buf);
 	}
+}
+
+void	setup_signal_handlers(void)
+{
+	signal(SIGINT, ctrl_c_handler);
+	signal(SIGQUIT, SIG_IGN);
+}
+
+int	main(int ac, char **av, char **env)
+{
+	char	**custom_environ;
+
+	(void)ac;
+	(void)av;
+	custom_environ = init_custom_environment(env);
+	if (!custom_environ)
+		return (1);
+	setup_signal_handlers();
+	process_commands(custom_environ);
 	rl_clear_history();
 	ft_free_char_arr(custom_environ);
 	return (0);
