@@ -53,7 +53,35 @@ int	handle_built_in_commands(char *new_buf, char ***custom_environ)
 	return (0); // Not a built-in command
 }
 
-char	**init_custom_environment(char **env)
+// <<<<<<< turman
+// char	**init_custom_environment(char **env)
+// =======
+// int main(int ac, char **av, char **env)
+// {
+// 	(void)ac;
+// 	(void)av;
+// 	int idx = -1;
+// 	char **custom_environ = (char **)malloc(sizeof(char *) * (4));
+// 	while (++idx < 3)
+// 		custom_environ[idx] = ft_strdup(env[idx]);
+// 	custom_environ[idx] = NULL;
+
+// 	ft_printf("Before:\n");
+// 	ft_print_str_arr(custom_environ);
+// 	ft_remove_str_from_char_arr(&custom_environ, "SHELL=/bin/bash");
+// 	ft_remove_str_from_char_arr(&custom_environ, "SHELL=/bin/bash");
+// 	ft_remove_str_from_char_arr(&custom_environ, "WSL2_GUI_APPS_ENABLED=1");
+// 	ft_remove_str_from_char_arr(&custom_environ, "WSL_DISTRO_NAME=Ubuntu-22.04");
+// 	printf("After:\n");
+// 	ft_print_str_arr(custom_environ);
+
+// 	ft_free_char_arr(custom_environ);
+
+// 	return 0;
+// } //? to test ft_remove_str_from_char_arr
+
+int main(int ac, char **av, char **env)
+// >>>>>>> main
 {
 	int		idx;
 	char	**custom_environ;
@@ -81,8 +109,8 @@ void	process_commands(char **custom_environ)
 	{
 		buf = readline("minishell# ");
 		if (!buf)
-			break ;
-		new_buf = ft_strtrim(buf, "\f\t ");
+			break;
+		new_buf = ft_strtrim(buf, "\t\n\v\f ");
 		free(buf);
 		if (handle_built_in_commands(new_buf, &custom_environ))
 		{

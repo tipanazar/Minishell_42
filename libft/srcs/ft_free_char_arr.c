@@ -17,6 +17,8 @@ void	ft_free_char_arr(char **arr)
 	int	idx;
 
 	idx = -1;
+	if(!arr)
+		return;
 	if (*arr)
 	{
 		while (arr[++idx])
