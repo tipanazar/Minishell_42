@@ -1,6 +1,6 @@
 #include "../minishell.h"
 
-void	ctrl_c_handler(int sig)
+void ctrl_c_handler(int sig)
 {
 	(void)sig;
 	rl_on_new_line();
@@ -10,7 +10,7 @@ void	ctrl_c_handler(int sig)
 	rl_redisplay();
 }
 
-bool	is_blank(const char *buf)
+bool is_blank(const char *buf)
 {
 	if (!buf)
 		return (true);
@@ -23,7 +23,7 @@ bool	is_blank(const char *buf)
 	return (true);
 }
 
-int	handle_built_in_commands(char *new_buf, char ***custom_environ)
+int handle_built_in_commands(char *new_buf, char ***custom_environ)
 {
 	if (ft_strncmp(new_buf, "exit ", 5) == 0 || ft_strcmp(new_buf, "exit") == 0)
 		return (1);
@@ -34,13 +34,13 @@ int	handle_built_in_commands(char *new_buf, char ***custom_environ)
 		add_history(new_buf);
 	}
 	if (ft_strcmp(new_buf, "export") == 0 || ft_strncmp(new_buf, "export ",
-			7) == 0)
+														7) == 0)
 	{
 		export(new_buf + 7, custom_environ);
 		return (1);
 	}
 	if (ft_strcmp(new_buf, "unset") == 0 || ft_strncmp(new_buf, "unset ",
-			6) == 0)
+													   6) == 0)
 	{
 		unset(new_buf + 5, custom_environ);
 		return (1);
@@ -53,38 +53,10 @@ int	handle_built_in_commands(char *new_buf, char ***custom_environ)
 	return (0); // Not a built-in command
 }
 
-// <<<<<<< turman
-// char	**init_custom_environment(char **env)
-// =======
-// int main(int ac, char **av, char **env)
-// {
-// 	(void)ac;
-// 	(void)av;
-// 	int idx = -1;
-// 	char **custom_environ = (char **)malloc(sizeof(char *) * (4));
-// 	while (++idx < 3)
-// 		custom_environ[idx] = ft_strdup(env[idx]);
-// 	custom_environ[idx] = NULL;
-
-// 	ft_printf("Before:\n");
-// 	ft_print_str_arr(custom_environ);
-// 	ft_remove_str_from_char_arr(&custom_environ, "SHELL=/bin/bash");
-// 	ft_remove_str_from_char_arr(&custom_environ, "SHELL=/bin/bash");
-// 	ft_remove_str_from_char_arr(&custom_environ, "WSL2_GUI_APPS_ENABLED=1");
-// 	ft_remove_str_from_char_arr(&custom_environ, "WSL_DISTRO_NAME=Ubuntu-22.04");
-// 	printf("After:\n");
-// 	ft_print_str_arr(custom_environ);
-
-// 	ft_free_char_arr(custom_environ);
-
-// 	return 0;
-// } //? to test ft_remove_str_from_char_arr
-
-int main(int ac, char **av, char **env)
-// >>>>>>> main
+char **init_custom_environment(char **env)
 {
-	int		idx;
-	char	**custom_environ;
+	int idx;
+	char **custom_environ;
 
 	idx = -1;
 	custom_environ = (char **)malloc(sizeof(char *) * (ft_strarrlen(env) + 1));
@@ -99,10 +71,10 @@ int main(int ac, char **av, char **env)
 	return (custom_environ);
 }
 
-void	process_commands(char **custom_environ)
+void process_commands(char **custom_environ)
 {
-	struct s_cmd	*cmd;
-	int				r;
+	struct s_cmd *cmd;
+	int r;
 
 	char *buf, *new_buf;
 	while (1)
@@ -115,14 +87,14 @@ void	process_commands(char **custom_environ)
 		if (handle_built_in_commands(new_buf, &custom_environ))
 		{
 			free(new_buf);
-			continue ;
+			continue;
 		}
 		if (fork1() == 0)
 		{
 			cmd = parsecmd(new_buf);
 			free(new_buf);
 			runcmd(cmd, custom_environ);
-				ft_free_char_arr(custom_environ);
+			ft_free_char_arr(custom_environ);
 			free_cmd(cmd);
 			exit(1);
 		}
@@ -131,15 +103,15 @@ void	process_commands(char **custom_environ)
 	}
 }
 
-void	setup_signal_handlers(void)
+void setup_signal_handlers(void)
 {
 	signal(SIGINT, ctrl_c_handler);
 	signal(SIGQUIT, SIG_IGN);
 }
 
-int	main(int ac, char **av, char **env)
+int main(int ac, char **av, char **env)
 {
-	char	**custom_environ;
+	char **custom_environ;
 
 	(void)ac;
 	(void)av;
