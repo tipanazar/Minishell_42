@@ -26,15 +26,8 @@ struct s_cmd	*execcmd(void)
 	return ((struct s_cmd *)cmd);
 }
 
-struct s_cmd	*redircmd(struct s_cmd *subcmd, char *file, int type)
+void	set_mode_and_fd(struct s_redircmd *cmd, int type)
 {
-	struct s_redircmd	*cmd;
-
-	cmd = malloc(sizeof(*cmd));
-	ft_memset(cmd, 0, sizeof(*cmd));
-	cmd->type = type;
-	cmd->cmd = subcmd;
-	cmd->file = file;
 	if (type == '<')
 	{
 		cmd->mode = O_RDONLY;
@@ -55,6 +48,18 @@ struct s_cmd	*redircmd(struct s_cmd *subcmd, char *file, int type)
 		cmd->mode = O_RDONLY;
 		cmd->fd = 0;
 	}
+}
+
+struct s_cmd	*redircmd(struct s_cmd *subcmd, char *file, int type)
+{
+	struct s_redircmd	*cmd;
+
+	cmd = malloc(sizeof(*cmd));
+	ft_memset(cmd, 0, sizeof(*cmd));
+	cmd->type = type;
+	cmd->cmd = subcmd;
+	cmd->file = file;
+	set_mode_and_fd(cmd, type);
 	return ((struct s_cmd *)cmd);
 }
 
@@ -68,36 +73,4 @@ struct s_cmd	*pipecmd(struct s_cmd *left, struct s_cmd *right)
 	cmd->left = left;
 	cmd->right = right;
 	return ((struct s_cmd *)cmd);
-}
-
-char	*find_command_in_path(char *command)
-{
-	char		*PATH;
-	char		*path;
-	static char	abs_path[512];
-	char		*temp_PATH;
-
-	if (command[0] == '/' || ft_strchr(command, '/'))
-	{
-		if (access(command, X_OK) == 0)
-			return (ft_strdup(command));
-		return (NULL);
-	}
-	PATH = getenv("PATH");
-	if (!PATH) // Check if PATH is NULL
-		return (NULL);
-	temp_PATH = ft_strdup(PATH);
-	path = ft_strtok(temp_PATH, ":");
-	while (path != NULL)
-	{
-		snprintf(abs_path, sizeof(abs_path), "%s/%s", path, command);
-		if (access(abs_path, X_OK) == 0)
-		{
-			free(temp_PATH);
-			return (abs_path);
-		}
-		path = ft_strtok(NULL, ":");
-	}
-	free(temp_PATH);
-	return (NULL);
 }

@@ -8,9 +8,9 @@ void	execute_command(char *new_buf, char **custom_env)
 	if (fork1() == 0)
 	{
 		cmd = parsecmd(new_buf);
+		free(new_buf);
 		runcmd(cmd, custom_env);
 		ft_free_char_arr(custom_env);
-		free(new_buf);
 		free_cmd(cmd);
 		exit(1);
 	}

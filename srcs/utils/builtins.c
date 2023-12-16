@@ -35,13 +35,13 @@ void	pwd(void)
 		perror("pwd");
 }
 
-void unset(char *buf, char ***custom_environ)
+void	unset(char *buf, char ***custom_environ)
 {
-	char **to_delete;
-	int idx = -1;
+	char	**to_delete;
+	int		idx;
 
+	idx = -1;
 	to_delete = create_unset_arr(buf, *custom_environ);
-	
 	while (to_delete[++idx])
 		ft_remove_str_from_char_arr(custom_environ, to_delete[idx]);
 	ft_free_char_arr(to_delete);

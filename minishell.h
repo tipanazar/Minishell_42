@@ -81,5 +81,8 @@ void 				echo(char *buf, char **custom_environ);
 char				*export_validator(char *buf);
 char 				**create_unset_arr(char *buf, char **custom_environ);
 void				export(char *buf, char ***custom_environ);
+void				echo_n_handler(char *buf, int *idx, int *newline);
+void				process_echo_command(char *buf, char **custom_environ, int *idx,
+						int *inside_sing_quotes, int newline);
 
 #endif

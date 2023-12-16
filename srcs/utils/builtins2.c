@@ -1,66 +1,17 @@
 #include "../../minishell.h"
 
-void echo(char *buf, char **custom_environ)
+void	echo(char *buf, char **custom_environ)
 {
-	int newline;
-	int idx;
-	int s_idx;
-	int inside_sing_quotes;
-	char *substr;
-	char *getenv_result;
+	int	idx;
+	int	inside_sing_quotes;
+	int	newline;
 
-	idx = -1;
-	s_idx = 1;
+	idx = 0;
 	inside_sing_quotes = 0;
-	ft_trim_leading_spaces(buf);
-	newline = ft_strncmp(buf, "-n", 2);
-	if (!newline)
-	{
-		idx++;
-		while (buf[++idx] == 'n')
-			;
-		if (!ft_isspace(buf[idx]))
-		{
-			newline = 1;
-			idx = -1;
-		}
-		ft_trim_leading_spaces(buf);
-	}
-	while (buf[++idx])
-	{
-		if (buf[idx] == '\"')
-			continue ;
-		if (buf[idx] == '\'')
-		{
-			inside_sing_quotes = !inside_sing_quotes;
-			continue ;
-		}
-		if (buf[idx] == '$' && !inside_sing_quotes && buf[idx + 1] && buf[idx
-			+ 1] != '$' && !ft_isspace(buf[idx + 1]))
-		{
-			// ft_printf("%d", g_exit_code);
-			if (buf[idx + 1] == '?')
-			{
-				ft_printf("%s", "*g_exit_code*");
-				idx++;
-			}
-			else
-			{
-				while (buf[idx + s_idx] && !ft_isspace(buf[idx + s_idx + 1]))
-					s_idx++;
-				substr = ft_substr(buf, idx, s_idx);
-				getenv_result = custom_getenv(substr + 1, custom_environ, 0);
-				if (getenv_result)
-					ft_printf("%s", getenv_result);
-				free(substr);
-				idx += s_idx;
-			}
-		}
-		else
-			ft_printf("%c", buf[idx]);
-	}
-	if (newline)
-		ft_printf("\n");
+	newline = 1;
+	echo_n_handler(buf, &idx, &newline);
+	process_echo_command(buf, custom_environ, &idx, &inside_sing_quotes,
+			newline);
 }
 
 char	*export_validator(char *buf)
@@ -179,7 +130,7 @@ void	export(char *buf, char ***custom_environ)
 	free(new_buf);
 }
 
-char **create_unset_arr(char *buf, char **custom_environ)
+char	**create_unset_arr(char *buf, char **custom_environ)
 {
 	char *token;
 	char *env_value;
@@ -193,7 +144,8 @@ char **create_unset_arr(char *buf, char **custom_environ)
 		env_value = custom_getenv(token, custom_environ, 1);
 		if (env_value)
 		{
-			to_delete = (char **)realloc(to_delete, sizeof(char *) * (ft_strarrlen(to_delete) + 2));
+			to_delete = (char **)realloc(to_delete, sizeof(char *)
+					* (ft_strarrlen(to_delete) + 2));
 			to_delete[idx++] = ft_strdup(env_value);
 			to_delete[idx] = NULL;
 		}
