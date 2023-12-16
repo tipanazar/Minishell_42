@@ -1,25 +1,27 @@
 #include "../../minishell.h"
 
+void	free_exec_cmd(struct s_execcmd *ecmd)
+{
+	int	i;
+
+	i = 0;
+	while (ecmd->argv[i])
+	{
+		free(ecmd->argv[i]);
+		i++;
+	}
+	free(ecmd->argv);
+}
+
 void	free_cmd(struct s_cmd *command)
 {
 	struct s_pipecmd	*pcmd;
-	struct s_execcmd	*ecmd;
 	struct s_redircmd	*rcmd;
-	int					i;
 
-	i = 0;
 	if (!command)
 		return ;
 	if (command->type == ' ')
-	{
-		ecmd = (struct s_execcmd *)command;
-		while (ecmd->argv[i])
-		{
-			free(ecmd->argv[i]);
-			i++;
-		}
-		free(ecmd->argv);
-	}
+		free_exec_cmd((struct s_execcmd *)command);
 	else if (command->type == '|')
 	{
 		pcmd = (struct s_pipecmd *)command;
@@ -27,7 +29,7 @@ void	free_cmd(struct s_cmd *command)
 		free_cmd(pcmd->right);
 	}
 	else if (command->type == '>' || command->type == '<'
-			|| command->type == '+' || command->type == '-')
+		|| command->type == '+' || command->type == '-')
 	{
 		rcmd = (struct s_redircmd *)command;
 		free_cmd(rcmd->cmd);
@@ -36,23 +38,10 @@ void	free_cmd(struct s_cmd *command)
 	free(command);
 }
 
-int	exec_cmd(struct s_cmd *cmd, char **custom_environ)
+void	execute_command1(struct s_execcmd *ecmd, char **custom_environ)
 {
-	struct s_execcmd	*ecmd;
-	char				*full_path;
-	int					exit_code;
-	char				*buf;
+	char	*full_path;
 
-	exit_code = 0;
-	ecmd = (struct s_execcmd *)cmd;
-	if (ecmd->argv[0] == 0)
-		exit(0);
-	buf = concat_args(ecmd->argv);
-	if (builtins(buf, custom_environ))
-	{
-		free(buf);
-		return (exit_code);
-	}
 	full_path = find_command_in_path(ecmd->argv[0]);
 	if (full_path)
 	{
@@ -62,6 +51,25 @@ int	exec_cmd(struct s_cmd *cmd, char **custom_environ)
 	else
 		execve(ecmd->argv[0], ecmd->argv, custom_environ);
 	perror("Command not found");
+}
+
+int	exec_cmd(struct s_cmd *cmd, char **custom_environ)
+{
+	struct s_execcmd	*ecmd;
+	char				*buf;
+	int					exit_code;
+
+	ecmd = (struct s_execcmd *)cmd;
+	exit_code = 0;
+	if (ecmd->argv[0] == 0)
+		exit(0);
+	buf = concat_args(ecmd->argv);
+	if (builtins(buf, custom_environ))
+	{
+		free(buf);
+		return (exit_code);
+	}
+	execute_command1(ecmd, custom_environ);
 	free(buf);
 	return (exit_code);
 }

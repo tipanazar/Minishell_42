@@ -93,7 +93,6 @@ int	get_redirection_flags(char type)
 int	redirect_cmd(struct s_redircmd *rcmd, char **custom_environ)
 {
 	int	flags;
-	int	pipe_read_end;
 
 	flags = get_redirection_flags(rcmd->type);
 	if (flags == -1 && rcmd->type != '-')
