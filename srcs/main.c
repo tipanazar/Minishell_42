@@ -2,19 +2,27 @@
 
 void	execute_command(char *new_buf, char **custom_env)
 {
+	pid_t			pid;
 	int				r;
 	struct s_cmd	*cmd;
 
-	if (fork1() == 0)
+	pid = fork();
+	if (pid < 0)
+	{
+		perror("fork");
+		exit(EXIT_FAILURE);
+	}
+	if (pid == 0)
 	{
 		cmd = parsecmd(new_buf);
 		free(new_buf);
 		runcmd(cmd, custom_env);
 		ft_free_char_arr(custom_env);
 		free_cmd(cmd);
-		exit(1);
+		exit(EXIT_SUCCESS);
 	}
-	wait(&r);
+	else
+		wait(&r);
 }
 
 char	**clone_env(char **env)
@@ -91,9 +99,9 @@ int	main(int ac, char **av, char **env)
 
 	(void)ac;
 	(void)av;
-	custom_env = clone_env(env);
 	signal(SIGINT, ctrl_c_handler);
 	signal(SIGQUIT, SIG_IGN);
+	custom_env = clone_env(env);
 	process_input(custom_env);
 	return (0);
 }

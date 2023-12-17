@@ -6,70 +6,76 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/16 22:31:00 by root              #+#    #+#             */
-/*   Updated: 2023/12/16 22:32:34 by root             ###   ########.fr       */
+/*   Updated: 2023/12/17 16:48:38 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../libft.h"
 
-int	count_arr_len_without_target(char **arr, const char *target)
+typedef struct s_cmd
 {
-	int	idx;
-	int	arr_len;
+	char		**src;
+	char		***dest;
+	const char	*target;
+	size_t		target_len;
+}				t_CopyParams;
 
-	idx = -1;
+int	calculate_arr_len_without_target(char **arr, const char *target,
+		size_t target_len)
+{
+	int	arr_len;
+	int	i;
+
 	arr_len = 0;
-	while (arr[++idx])
+	i = 0;
+	while (arr[i])
 	{
-		if (ft_strcmp(arr[idx], target))
-		{
+		if (ft_strncmp(arr[i], target, target_len) != 0
+			|| arr[i][target_len] != '=')
 			arr_len++;
-		}
+		i++;
 	}
 	return (arr_len);
 }
 
-void	copy_arr_excluding_target(char **src, char ***dest, const char *target,
-		int arr_len)
+void	copy_arr_excluding_target(t_CopyParams *params, int arr_len)
 {
-	int	idx;
-	int	s_idx;
+	int	i;
+	int	j;
 
-	idx = -1;
-	s_idx = 0;
-	*dest = (char **)malloc(sizeof(char *) * (arr_len + 1));
-	if (!*dest)
-	{
+	i = 0;
+	j = 0;
+	*(params->dest) = (char **)malloc(sizeof(char *) * (arr_len + 1));
+	if (!*(params->dest))
 		return ;
-	}
-	while (src[++idx])
+	while (params->src[i])
 	{
-		if (ft_strcmp(src[idx], target))
+		if (ft_strncmp(params->src[i], params->target, params->target_len) != 0
+			|| params->src[i][params->target_len] != '=')
 		{
-			(*dest)[s_idx++] = ft_strdup(src[idx]);
+			(*(params->dest))[j++] = ft_strdup(params->src[i]);
 		}
+		i++;
 	}
-	(*dest)[s_idx] = NULL;
+	(*(params->dest))[j] = NULL;
 }
 
 void	ft_remove_str_from_char_arr(char ***arr, const char *target)
 {
-	int		arr_len;
-	char	**new_arr;
+	char			**new_arr;
+	size_t			target_len;
+	int				arr_len;
+	t_CopyParams	params;
 
-	arr_len = count_arr_len_without_target(*arr, target);
-	if (arr_len == ft_strarrlen(*arr))
-	{
+	if (!arr || !*arr || !target)
 		return ;
-	}
-	if (!arr_len)
-	{
-		ft_free_char_arr(*arr);
-		*arr = NULL;
-		return ;
-	}
-	new_arr = NULL;
-	copy_arr_excluding_target(*arr, &new_arr, target, arr_len);
+	target_len = ft_strlen(target);
+	arr_len = calculate_arr_len_without_target(*arr, target, target_len);
+	params.src = *arr;
+	params.dest = &new_arr;
+	params.target = target;
+	params.target_len = target_len;
+	copy_arr_excluding_target(&params, arr_len);
 	ft_free_char_arr(*arr);
 	*arr = new_arr;
 }

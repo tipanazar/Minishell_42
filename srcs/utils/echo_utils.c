@@ -51,7 +51,7 @@ void	handle_variable_expansion(char *buf, char **custom_environ, int *idx)
 	{
 		s_idx = 1;
 		while (buf[*idx + s_idx] && !ft_isspace(buf[*idx + s_idx]) && buf[*idx
-			+ s_idx] != '\0')
+				+ s_idx] != '\0')
 			s_idx++;
 		substr = ft_substr(buf, *idx + 1, s_idx - 1);
 		getenv_result = custom_getenv(substr, custom_environ, 0);
@@ -63,7 +63,7 @@ void	handle_variable_expansion(char *buf, char **custom_environ, int *idx)
 }
 
 void	process_variables(char *buf, char **custom_environ, int *idx,
-		int inside_sing_quotes)
+							int inside_sing_quotes)
 {
 	if (buf[*idx] == '$' && !inside_sing_quotes && buf[*idx + 1] != '\0'
 		&& buf[*idx + 1] != '$' && !ft_isspace(buf[*idx + 1]))
@@ -81,7 +81,7 @@ void	process_echo_command(struct s_echo_args *args)
 	{
 		if (!process_quotes(args->buf, args->idx, args->inside_sing_quotes))
 			process_variables(args->buf, args->custom_environ, args->idx,
-					*args->inside_sing_quotes);
+				*args->inside_sing_quotes);
 	}
 	if (args->newline)
 		ft_printf("\n");

@@ -1,19 +1,19 @@
 #include "../../minishell.h"
-                            
-char	*final_validation_checks(char *buf, int idx, bool *has_equal_sign,
-		char *inside_quotes, char *quote_type)
+
+char	*final_validation_checks(char *buf, int idx, t_ValidationArgs *args)
 {
-	if (!*has_equal_sign && (buf[idx - 1] == '\'' || buf[idx - 1] == '\"'))
+	if (!*(args->has_equal_sign) && (buf[idx - 1] == '\'' || buf[idx
+				- 1] == '\"'))
 	{
 		ft_printf("Heredoc??\n");
 		return (NULL);
 	}
-	if (!*has_equal_sign || *inside_quotes)
+	if (!*(args->has_equal_sign) || *(args->inside_quotes))
 	{
 		ft_printf("Heredoc??\n");
 		return (NULL);
 	}
-	return (quote_type);
+	return (args->quote_type);
 }
 
 bool	handle_space_and_equal(char *buf, int idx, bool *has_equal_sign,
@@ -32,7 +32,7 @@ bool	handle_space_and_equal(char *buf, int idx, bool *has_equal_sign,
 		&& !*has_equal_sign)
 	{
 		ft_printf("-minishell: export: `%s': not a valid identifier\n", buf
-				+ idx + 1);
+			+ idx + 1);
 		return (false);
 	}
 	if (buf[idx] == '=')
@@ -64,27 +64,27 @@ bool	check_quote_status(char *buf, int idx, char *inside_quotes,
 	return (true);
 }
 
-char	*validate_buffer(char *buf, bool *has_equal_sign, char *inside_quotes,
-		char *quote_type)
+char	*validate_buffer(char *buf, t_ValidationArgs *args)
 {
 	int	idx;
 
 	idx = -1;
 	while (buf[++idx])
 	{
-		if (!check_quote_status(buf, idx, inside_quotes, quote_type))
+		if (!check_quote_status(buf, idx, args->inside_quotes,
+				args->quote_type))
 		{
-			free(quote_type);
+			free(args->quote_type);
 			return (NULL);
 		}
-		if (!handle_space_and_equal(buf, idx, has_equal_sign, inside_quotes))
+		if (!handle_space_and_equal(buf, idx, args->has_equal_sign,
+				args->inside_quotes))
 		{
-			free(quote_type);
+			free(args->quote_type);
 			return (NULL);
 		}
 	}
-	return (final_validation_checks(buf, idx, has_equal_sign, inside_quotes,
-			quote_type));
+	return (final_validation_checks(buf, idx, args));
 }
 
 void	export(char *buf, char ***custom_environ)

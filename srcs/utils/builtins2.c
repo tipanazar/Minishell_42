@@ -21,20 +21,24 @@ void	echo(char *buf, char **custom_environ)
 
 char	*export_validator(char *buf)
 {
-	bool	has_equal_sign;
-	char	inside_quotes;
-	char	*quote_type;
+	t_ValidationArgs	args;
+	char				*result;
 
-	has_equal_sign = false;
-	inside_quotes = 0;
-	quote_type = malloc(2);
-	if (!quote_type)
+	args.has_equal_sign = malloc(sizeof(bool));
+	args.inside_quotes = malloc(sizeof(char));
+	args.quote_type = malloc(2);
+	if (!args.has_equal_sign || !args.inside_quotes || !args.quote_type)
 	{
 		perror("Memory allocation failed");
 		exit(1);
 	}
-	quote_type[0] = 0;
-	return (validate_buffer(buf, &has_equal_sign, &inside_quotes, quote_type));
+	*(args.has_equal_sign) = false;
+	*(args.inside_quotes) = 0;
+	args.quote_type[0] = 0;
+	result = validate_buffer(buf, &args);
+	free(args.has_equal_sign);
+	free(args.inside_quotes);
+	return (result);
 }
 
 int	update_env_var(char ***custom_environ, char *new_buf, int idx)
@@ -66,7 +70,6 @@ void	add_new_env_var(char ***custom_environ, char *new_buf, int idx)
 char	**create_unset_arr(char *buf, char **custom_environ)
 {
 	char	*token;
-	char	*env_value;
 	char	**to_delete;
 	int		idx;
 
@@ -75,12 +78,12 @@ char	**create_unset_arr(char *buf, char **custom_environ)
 	token = ft_strtok(buf, "\t\n\v\f ");
 	while (token)
 	{
-		env_value = custom_getenv(token, custom_environ, 1);
-		if (env_value)
+		if (custom_getenv(token, custom_environ, 0))
 		{
-			to_delete = (char **)realloc(to_delete, sizeof(char *)
-					* (ft_strarrlen(to_delete) + 2));
-			to_delete[idx++] = ft_strdup(env_value);
+			to_delete = (char **)realloc(to_delete, sizeof(char *) * (idx + 2));
+			if (!to_delete)
+				return (NULL);
+			to_delete[idx++] = ft_strdup(token);
 			to_delete[idx] = NULL;
 		}
 		token = ft_strtok(NULL, "\t\n\v\f ");

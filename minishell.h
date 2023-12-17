@@ -24,6 +24,13 @@ struct					s_cmd
 	int					type;
 };
 
+typedef struct s_export
+{
+	bool				*has_equal_sign;
+	char				*inside_quotes;
+	char				*quote_type;
+}						t_ValidationArgs;
+
 struct					s_process_token_args
 {
 	struct s_cmd		*ret;
@@ -91,8 +98,8 @@ void					ft_cd(char *buf, char **custom_environ);
 void					unset(char *buf, char ***custom_environ);
 char					*find_command_in_path(char *command);
 void					free_cmd(struct s_cmd *command);
-int						redirect_cmd(struct s_redircmd *rcmd,
-							char **custom_environ);
+int	redirect_cmd(struct s_redircmd *rcmd,
+					char **custom_environ);
 void					pipe_command(struct s_pipecmd *pcmd, char **env);
 char					*read_and_trim_line(void);
 void					ctrl_c_handler(int sig);
@@ -101,22 +108,19 @@ void					echo(char *buf, char **custom_environ);
 void					echo_n_handler(char *buf, int *idx, int *newline);
 int						process_quotes(char *buf, int *idx,
 							int *inside_sing_quotes);
-void					handle_variable_expansion(char *buf,
-							char **custom_environ, int *idx);
+void	handle_variable_expansion(char *buf,
+								char **custom_environ,
+								int *idx);
 void					process_variables(char *buf, char **custom_environ,
 							int *idx, int inside_sing_quotes);
 void					process_echo_command(struct s_echo_args *args);
 char					*export_validator(char *buf);
 char					**create_unset_arr(char *buf, char **custom_environ);
-char					*final_validation_checks(char *buf, int idx,
-							bool *has_equal_sign, char *inside_quotes,
-							char *quote_type);
 bool					handle_space_and_equal(char *buf, int idx,
 							bool *has_equal_sign, char *inside_quotes);
 bool					check_quote_status(char *buf, int idx,
 							char *inside_quotes, char *quote_type);
-char					*validate_buffer(char *buf, bool *has_equal_sign,
-							char *inside_quotes, char *quote_type);
+char 					*validate_buffer(char *buf, t_ValidationArgs *args);
 int						update_env_var(char ***custom_environ, char *new_buf,
 							int idx);
 void					export(char *buf, char ***custom_environ);

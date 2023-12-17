@@ -40,10 +40,15 @@ void	unset(char *buf, char ***custom_environ)
 	char	**to_delete;
 	int		idx;
 
-	idx = -1;
 	to_delete = create_unset_arr(buf, *custom_environ);
-	while (to_delete[++idx])
+	if (!to_delete)
+		return ;
+	idx = 0;
+	while (to_delete[idx])
+	{
 		ft_remove_str_from_char_arr(custom_environ, to_delete[idx]);
+		idx++;
+	}
 	ft_free_char_arr(to_delete);
 }
 
@@ -69,7 +74,7 @@ int	builtins(char *buf, char **custom_environ)
 
 struct s_cmd	*parsepipe(char **ps, char *es)
 {
-	struct s_cmd *cmd;
+	struct s_cmd	*cmd;
 
 	cmd = parseexec(ps, es);
 	if (peek(ps, es, "|"))
