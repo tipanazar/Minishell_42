@@ -4,7 +4,7 @@ void	ft_cd(char *buf, char **custom_environ)
 {
 	char		*home_dir;
 	char		*new_buf;
-	struct stat	fileStat;
+	struct stat	file_stat;
 
 	new_buf = NULL;
 	new_buf = ft_str_remove_chars(buf, " ");
@@ -17,10 +17,10 @@ void	ft_cd(char *buf, char **custom_environ)
 			ft_printf("-minishell: cd: HOME not set\n");
 		return ;
 	}
-	if (stat(new_buf, &fileStat) || (S_ISDIR(fileStat.st_mode)
+	if (stat(new_buf, &file_stat) || (S_ISDIR(file_stat.st_mode)
 			&& chdir(new_buf) < 0))
 		ft_printf("-minishell: cd: %s: No such file or directory\n", new_buf);
-	else if (!S_ISDIR(fileStat.st_mode))
+	else if (!S_ISDIR(file_stat.st_mode))
 		ft_printf("-minishell: cd: %s: Not a directory\n", new_buf);
 	free(new_buf);
 }
@@ -65,4 +65,17 @@ int	builtins(char *buf, char **custom_environ)
 		return (1);
 	}
 	return (0);
+}
+
+struct s_cmd	*parsepipe(char **ps, char *es)
+{
+	struct s_cmd *cmd;
+
+	cmd = parseexec(ps, es);
+	if (peek(ps, es, "|"))
+	{
+		get_token(ps, es, 0, 0);
+		cmd = pipecmd(cmd, parsepipe(ps, es));
+	}
+	return (cmd);
 }

@@ -50,3 +50,21 @@ void	pipe_command(struct s_pipecmd *pcmd, char **env)
 	}
 	create_pipe_process(pcmd, fd_pipe, env);
 }
+
+struct s_cmd	*parsecmd(char *s)
+{
+	char			*es;
+	struct s_cmd	*cmd;
+
+	es = s + ft_strlen(s);
+	cmd = parsepipe(&s, es);
+	peek(&s, es, "");
+	if (s != es)
+	{
+		write(2, "leftovers: %s\n", 14);
+		free(s);
+		free(cmd);
+		exit(-1);
+	}
+	return (cmd);
+}

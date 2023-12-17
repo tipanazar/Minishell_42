@@ -19,6 +19,7 @@ srcs/utils/builtins.c \
 srcs/utils/builtins2.c \
 srcs/utils/full_path.c \
 srcs/utils/echo_utils.c \
+srcs/utils/export.c \
 
 
 
