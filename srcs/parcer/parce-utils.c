@@ -55,7 +55,7 @@ struct s_cmd	*redircmd(struct s_cmd *subcmd, char *file, int type)
 
 struct s_cmd	*pipecmd(struct s_cmd *left, struct s_cmd *right)
 {
-	struct s_pipecmd *cmd;
+	struct s_pipecmd	*cmd;
 
 	cmd = malloc(sizeof(*cmd));
 	ft_memset(cmd, 0, sizeof(*cmd));

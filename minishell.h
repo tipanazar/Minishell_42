@@ -21,12 +21,19 @@
 
 extern int				g_exit_code;
 
+typedef struct 			s_parseexec
+{
+	char				*q;
+	char				*eq;
+	int					tok;
+}						t_parseexec;
+
 struct					s_cmd
 {
 	int					type;
 };
 
-typedef struct s_export
+typedef struct 			s_export
 {
 	bool				*has_equal_sign;
 	char				*inside_quotes;
@@ -116,5 +123,6 @@ int						update_env_var(char ***custom_environ, char *new_buf,
 void					export(char *buf, char ***custom_environ);
 void					add_new_env_var(char ***custom_environ, char *new_buf,
 							int idx);
+void					pwd(void);
 
 #endif
