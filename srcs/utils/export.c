@@ -112,4 +112,5 @@ void	export(char *buf, char ***custom_environ)
 	}
 	add_new_env_var(custom_environ, new_buf, idx);
 	free(new_buf);
+	g_exit_code = 0;
 }

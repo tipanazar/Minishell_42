@@ -3,6 +3,7 @@
 
 # include "./libft/libft.h"
 # include <dirent.h>
+# include <errno.h>
 # include <fcntl.h>
 # include <limits.h>
 # include <readline/history.h>
@@ -18,6 +19,8 @@
 # include <unistd.h>
 
 # define INITIAL_MAXARGS 10
+
+extern int				g_exit_code;
 
 struct					s_cmd
 {
@@ -98,8 +101,8 @@ void					ft_cd(char *buf, char **custom_environ);
 void					unset(char *buf, char ***custom_environ);
 char					*find_command_in_path(char *command);
 void					free_cmd(struct s_cmd *command);
-int	redirect_cmd(struct s_redircmd *rcmd,
-					char **custom_environ);
+int						redirect_cmd(struct s_redircmd *rcmd,
+							char **custom_environ);
 void					pipe_command(struct s_pipecmd *pcmd, char **env);
 char					*read_and_trim_line(void);
 void					ctrl_c_handler(int sig);
@@ -108,9 +111,9 @@ void					echo(char *buf, char **custom_environ);
 void					echo_n_handler(char *buf, int *idx, int *newline);
 int						process_quotes(char *buf, int *idx,
 							int *inside_sing_quotes);
-void	handle_variable_expansion(char *buf,
-								char **custom_environ,
-								int *idx);
+void					handle_variable_expansion(char *buf,
+							char **custom_environ,
+							int *idx);
 void					process_variables(char *buf, char **custom_environ,
 							int *idx, int inside_sing_quotes);
 void					process_echo_command(struct s_echo_args *args);
@@ -120,7 +123,7 @@ bool					handle_space_and_equal(char *buf, int idx,
 							bool *has_equal_sign, char *inside_quotes);
 bool					check_quote_status(char *buf, int idx,
 							char *inside_quotes, char *quote_type);
-char 					*validate_buffer(char *buf, t_ValidationArgs *args);
+char					*validate_buffer(char *buf, t_ValidationArgs *args);
 int						update_env_var(char ***custom_environ, char *new_buf,
 							int idx);
 void					export(char *buf, char ***custom_environ);

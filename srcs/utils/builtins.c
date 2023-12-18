@@ -1,27 +1,59 @@
 #include "../../minishell.h"
 
-void	ft_cd(char *buf, char **custom_environ)
+void	change_to_home_directory(char **custom_environ)
 {
-	char		*home_dir;
-	char		*new_buf;
+	char	*home_dir;
+
+	home_dir = custom_getenv("HOME", custom_environ, 0);
+	if (home_dir)
+	{
+		if (chdir(home_dir) == 0)
+			g_exit_code = 0;
+		else
+			g_exit_code = 1;
+	}
+	else
+	{
+		ft_printf("minishell# cd: HOME not set\n");
+		g_exit_code = 1;
+	}
+}
+
+void	change_to_specified_directory(char *new_buf)
+{
 	struct stat	file_stat;
 
-	new_buf = NULL;
+	if (stat(new_buf, &file_stat) == 0)
+	{
+		if (S_ISDIR(file_stat.st_mode))
+		{
+			if (chdir(new_buf) == 0)
+				g_exit_code = 0;
+			else
+				g_exit_code = 1;
+		}
+		else
+		{
+			ft_printf("minishell# cd: %s: Not a directory\n", new_buf);
+			g_exit_code = 1;
+		}
+	}
+	else
+	{
+		ft_printf("minishell# cd: %s: No such file or directory\n", new_buf);
+		g_exit_code = 1;
+	}
+}
+
+void	ft_cd(char *buf, char **custom_environ)
+{
+	char	*new_buf;
+
 	new_buf = ft_str_remove_chars(buf, " ");
 	if (ft_strlen(new_buf) == 0)
-	{
-		home_dir = custom_getenv("HOME", custom_environ, 0);
-		if (home_dir)
-			chdir(home_dir);
-		else
-			ft_printf("-minishell: cd: HOME not set\n");
-		return ;
-	}
-	if (stat(new_buf, &file_stat) || (S_ISDIR(file_stat.st_mode)
-			&& chdir(new_buf) < 0))
-		ft_printf("-minishell: cd: %s: No such file or directory\n", new_buf);
-	else if (!S_ISDIR(file_stat.st_mode))
-		ft_printf("-minishell: cd: %s: Not a directory\n", new_buf);
+		change_to_home_directory(custom_environ);
+	else
+		change_to_specified_directory(new_buf);
 	free(new_buf);
 }
 
@@ -30,9 +62,15 @@ void	pwd(void)
 	char	dir[2000];
 
 	if (getcwd(dir, sizeof(dir)) != NULL)
+	{
 		ft_printf("%s\n", dir);
+		g_exit_code = 0;
+	}
 	else
+	{
 		perror("pwd");
+		g_exit_code = 1;
+	}
 }
 
 void	unset(char *buf, char ***custom_environ)
@@ -50,6 +88,7 @@ void	unset(char *buf, char ***custom_environ)
 		idx++;
 	}
 	ft_free_char_arr(to_delete);
+	g_exit_code = 0;
 }
 
 int	builtins(char *buf, char **custom_environ)
@@ -62,6 +101,7 @@ int	builtins(char *buf, char **custom_environ)
 	if (ft_strncmp(buf, "env ", 4) == 0 || ft_strcmp(buf, "env") == 0)
 	{
 		ft_print_str_arr(custom_environ);
+		g_exit_code = 0;
 		return (1);
 	}
 	if (ft_strncmp(buf, "echo ", 5) == 0 || ft_strcmp(buf, "echo") == 0)

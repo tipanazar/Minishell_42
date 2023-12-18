@@ -1,5 +1,7 @@
 #include "../minishell.h"
 
+int		g_exit_code;
+
 void	execute_command(char *new_buf, char **custom_env)
 {
 	pid_t			pid;
@@ -19,10 +21,14 @@ void	execute_command(char *new_buf, char **custom_env)
 		runcmd(cmd, custom_env);
 		ft_free_char_arr(custom_env);
 		free_cmd(cmd);
-		exit(EXIT_SUCCESS);
+		exit(g_exit_code);
 	}
 	else
+	{
 		wait(&r);
+		if (WIFEXITED(r))
+			g_exit_code = WEXITSTATUS(r);
+	}
 }
 
 char	**clone_env(char **env)
@@ -51,13 +57,13 @@ bool	handle_command(char *new_buf, char ***custom_env)
 		return (true);
 	}
 	else if (ft_strcmp(new_buf, "unset") == 0 || ft_strncmp(new_buf, "unset ",
-			6) == 0)
+				6) == 0)
 	{
 		unset(new_buf + 5, custom_env);
 		return (true);
 	}
 	else if (ft_strcmp(new_buf, "cd") == 0 || ft_strncmp(new_buf, "cd ",
-			3) == 0)
+				3) == 0)
 	{
 		ft_cd(new_buf + 2, *custom_env);
 		return (true);
@@ -99,6 +105,7 @@ int	main(int ac, char **av, char **env)
 
 	(void)ac;
 	(void)av;
+	g_exit_code = 0;
 	signal(SIGINT, ctrl_c_handler);
 	signal(SIGQUIT, SIG_IGN);
 	custom_env = clone_env(env);

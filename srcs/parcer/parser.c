@@ -12,6 +12,7 @@ struct s_cmd	*parseredirs(struct s_cmd *cmd, char **ps, char *es)
 		if (get_token(ps, es, &q, &eq) != 'a')
 		{
 			write(2, "missing file for redirection\n", 29);
+			g_exit_code = 1;
 			exit(-1);
 		}
 		if (tok == '<')
@@ -65,6 +66,7 @@ struct s_cmd	*process_token(struct s_process_token_args *args)
 	else if (args->tok != 'a')
 	{
 		write(2, "syntax error\n", 12);
+		g_exit_code = 1;
 		free(args->ret);
 		exit(-1);
 	}

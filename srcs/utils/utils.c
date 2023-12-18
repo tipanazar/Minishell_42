@@ -17,10 +17,10 @@ void	ctrl_c_handler(int sig)
 {
 	(void)sig;
 	rl_on_new_line();
-	ft_printf("minishell#\n");
 	rl_replace_line("", 0);
-	rl_on_new_line();
 	rl_redisplay();
+	ft_printf("\nminishell# ");
+	g_exit_code = 130;
 }
 
 bool	is_blank(const char *buf)

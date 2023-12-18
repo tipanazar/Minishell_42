@@ -29,7 +29,7 @@ void	free_cmd(struct s_cmd *command)
 		free_cmd(pcmd->right);
 	}
 	else if (command->type == '>' || command->type == '<'
-		|| command->type == '+' || command->type == '-')
+			|| command->type == '+' || command->type == '-')
 	{
 		rcmd = (struct s_redircmd *)command;
 		free_cmd(rcmd->cmd);
@@ -51,27 +51,29 @@ void	execute_command1(struct s_execcmd *ecmd, char **custom_environ)
 	else
 		execve(ecmd->argv[0], ecmd->argv, custom_environ);
 	perror("Command not found");
+	if (errno == ENOENT)
+		g_exit_code = 127;
+	else
+		g_exit_code = 1;
 }
 
 int	exec_cmd(struct s_cmd *cmd, char **custom_environ)
 {
 	struct s_execcmd	*ecmd;
 	char				*buf;
-	int					exit_code;
 
 	ecmd = (struct s_execcmd *)cmd;
-	exit_code = 0;
 	if (ecmd->argv[0] == 0)
 		exit(0);
 	buf = concat_args(ecmd->argv);
 	if (builtins(buf, custom_environ))
 	{
 		free(buf);
-		return (exit_code);
+		return (g_exit_code);
 	}
 	execute_command1(ecmd, custom_environ);
 	free(buf);
-	return (exit_code);
+	return (g_exit_code);
 }
 
 int	runcmd(struct s_cmd *cmd, char **env)

@@ -17,6 +17,7 @@ void	echo(char *buf, char **custom_environ)
 	args.inside_sing_quotes = &inside_sing_quotes;
 	args.newline = newline;
 	process_echo_command(&args);
+	g_exit_code = 0;
 }
 
 char	*export_validator(char *buf)
@@ -30,6 +31,7 @@ char	*export_validator(char *buf)
 	if (!args.has_equal_sign || !args.inside_quotes || !args.quote_type)
 	{
 		perror("Memory allocation failed");
+		g_exit_code = 1;
 		exit(1);
 	}
 	*(args.has_equal_sign) = false;
@@ -82,7 +84,10 @@ char	**create_unset_arr(char *buf, char **custom_environ)
 		{
 			to_delete = (char **)realloc(to_delete, sizeof(char *) * (idx + 2));
 			if (!to_delete)
+			{
+				g_exit_code = 1;
 				return (NULL);
+			}
 			to_delete[idx++] = ft_strdup(token);
 			to_delete[idx] = NULL;
 		}

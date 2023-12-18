@@ -44,7 +44,7 @@ void	handle_variable_expansion(char *buf, char **custom_environ, int *idx)
 
 	if (buf[*idx + 1] == '?')
 	{
-		ft_printf("%s", "*g_exit_code*");
+		ft_printf("%d", g_exit_code);
 		*idx += 2;
 	}
 	else

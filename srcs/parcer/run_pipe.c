@@ -8,7 +8,7 @@ void	handle_child_process(struct s_pipecmd *pcmd, int fd_pipe[2], char **env)
 	runcmd(pcmd->left, env);
 	free_cmd((struct s_cmd *)pcmd);
 	ft_free_char_arr(env);
-	exit(0);
+	exit(g_exit_code);
 }
 
 void	handle_parent_process(struct s_pipecmd *pcmd, int fd_pipe[2], int p_id,
@@ -20,6 +20,8 @@ void	handle_parent_process(struct s_pipecmd *pcmd, int fd_pipe[2], int p_id,
 	dup2(fd_pipe[0], STDIN_FILENO);
 	close(fd_pipe[0]);
 	waitpid(p_id, &status, 0);
+	if (WIFEXITED(status))
+		g_exit_code = WEXITSTATUS(status);
 	runcmd(pcmd->right, env);
 }
 
@@ -30,7 +32,7 @@ void	create_pipe_process(struct s_pipecmd *pcmd, int fd_pipe[2], char **env)
 	p_id = fork();
 	if (p_id < 0)
 	{
-		write(2, "fork has failed\n", 16);
+		perror("fork");
 		exit(1);
 	}
 	else if (p_id == 0)
@@ -45,8 +47,8 @@ void	pipe_command(struct s_pipecmd *pcmd, char **env)
 
 	if (pipe(fd_pipe) < 0)
 	{
-		write(2, "pipe has failed\n", 14);
-		exit(0);
+		perror("pipe");
+		exit(1);
 	}
 	create_pipe_process(pcmd, fd_pipe, env);
 }
