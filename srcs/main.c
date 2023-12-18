@@ -1,126 +1,114 @@
 #include "../minishell.h"
 
-void ctrl_c_handler(int sig)
-{
-	(void)sig;
-	rl_on_new_line();
-	ft_printf("minishell#\n");
-	rl_replace_line("", 0);
-	rl_on_new_line();
-	rl_redisplay();
-}
+int		g_exit_code;
 
-bool is_blank(const char *buf)
+void	execute_command(char *new_buf, char **custom_env)
 {
-	if (!buf)
-		return (true);
-	while (*buf)
+	pid_t			pid;
+	int				r;
+	struct s_cmd	*cmd;
+
+	pid = fork();
+	if (pid < 0)
 	{
-		if (!ft_isspace(*buf))
-			return (false);
-		buf++;
+		perror("fork");
+		exit(EXIT_FAILURE);
 	}
-	return (true);
+	if (pid == 0)
+	{
+		cmd = parsecmd(new_buf);
+		free(new_buf);
+		runcmd(cmd, custom_env);
+		ft_free_char_arr(custom_env);
+		free_cmd(cmd);
+		exit(g_exit_code);
+	}
+	else
+	{
+		wait(&r);
+		if (WIFEXITED(r))
+			g_exit_code = WEXITSTATUS(r);
+	}
 }
 
-int handle_built_in_commands(char *new_buf, char ***custom_environ)
+char	**clone_env(char **env)
 {
-	if (ft_strncmp(new_buf, "exit ", 5) == 0 || ft_strcmp(new_buf, "exit") == 0)
-		return (1);
-	if (is_blank(new_buf))
-		return (1);
+	char	**custom_env;
+	int		idx;
+
+	idx = -1;
+	custom_env = (char **)malloc(sizeof(char *) * (ft_strarrlen(env) + 1));
+	if (!custom_env)
+		return (NULL);
+	while (env[++idx])
+		custom_env[idx] = ft_strdup(env[idx]);
+	custom_env[idx] = NULL;
+	return (custom_env);
+}
+
+bool	handle_command(char *new_buf, char ***custom_env)
+{
 	if (ft_strlen(new_buf) && ft_isspace(new_buf[0]) == 0)
-	{
 		add_history(new_buf);
-	}
 	if (ft_strcmp(new_buf, "export") == 0 || ft_strncmp(new_buf, "export ",
 														7) == 0)
 	{
-		export(new_buf + 7, custom_environ);
-		return (1);
+		export(new_buf + 7, custom_env);
+		return (true);
 	}
-	if (ft_strcmp(new_buf, "unset") == 0 || ft_strncmp(new_buf, "unset ",
-													   6) == 0)
+	else if (ft_strcmp(new_buf, "unset") == 0 || ft_strncmp(new_buf, "unset ",
+				6) == 0)
 	{
-		unset(new_buf + 5, custom_environ);
-		return (1);
+		unset(new_buf + 5, custom_env);
+		return (true);
 	}
-	if (ft_strcmp(new_buf, "cd") == 0 || ft_strncmp(new_buf, "cd ", 3) == 0)
+	else if (ft_strcmp(new_buf, "cd") == 0 || ft_strncmp(new_buf, "cd ",
+				3) == 0)
 	{
-		ft_cd(new_buf + 2, *custom_environ);
-		return (1);
+		ft_cd(new_buf + 2, *custom_env);
+		return (true);
 	}
-	return (0); // Not a built-in command
+	return (false);
 }
 
-char **init_custom_environment(char **env)
+void	process_input(char **custom_env)
 {
-	int idx;
-	char **custom_environ;
+	char	*new_buf;
 
-	idx = -1;
-	custom_environ = (char **)malloc(sizeof(char *) * (ft_strarrlen(env) + 1));
-	if (!custom_environ)
-	{
-		perror("Memory allocation failed");
-		return (NULL);
-	}
-	while (env[++idx])
-		custom_environ[idx] = ft_strdup(env[idx]);
-	custom_environ[idx] = NULL;
-	return (custom_environ);
-}
-
-void process_commands(char **custom_environ)
-{
-	struct s_cmd *cmd;
-	int r;
-
-	char *buf, *new_buf;
 	while (1)
 	{
-		buf = readline("minishell# ");
-		if (!buf)
-			break;
-		new_buf = ft_strtrim(buf, "\t\n\v\f ");
-		free(buf);
-		if (handle_built_in_commands(new_buf, &custom_environ))
+		new_buf = read_and_trim_line();
+		if (!new_buf)
+			break ;
+		if (ft_strcmp(new_buf, "exit") == 0 || ft_strncmp(new_buf, "exit ",
+				5) == 0)
+		{
+			free(new_buf);
+			break ;
+		}
+		if (is_blank(new_buf))
 		{
 			free(new_buf);
 			continue;
 		}
-		if (fork1() == 0)
-		{
-			cmd = parsecmd(new_buf);
-			free(new_buf);
-			runcmd(cmd, custom_environ);
-			ft_free_char_arr(custom_environ);
-			free_cmd(cmd);
-			exit(1);
-		}
-		wait(&r);
+		if (!handle_command(new_buf, &custom_env))
+			execute_command(new_buf, custom_env);
 		free(new_buf);
 	}
-}
-
-void setup_signal_handlers(void)
-{
-	signal(SIGINT, ctrl_c_handler);
-	signal(SIGQUIT, SIG_IGN);
+	rl_clear_history();
+	ft_free_char_arr(custom_env);
 }
 
 int main(int ac, char **av, char **env)
 {
-	char **custom_environ;
+	char	**custom_env;
 
 	(void)ac;
 	(void)av;
-	custom_environ = init_custom_environment(env);
-	if (!custom_environ)
-		return (1);
-	setup_signal_handlers();
-	process_commands(custom_environ);
-	rl_clear_history();
-	ft_free_char_arr(custom_environ);
+	g_exit_code = 0;
+	signal(SIGINT, ctrl_c_handler);
+	signal(SIGQUIT, SIG_IGN);
+	custom_env = clone_env(env);
+	process_input(custom_env);
 	return (0);
 }
