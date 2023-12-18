@@ -112,15 +112,15 @@ int	builtins(char *buf, char **custom_environ)
 	return (0);
 }
 
-struct s_cmd	*parsepipe(char **ps, char *es)
-{
-	struct s_cmd	*cmd;
+// struct s_cmd	*parsepipe(char **ps, char *es)
+// {
+// 	struct s_cmd	*cmd;
 
-	cmd = parseexec(ps, es);
-	if (peek(ps, es, "|"))
-	{
-		get_token(ps, es, 0, 0);
-		cmd = pipecmd(cmd, parsepipe(ps, es));
-	}
-	return (cmd);
-}
+// 	cmd = parseexec(ps, es);
+// 	if (peek(ps, es, "|"))
+// 	{
+// 		get_token(ps, es, 0, 0);
+// 		cmd = pipecmd(cmd, parsepipe(ps, es));
+// 	}
+// 	return (cmd);
+// }

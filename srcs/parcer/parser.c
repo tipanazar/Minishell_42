@@ -1,5 +1,36 @@
 #include "../../minishell.h"
 
+struct s_cmd	*parsecmd(char *s)
+{
+	char			*es;
+	struct s_cmd	*cmd;
+
+	es = s + ft_strlen(s);
+	cmd = parsepipe(&s, es);
+	peek(&s, es, "");
+	if (s != es)
+	{
+		write(2, "leftovers: %s\n", 14);
+		free(s);
+		free(cmd);
+		exit(-1);
+	}
+	return (cmd);
+}
+
+struct s_cmd	*parsepipe(char **ps, char *es)
+{
+	struct s_cmd	*cmd;
+
+	cmd = parseexec(ps, es);
+	if (peek(ps, es, "|"))
+	{
+		get_token(ps, es, 0, 0);
+		cmd = pipecmd(cmd, parsepipe(ps, es));
+	}
+	return (cmd);
+}
+
 struct s_cmd	*parseredirs(struct s_cmd *cmd, char **ps, char *es)
 {
 	int		tok;
@@ -12,7 +43,6 @@ struct s_cmd	*parseredirs(struct s_cmd *cmd, char **ps, char *es)
 		if (get_token(ps, es, &q, &eq) != 'a')
 		{
 			write(2, "missing file for redirection\n", 29);
-			g_exit_code = 1;
 			exit(-1);
 		}
 		if (tok == '<')
@@ -27,71 +57,103 @@ struct s_cmd	*parseredirs(struct s_cmd *cmd, char **ps, char *es)
 	return (cmd);
 }
 
-struct s_cmd	*handle_parseexec_loop(struct s_execcmd *cmd, char **ps,
-		char *es)
-{
-	struct s_process_token_args	args;
-	int							tok;
-	struct s_cmd				*ret;
-	char						*q;
-	char						*eq;
+// struct s_cmd	*parseexec(char **ps, char *es)
+// {
+// 	struct s_execcmd	*cmd;
+// 	struct s_cmd		*ret;
+// 	char				*q;
+// 	char				*eq;
+// 	int					tok;
 
-	while (!peek(ps, es, "|"))
-	{
-		tok = get_token(ps, es, &q, &eq);
-		if (tok == 0)
-			break ;
-		args = (struct s_process_token_args){(struct s_cmd *)cmd, cmd, tok, ps,
-			es, q, eq};
-		ret = process_token(&args);
-	}
-	(void)ret;
-	cmd->argv[cmd->argc] = 0;
-	return ((struct s_cmd *)cmd);
-}
-
-void	expand_argv_if_needed(struct s_execcmd *cmd)
+// 	ret = execcmd();
+// 	cmd = (struct s_execcmd *)ret;
+// 	cmd->argc = 0;
+// 	cmd->max_args = 10;
+// 	cmd->argv = malloc(cmd->max_args * sizeof(char *));
+// 	if (cmd->argv == NULL)
+// 	{
+// 		perror("malloc");
+// 		exit(-1);
+// 	}
+// 	ret = parseredirs(ret, ps, es);
+// 	while (!peek(ps, es, "|"))
+// 	{
+// 		if ((tok = get_token(ps, es, &q, &eq)) == 0)
+// 			break ;
+// 		if (tok == '\'' || tok == '\"')
+// 			cmd->argv[cmd->argc] = mkcopy(q, eq);
+// 		else if (tok != 'a')
+// 		{
+// 			write(2, "syntax error\n", 12);
+// 			free(ret);
+// 			exit(-1);
+// 		}
+// 		else
+// 			cmd->argv[cmd->argc] = mkcopy(q, eq);
+// 		cmd->argc++;
+// 		if (cmd->argc >= cmd->max_args)
+// 		{
+// 			cmd->max_args *= 2;
+// 			cmd->argv = ft_realloc(cmd->argv, cmd->max_args * sizeof(char *));
+// 		}
+// 		ret = parseredirs(ret, ps, es);
+// 	}
+// 	cmd->argv[cmd->argc] = 0;
+// 	return (ret);
+// }
+typedef struct s_parseexec
 {
-	if (cmd->argc >= cmd->max_args)
-	{
-		cmd->max_args *= 2;
-		cmd->argv = ft_realloc(cmd->argv, cmd->max_args * sizeof(char *));
-	}
-}
+	char		*q;
+	char		*eq;
+	int			tok;
+}				t_parseexec;
 
-struct s_cmd	*process_token(struct s_process_token_args *args)
+void	parseexec_middleware(t_parseexec **parseexec_vars,
+							struct s_execcmd **cmd,
+							struct s_cmd **ret)
 {
-	if (args->tok == '\'' || args->tok == '\"')
-		args->cmd->argv[args->cmd->argc] = mkcopy(args->q, args->eq);
-	else if (args->tok != 'a')
+	if ((*parseexec_vars)->tok == '\'' || (*parseexec_vars)->tok == '\"')
+		(*cmd)->argv[(*cmd)->argc] = mkcopy((*parseexec_vars)->q,
+				(*parseexec_vars)->eq);
+	else if ((*parseexec_vars)->tok != 'a')
 	{
 		write(2, "syntax error\n", 12);
-		g_exit_code = 1;
-		free(args->ret);
+		free(*ret);
 		exit(-1);
 	}
 	else
-		args->cmd->argv[args->cmd->argc] = mkcopy(args->q, args->eq);
-	args->cmd->argc++;
-	expand_argv_if_needed(args->cmd);
-	return (parseredirs(args->ret, args->ps, args->es));
+		(*cmd)->argv[(*cmd)->argc] = mkcopy((*parseexec_vars)->q,
+				(*parseexec_vars)->eq);
+	(*cmd)->argc++;
+	if ((*cmd)->argc >= (*cmd)->max_args)
+	{
+		(*cmd)->max_args *= 2;
+		(*cmd)->argv = ft_realloc((*cmd)->argv, (*cmd)->max_args
+				* sizeof(char *));
+	}
 }
 
 struct s_cmd	*parseexec(char **ps, char *es)
 {
-	struct s_execcmd	*cmd;
 	struct s_cmd		*ret;
+	struct s_execcmd	*cmd;
+	t_parseexec			*parseexec_vars;
 
 	ret = execcmd();
 	cmd = (struct s_execcmd *)ret;
 	cmd->argc = 0;
 	cmd->max_args = 10;
 	cmd->argv = malloc(cmd->max_args * sizeof(char *));
-	if (cmd->argv == NULL)
+	parseexec_vars->tok = get_token(ps, es, &parseexec_vars->q,
+			&parseexec_vars->eq);
+	parseexec_vars = malloc(sizeof(t_parseexec));
+	while (!peek(ps, es, "|"))
 	{
-		perror("malloc");
-		exit(-1);
+		if (parseexec_vars->tok == 0)
+			break ;
+		parseexec_middleware(&parseexec_vars, &cmd, &ret);
+		ret = parseredirs(ret, ps, es);
 	}
-	ret = parseredirs(ret, ps, es);
-	return (handle_parseexec_loop(cmd, ps, es));
+	cmd->argv[cmd->argc] = 0;
+	return (ret);
 }

@@ -18,7 +18,6 @@
 # include <termcap.h>
 # include <unistd.h>
 
-# define INITIAL_MAXARGS 10
 
 extern int				g_exit_code;
 
@@ -33,17 +32,6 @@ typedef struct s_export
 	char				*inside_quotes;
 	char				*quote_type;
 }						t_ValidationArgs;
-
-struct					s_process_token_args
-{
-	struct s_cmd		*ret;
-	struct s_execcmd	*cmd;
-	int					tok;
-	char				**ps;
-	char				*es;
-	char				*q;
-	char				*eq;
-};
 
 struct					s_execcmd
 {
@@ -91,7 +79,6 @@ struct s_cmd			*pipecmd(struct s_cmd *left, struct s_cmd *right);
 struct s_cmd			*parseredirs(struct s_cmd *cmd, char **ps, char *es);
 struct s_cmd			*parsepipe(char **ps, char *es);
 struct s_cmd			*parseexec(char **ps, char *es);
-struct s_cmd			*process_token(struct s_process_token_args *args);
 char					*concat_args(char **args);
 int						builtins(char *buf, char **env);
 void					env(char **env);
