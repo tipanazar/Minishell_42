@@ -7,12 +7,21 @@ NAME = minishell
 LIBFTDIR = ./libft
 LIBFT = $(LIBFTDIR)/libft.a
 SRCS = srcs/main.c \
-srcs/parcer/commands-runner.c \
-srcs/parcer/commands-utils.c \
+srcs/parcer/runner.c \
+srcs/parcer/run_redirect.c \
+srcs/parcer/run_pipe.c \
+srcs/parcer/parce-utils.c \
 srcs/parcer/get-token.c \
-srcs/parcer/parcers.c \
+srcs/parcer/parser.c \
+srcs/utils/utils.c	  \
 srcs/utils/utils1.c	  \
-srcs/builtins.c \
+srcs/utils/builtins.c \
+srcs/utils/builtins2.c \
+srcs/utils/full_path.c \
+srcs/utils/echo_utils.c \
+srcs/utils/export.c \
+
+
 
 OBJS = $(SRCS:.c=.o)
 
