@@ -23,7 +23,6 @@ bool	handle_space_and_equal(char *buf, int idx, bool *has_equal_sign,
 		&& *has_equal_sign)
 	{
 		*has_equal_sign = true;
-		ft_printf("Trim\n");
 		while (buf[++idx])
 			buf[idx] = '\0';
 		return (false);

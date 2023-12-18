@@ -24,7 +24,7 @@ void	echo_n_handler(char *buf, int *idx, int *newline)
 	}
 }
 
-int	process_quotes(char *buf, int *idx, int *inside_sing_quotes)
+int		process_quotes(char *buf, int *idx, int *inside_sing_quotes)
 {
 	if (buf[*idx] == '\"' || buf[*idx] == '\'')
 	{
@@ -50,8 +50,7 @@ void	handle_variable_expansion(char *buf, char **custom_environ, int *idx)
 	else
 	{
 		s_idx = 1;
-		while (buf[*idx + s_idx] && !ft_isspace(buf[*idx + s_idx]) && buf[*idx
-				+ s_idx] != '\0')
+		while (buf[*idx + s_idx] && !ft_isspace(buf[*idx + s_idx]))
 			s_idx++;
 		substr = ft_substr(buf, *idx + 1, s_idx - 1);
 		getenv_result = custom_getenv(substr, custom_environ, 0);
