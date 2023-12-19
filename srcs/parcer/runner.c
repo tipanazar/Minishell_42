@@ -29,7 +29,7 @@ void	free_cmd(struct s_cmd *command)
 		free_cmd(pcmd->right);
 	}
 	else if (command->type == '>' || command->type == '<'
-			|| command->type == '+' || command->type == '-')
+		|| command->type == '+' || command->type == '-')
 	{
 		rcmd = (struct s_redircmd *)command;
 		free_cmd(rcmd->cmd);

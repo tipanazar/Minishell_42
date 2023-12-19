@@ -57,22 +57,6 @@ void	ft_cd(char *buf, char **custom_environ)
 	free(new_buf);
 }
 
-void	pwd(void)
-{
-	char	dir[2000];
-
-	if (getcwd(dir, sizeof(dir)) != NULL)
-	{
-		ft_printf("%s\n", dir);
-		g_exit_code = 0;
-	}
-	else
-	{
-		perror("pwd");
-		g_exit_code = 1;
-	}
-}
-
 void	unset(char *buf, char ***custom_environ)
 {
 	char	**to_delete;
@@ -110,17 +94,4 @@ int	builtins(char *buf, char **custom_environ)
 		return (1);
 	}
 	return (0);
-}
-
-struct s_cmd	*parsepipe(char **ps, char *es)
-{
-	struct s_cmd	*cmd;
-
-	cmd = parseexec(ps, es);
-	if (peek(ps, es, "|"))
-	{
-		get_token(ps, es, 0, 0);
-		cmd = pipecmd(cmd, parsepipe(ps, es));
-	}
-	return (cmd);
 }
