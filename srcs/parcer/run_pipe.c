@@ -39,21 +39,6 @@ void	create_pipe_process(struct s_pipecmd *pcmd, int fd_pipe[2], char **env)
 		handle_child_process(pcmd, fd_pipe, env);
 	else
 		handle_parent_process(pcmd, fd_pipe, p_id, env);
-	// else if (p_id == 0)
-	// {
-	// 	close(fd_pipe[1]);
-	// 	dup2(fd_pipe[0], STDIN_FILENO);
-	// 	runcmd(pcmd->right, env);
-	// 	close(fd_pipe[0]);
-	// }
-	// else
-	// {
-	// 	close(fd_pipe[0]);
-	// 	dup2(fd_pipe[1], STDOUT_FILENO);
-	// 	runcmd(pcmd->left, env);
-	// 	close(fd_pipe[1]);
-	// 	wait(&p_id);
-	// }
 }
 
 void	pipe_command(struct s_pipecmd *pcmd, char **env)
