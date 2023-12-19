@@ -16,6 +16,8 @@ void	execute_command(char *new_buf, char **custom_env)
 	}
 	if (pid == 0)
 	{
+		signal(SIGQUIT, SIG_DFL);
+		signal(SIGINT, SIG_DFL);
 		cmd = parsecmd(new_buf);
 		free(new_buf);
 		runcmd(cmd, custom_env);
@@ -26,7 +28,12 @@ void	execute_command(char *new_buf, char **custom_env)
 	else
 	{
 		wait(&r);
-		if (WIFEXITED(r))
+		if (WIFSIGNALED(r) && WTERMSIG(r) == SIGQUIT)
+		{
+			write(STDOUT_FILENO, "Quit (core dumped)\n", 19);
+			g_exit_code = 131;
+		}
+		else if (WIFEXITED(r))
 			g_exit_code = WEXITSTATUS(r);
 	}
 }
@@ -74,10 +81,12 @@ bool	handle_command(char *new_buf, char ***custom_env)
 void	process_input(char **custom_env)
 {
 	char	*new_buf;
+	char	*buf;
 
 	while (1)
 	{
-		new_buf = read_and_trim_line();
+		buf = readline("minishell# ");
+		new_buf = read_and_trim_line(buf);
 		if (!new_buf)
 			break ;
 		if (ft_strcmp(new_buf, "exit") == 0 || ft_strncmp(new_buf, "exit ",

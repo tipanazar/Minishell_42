@@ -7,6 +7,8 @@ int	double_redirect_left(struct s_redircmd *rcmd)
 	size_t	delimiter_length;
 	ssize_t	read_len;
 
+	write(STDERR_FILENO, rcmd->file, ft_strlen(rcmd->file));
+	write(STDERR_FILENO, "\n", 1);	
 	if (rcmd == NULL || rcmd->file == NULL)
 	{
 		write(STDERR_FILENO, "Invalid command\n", 16);
