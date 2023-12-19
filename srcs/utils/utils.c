@@ -1,11 +1,9 @@
 #include "../../minishell.h"
 
-char	*read_and_trim_line(void)
+char	*read_and_trim_line(char *buf)
 {
-	char	*buf;
 	char	*new_buf;
 
-	buf = readline("minishell# ");
 	if (!buf)
 		return (NULL);
 	new_buf = ft_strtrim(buf, "\t\n\v\f ");
@@ -15,12 +13,23 @@ char	*read_and_trim_line(void)
 
 void	ctrl_c_handler(int sig)
 {
-	(void)sig;
-	rl_on_new_line();
-	rl_replace_line("", 0);
-	rl_redisplay();
-	ft_printf("\nminishell# ");
-	g_exit_code = 130;
+	pid_t	pid;
+	int		status;
+
+	pid = waitpid(-1, &status, WNOHANG);
+	if (sig == SIGINT)
+	{
+		if (pid == -1)
+		{
+			g_exit_code = 130;
+			write(STDOUT_FILENO, "\n", 1);
+			rl_on_new_line();
+			rl_replace_line("", 0);
+			rl_redisplay();
+		}
+		else
+			write(STDOUT_FILENO, "\n", 1);
+	}
 }
 
 bool	is_blank(const char *buf)

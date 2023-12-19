@@ -75,7 +75,6 @@ struct					s_pipecmd
 
 int						runcmd(struct s_cmd *cmd, char **env);
 int						fork1(void);
-int						getcmd(char *buf, int nbuf);
 int						get_token(char **ps, char *es, char **q, char **eq);
 int						peek(char **ps, char *es, char *toks);
 char					*mkcopy(char *s, char *es);
@@ -98,7 +97,7 @@ void					free_cmd(struct s_cmd *command);
 int						redirect_cmd(struct s_redircmd *rcmd,
 							char **custom_environ);
 void					pipe_command(struct s_pipecmd *pcmd, char **env);
-char					*read_and_trim_line(void);
+char					*read_and_trim_line(char *buf);
 void					ctrl_c_handler(int sig);
 bool					is_blank(const char *buf);
 void					echo(char *buf, char **custom_environ);
