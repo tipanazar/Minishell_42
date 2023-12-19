@@ -61,14 +61,14 @@ void	parseexec_middleware(t_parseexec **parseexec_vars,
 							struct s_execcmd **cmd,
 							struct s_cmd **ret)
 {
+	(void)ret;
 	if ((*parseexec_vars)->tok == '\'' || (*parseexec_vars)->tok == '\"')
 		(*cmd)->argv[(*cmd)->argc] = mkcopy((*parseexec_vars)->q,
 				(*parseexec_vars)->eq);
 	else if ((*parseexec_vars)->tok != 'a')
 	{
-		write(2, "syntax error\n", 12);
-		free(*ret);
-		exit(-1);
+		write(2, "syntax error\n", 13);
+		return ;
 	}
 	else
 		(*cmd)->argv[(*cmd)->argc] = mkcopy((*parseexec_vars)->q,
@@ -103,6 +103,7 @@ struct s_cmd	*parseexec(char **ps, char *es)
 		parseexec_middleware(&parseexec_vars, &cmd, &ret);
 		ret = parseredirs(ret, ps, es);
 	}
+	free(parseexec_vars);
 	cmd->argv[cmd->argc] = 0;
 	return (ret);
 }
