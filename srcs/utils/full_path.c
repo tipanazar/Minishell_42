@@ -58,3 +58,19 @@ char	*find_command_in_path(char *command)
 	free(temp);
 	return (result);
 }
+
+void	pwd(void)
+{
+	char	dir[2000];
+
+	if (getcwd(dir, sizeof(dir)) != NULL)
+	{
+		ft_printf("%s\n", dir);
+		g_exit_code = 0;
+	}
+	else
+	{
+		perror("pwd");
+		g_exit_code = 1;
+	}
+}
