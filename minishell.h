@@ -31,7 +31,7 @@ typedef struct 			s_parseexec
 struct					s_cmd
 {
 	int					type;
-	bool				flag;
+	int					flag;
 };
 
 typedef struct 			s_export

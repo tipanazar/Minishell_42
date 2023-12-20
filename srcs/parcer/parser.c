@@ -44,7 +44,7 @@ struct s_cmd	*parseredirs(struct s_cmd *cmd, char **ps, char *es)
 		{
 			write(2, "missing file for redirection\n", 29);
 			g_exit_code = 2;
-			cmd->flag = false;
+			cmd->flag = 1;
 			return (cmd);
 		}
 		if (tok == '<')
@@ -94,7 +94,6 @@ struct s_cmd	*parseexec(char **ps, char *es)
 	cmd->max_args = 10;
 	cmd->argv = malloc(cmd->max_args * sizeof(char *));
 	parseexec_vars = malloc(sizeof(t_parseexec));
-	ret->flag = true;
 	while (!peek(ps, es, "|"))
 	{
 		parseexec_vars->tok = get_token(ps, es, &parseexec_vars->q,

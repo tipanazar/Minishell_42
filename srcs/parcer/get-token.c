@@ -30,7 +30,7 @@ int	handle_quotes(char **s, char *es, char quote)
 	else
 	{
 		ft_printf("Missing closing quote\n");
-		return quote;
+		exit(-1);
 	}
 }
 
