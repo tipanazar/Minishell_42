@@ -93,7 +93,7 @@ char					*custom_getenv(char *name, char **custom_environ,
 							bool full_str);
 void					ft_cd(char *buf, char **custom_environ);
 void					unset(char *buf, char ***custom_environ);
-char					*find_command_in_path(char *command);
+char					*find_command_in_path(char *command, char **custom_environ);
 void					free_cmd(struct s_cmd *command);
 int						redirect_cmd(struct s_redircmd *rcmd,
 							char **custom_environ);

@@ -33,7 +33,7 @@ char	*search_command_in_dirs(char *temp, char *command)
 	return (NULL);
 }
 
-char	*find_command_in_path(char *command)
+char	*find_command_in_path(char *command, char **custom_environ)
 {
 	struct stat	st;
 	char		*path;
@@ -46,7 +46,7 @@ char	*find_command_in_path(char *command)
 			return (ft_strdup(command));
 		return (NULL);
 	}
-	path = getenv("PATH");
+	path = custom_getenv("PATH", custom_environ, 0);
 	if (!path)
 		return (NULL);
 	temp = ft_strdup(path);
