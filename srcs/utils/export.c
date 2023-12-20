@@ -11,8 +11,7 @@ char	*final_validation_checks(char *buf, int idx, t_ValidationArgs *args)
 	}
 	if (!(args)->has_equal_sign || (args)->inside_quotes)
 	{
-		ft_printf("%d\n", args->has_equal_sign);
-		// ft_printf("Heredoc??\n");
+		ft_printf("Heredoc??\n");
 		free((args)->quote_type);
 		return (NULL);
 	}

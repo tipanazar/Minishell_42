@@ -52,7 +52,8 @@ int	update_env_var(char ***custom_environ, char *new_buf, int idx)
 	is_updated = 0;
 	if (ft_strcmp(splitted_environ[0], splitted_new_buf[0]) == 0)
 	{
-		ft_strncpy((*custom_environ)[idx], new_buf, ft_strlen(new_buf));
+		free((*custom_environ)[idx]);
+		(*custom_environ)[idx] = ft_strdup(new_buf);
 		is_updated = 1;
 	}
 	ft_free_char_arr(splitted_environ);
