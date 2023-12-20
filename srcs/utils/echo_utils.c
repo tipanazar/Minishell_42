@@ -3,6 +3,7 @@
 void	echo_n_handler(char *buf, int *idx, int *newline)
 {
 	ft_trim_leading_spaces(buf);
+	ft_printf("buf: %s\n", buf);
 	if (ft_strncmp(buf, "-n", 2) == 0)
 	{
 		*newline = 0;
@@ -31,9 +32,9 @@ int		process_quotes(char *buf, int *idx, int *inside_sing_quotes)
 		if (buf[*idx] == '\'')
 			*inside_sing_quotes = !*inside_sing_quotes;
 		(*idx)++;
-		return (1);
+		return (0);
 	}
-	return (0);
+	return (1);
 }
 
 void	handle_variable_expansion(char *buf, char **custom_environ, int *idx)
@@ -76,9 +77,9 @@ void	process_variables(char *buf, char **custom_environ, int *idx,
 
 void	process_echo_command(struct s_echo_args *args)
 {
-	while (args->buf[*args->idx] != '\0')
+	while (args->buf[*args->idx])
 	{
-		if (!process_quotes(args->buf, args->idx, args->inside_sing_quotes))
+		if (process_quotes(args->buf, args->idx, args->inside_sing_quotes))
 			process_variables(args->buf, args->custom_environ, args->idx,
 				*args->inside_sing_quotes);
 	}

@@ -103,5 +103,6 @@ char				*ft_str_remove_chars(char *str,
 						const char *chars_to_remove);
 void				ft_remove_str_from_char_arr(char ***arr,
 						const char *target);
+int					ft_atoi(char *str);
 
 #endif

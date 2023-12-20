@@ -24,6 +24,7 @@ int	handle_quotes(char **s, char *es, char quote)
 		(*s)++;
 	if (*s < es)
 	{
+		ft_printf("Next: %c\n", **s + 1);
 		**s = '\0';
 		return (quote);
 	}
