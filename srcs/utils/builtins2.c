@@ -22,24 +22,22 @@ void	echo(char *buf, char **custom_environ)
 
 char	*export_validator(char *buf)
 {
-	t_ValidationArgs	args;
+	t_ValidationArgs	*args;
 	char				*result;
 
-	args.has_equal_sign = malloc(sizeof(bool));
-	args.inside_quotes = malloc(sizeof(char));
-	args.quote_type = malloc(2);
-	if (!args.has_equal_sign || !args.inside_quotes || !args.quote_type)
+	args = (t_ValidationArgs *)malloc(sizeof(t_ValidationArgs));
+	args->quote_type = (char *)malloc(sizeof(char) * 2);
+	if (!args || !args->quote_type)
 	{
 		perror("Memory allocation failed");
 		g_exit_code = 1;
 		exit(1);
 	}
-	*(args.has_equal_sign) = false;
-	*(args.inside_quotes) = 0;
-	args.quote_type[0] = 0;
-	result = validate_buffer(buf, &args);
-	free(args.has_equal_sign);
-	free(args.inside_quotes);
+	args->has_equal_sign = false;
+	args->inside_quotes = 0;
+	args->quote_type[0] = 0;
+	result = validate_buffer(buf, args);
+	free(args);
 	return (result);
 }
 

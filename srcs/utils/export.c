@@ -2,24 +2,27 @@
 
 char	*final_validation_checks(char *buf, int idx, t_ValidationArgs *args)
 {
-	if (!*(args->has_equal_sign) && (buf[idx - 1] == '\'' || buf[idx
+	if (!(args)->has_equal_sign && (buf[idx - 1] == '\'' || buf[idx
 				- 1] == '\"'))
 	{
 		ft_printf("Heredoc??\n");
+		free((args)->quote_type);
 		return (NULL);
 	}
-	if (!*(args->has_equal_sign) || *(args->inside_quotes))
+	if (!(args)->has_equal_sign || (args)->inside_quotes)
 	{
-		ft_printf("Heredoc??\n");
+		ft_printf("%d\n", args->has_equal_sign);
+		// ft_printf("Heredoc??\n");
+		free((args)->quote_type);
 		return (NULL);
 	}
-	return (args->quote_type);
+	return ((args)->quote_type);
 }
 
 bool	handle_space_and_equal(char *buf, int idx, bool *has_equal_sign,
-		char *inside_quotes)
+		char inside_quotes)
 {
-	if (!ft_isspace(buf[idx]) && ft_isspace(buf[idx + 1]) && !*inside_quotes
+	if (!ft_isspace(buf[idx]) && ft_isspace(buf[idx + 1]) && !inside_quotes
 		&& *has_equal_sign)
 	{
 		*has_equal_sign = true;
@@ -28,7 +31,7 @@ bool	handle_space_and_equal(char *buf, int idx, bool *has_equal_sign,
 		return (false);
 	}
 	if ((ft_isspace(buf[idx]) || ft_isdigit(buf[idx])) && buf[idx + 1] == '='
-		&& !*has_equal_sign)
+		&& !(*has_equal_sign))
 	{
 		ft_printf("-minishell: export: `%s': not a valid identifier\n", buf
 			+ idx + 1);
@@ -39,22 +42,20 @@ bool	handle_space_and_equal(char *buf, int idx, bool *has_equal_sign,
 	return (true);
 }
 
-bool	check_quote_status(char *buf, int idx, char *inside_quotes,
+bool	check_quote_status(char *buf, int idx, char inside_quotes,
 		char *quote_type)
 {
 	if (buf[idx] == '\'' || buf[idx] == '\"')
 	{
-		if (!*inside_quotes)
-		{
-			*inside_quotes = buf[idx];
-		}
-		else if (*inside_quotes == buf[idx])
+		if (!inside_quotes)
+			inside_quotes = buf[idx];
+		else if (inside_quotes == buf[idx])
 		{
 			quote_type[0] = buf[idx];
 			quote_type[1] = '\0';
-			*inside_quotes = 0;
+			inside_quotes = 0;
 		}
-		else if (*inside_quotes && *inside_quotes != buf[idx] && !buf[idx + 1])
+		else if (inside_quotes && inside_quotes != buf[idx] && !buf[idx + 1])
 		{
 			ft_printf("Heredoc??\n");
 			return (false);
@@ -70,16 +71,16 @@ char	*validate_buffer(char *buf, t_ValidationArgs *args)
 	idx = -1;
 	while (buf[++idx])
 	{
-		if (!check_quote_status(buf, idx, args->inside_quotes,
-				args->quote_type))
+		if (!check_quote_status(buf, idx, (args)->inside_quotes,
+				(args)->quote_type))
 		{
-			free(args->quote_type);
+			free((args)->quote_type);
 			return (NULL);
 		}
-		if (!handle_space_and_equal(buf, idx, args->has_equal_sign,
-				args->inside_quotes))
+		if (!handle_space_and_equal(buf, idx, &(args)->has_equal_sign,
+				(args)->inside_quotes))
 		{
-			free(args->quote_type);
+			free((args)->quote_type);
 			return (NULL);
 		}
 	}

@@ -40,6 +40,12 @@ struct s_cmd	*parseredirs(struct s_cmd *cmd, char **ps, char *es)
 	while (peek(ps, es, "<>"))
 	{
 		tok = get_token(ps, es, 0, 0);
+		if (tok == -1)
+		{
+			g_exit_code = 2;
+			cmd->flag = false;
+			return cmd;
+		}
 		if (get_token(ps, es, &q, &eq) != 'a')
 		{
 			write(2, "missing file for redirection\n", 29);
@@ -76,8 +82,8 @@ void	parseexec_middleware(t_parseexec **parseexec_vars,
 	(*cmd)->argc++;
 	if ((*cmd)->argc >= (*cmd)->max_args)
 	{
-		(*cmd)->max_args *= 2;
-		(*cmd)->argv = ft_realloc((*cmd)->argv, (*cmd)->max_args
+		(*cmd)->max_args = (*cmd)->argc + 1;
+		(*cmd)->argv = realloc((*cmd)->argv, (*cmd)->max_args
 				* sizeof(char *));
 	}
 }

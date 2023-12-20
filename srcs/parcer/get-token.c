@@ -30,6 +30,9 @@ int	handle_quotes(char **s, char *es, char quote)
 	else
 	{
 		ft_printf("Missing closing quote\n");
+		// **s = '\0';
+		// (*s)++;
+		// return 0;
 		return quote;
 	}
 }
@@ -72,7 +75,11 @@ int	get_token(char **ps, char *es, char **q, char **eq)
 		*q = s;
 	ret = *s;
 	if (*s == '\'' || *s == '\"')
+	{
 		ret = handle_quotes(&s, es, *s);
+		if(ret == -1)
+			return ret;
+	}
 	else if (*s == 0)
 		(void)s;
 	else
