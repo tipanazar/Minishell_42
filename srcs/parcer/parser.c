@@ -13,7 +13,7 @@ struct s_cmd	*parsecmd(char *s)
 		write(2, "leftovers: %s\n", 14);
 		free(s);
 		free(cmd);
-		exit(-1);
+		return (NULL);
 	}
 	return (cmd);
 }
@@ -43,7 +43,9 @@ struct s_cmd	*parseredirs(struct s_cmd *cmd, char **ps, char *es)
 		if (get_token(ps, es, &q, &eq) != 'a')
 		{
 			write(2, "missing file for redirection\n", 29);
-			exit(-1);
+			g_exit_code = 2;
+			cmd->flag = false;
+			return (cmd);
 		}
 		if (tok == '<')
 			cmd = redircmd(cmd, mkcopy(q, eq), '<');
@@ -62,7 +64,7 @@ void	parseexec_middleware(t_parseexec **parseexec_vars,
 {
 	if ((*parseexec_vars)->tok == '\'' || (*parseexec_vars)->tok == '\"')
 		(*cmd)->argv[(*cmd)->argc] = mkcopy((*parseexec_vars)->q,
-				(*parseexec_vars)->eq);
+											(*parseexec_vars)->eq);
 	else if ((*parseexec_vars)->tok != 'a')
 	{
 		write(2, "syntax error\n", 13);
@@ -70,7 +72,7 @@ void	parseexec_middleware(t_parseexec **parseexec_vars,
 	}
 	else
 		(*cmd)->argv[(*cmd)->argc] = mkcopy((*parseexec_vars)->q,
-				(*parseexec_vars)->eq);
+											(*parseexec_vars)->eq);
 	(*cmd)->argc++;
 	if ((*cmd)->argc >= (*cmd)->max_args)
 	{
@@ -92,6 +94,7 @@ struct s_cmd	*parseexec(char **ps, char *es)
 	cmd->max_args = 10;
 	cmd->argv = malloc(cmd->max_args * sizeof(char *));
 	parseexec_vars = malloc(sizeof(t_parseexec));
+	ret->flag = true;
 	while (!peek(ps, es, "|"))
 	{
 		parseexec_vars->tok = get_token(ps, es, &parseexec_vars->q,

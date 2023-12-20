@@ -26,9 +26,7 @@ char	*search_command_in_dirs(char *temp, char *command)
 		if (!full_path)
 			return (NULL);
 		if (stat(full_path, &st) == 0 && (st.st_mode & S_IXUSR))
-		{
 			return (full_path);
-		}
 		free(full_path);
 		dir = ft_strtok(NULL, ":");
 	}
