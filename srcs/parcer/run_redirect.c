@@ -49,11 +49,14 @@ int	handle_redirection(struct s_redircmd *rcmd, char **custom_environ,
 		int flags)
 {
 	int	fd_redirect;
+	char *str;
 
 	fd_redirect = open(rcmd->file, flags, 0666);
 	if (fd_redirect < 0)
-	{
-		perror("open");
+	{	
+		str = ft_strjoin("minishell: ", rcmd->file);
+		perror(str);
+		free(str);
 		g_exit_code = 1;
 		return (-1);
 	}

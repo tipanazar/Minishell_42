@@ -14,13 +14,13 @@ void	echo_n_handler(char *buf, int *idx, int *newline)
 	{
 		(*idx)++;
 		while (buf[*idx] == 'n')
-			(*idx)++;
+			(*idx)++;	
 		if (!ft_isspace(buf[*idx]) && buf[*idx] != '\0')
 		{
 			*newline = 1;
 			*idx = -1;
 		}
-		ft_trim_leading_spaces(buf);
+		ft_trim_leading_spaces(buf + *idx);
 	}
 }
 
