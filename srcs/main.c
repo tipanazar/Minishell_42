@@ -20,7 +20,8 @@ void	execute_command(char *new_buf, char **custom_env)
 		signal(SIGINT, SIG_DFL);
 		cmd = parsecmd(new_buf);
 		free(new_buf);
-		runcmd(cmd, custom_env);
+		if(cmd->flag == true)
+			runcmd(cmd, custom_env);
 		ft_free_char_arr(custom_env);
 		free_cmd(cmd);
 		exit(g_exit_code);
