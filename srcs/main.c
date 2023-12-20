@@ -61,7 +61,10 @@ bool	handle_command(char *new_buf, char ***custom_env)
 	if (ft_strcmp(new_buf, "export") == 0 || ft_strncmp(new_buf, "export ",
 														7) == 0)
 	{
-		export(new_buf + 7, custom_env);
+		if(ft_strncmp(new_buf, "export ", 7))
+			ft_printf("-minishell: export: no arguments provided\n");
+		else
+			export(new_buf + 7, custom_env);
 		return (true);
 	}
 	else if (ft_strcmp(new_buf, "unset") == 0 || ft_strncmp(new_buf, "unset ",
