@@ -18,6 +18,7 @@ struct s_cmd	*parsecmd(char *s)
 	return (cmd);
 }
 
+
 struct s_cmd	*parsepipe(char **ps, char *es)
 {
 	struct s_cmd	*cmd;
@@ -42,19 +43,13 @@ struct s_cmd	*parseredirs(struct s_cmd *cmd, char **ps, char *es)
 		tok = get_token(ps, es, 0, 0);
 		if (get_token(ps, es, &q, &eq) != 'a')
 		{
-			write(2, "missing file for redirection\n", 29);
+			write(2, "syntax error near unexpected token `newline'\n", 46);
 			g_exit_code = 2;
 			cmd->flag = 1;
 			return (cmd);
 		}
-		if (tok == '<')
-			cmd = redircmd(cmd, mkcopy(q, eq), '<');
-		else if (tok == '>')
-			cmd = redircmd(cmd, mkcopy(q, eq), '>');
-		else if (tok == '+')
-			cmd = redircmd(cmd, mkcopy(q, eq), '+');
-		else if (tok == '-')
-			cmd = redircmd(cmd, mkcopy(q, eq), '-');
+		if (tok == '<' || tok == '>' || tok == '+' || tok == '%')
+			cmd = redircmd(cmd, mkcopy(q, eq), tok);
 	}
 	return (cmd);
 }
@@ -67,7 +62,7 @@ void	parseexec_middleware(t_parseexec **parseexec_vars,
 											(*parseexec_vars)->eq);
 	else if ((*parseexec_vars)->tok != 'a')
 	{
-		write(2, "syntax error\n", 13);
+		// write(2, "syntax error\n", 13);
 		return ;
 	}
 	else
@@ -90,6 +85,7 @@ struct s_cmd	*parseexec(char **ps, char *es)
 
 	ret = execcmd();
 	cmd = (struct s_execcmd *)ret;
+	ret = parseredirs(ret, ps, es);
 	cmd->argc = 0;
 	cmd->max_args = 10;
 	cmd->argv = malloc(cmd->max_args * sizeof(char *));

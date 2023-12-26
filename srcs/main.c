@@ -90,6 +90,11 @@ void	process_input(char **custom_env)
 		new_buf = read_and_trim_line(buf);
 		if (!new_buf)
 			break ;
+		if(check_for_quotes(new_buf) == NULL)
+		{
+			free(new_buf);
+			continue ;
+		}
 		if (ft_strcmp(new_buf, "exit") == 0 || ft_strncmp(new_buf, "exit ",
 				5) == 0)
 		{

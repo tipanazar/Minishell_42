@@ -74,6 +74,7 @@ struct					s_pipecmd
 	struct s_cmd		*right;
 };
 
+char	*check_for_quotes(char *buffer);
 int						runcmd(struct s_cmd *cmd, char **env);
 int						fork1(void);
 int						get_token(char **ps, char *es, char **q, char **eq);
