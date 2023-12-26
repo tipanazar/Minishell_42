@@ -1,5 +1,26 @@
 #include "../../minishell.h"
 
+int	check_error(char *cmd)
+{
+	if (errno == EACCES)
+	{
+		write(2, cmd, strlen(cmd));
+		write(2, ": permission denied\n", 20);
+		return (126);
+	}
+	else if (errno == ENOENT)
+	{
+		write(2, cmd, strlen(cmd));
+		write(2, ": command not found\n", 20);
+		return (127);
+	}
+	else
+	{
+		perror(cmd);
+		return (127);
+	}
+}
+
 void	free_exec_cmd(struct s_execcmd *ecmd)
 {
 	int	i;
@@ -47,17 +68,19 @@ void	execute_command1(struct s_execcmd *ecmd, char **custom_environ)
 	if (full_path)
 	{
 		execve(full_path, ecmd->argv, custom_environ);
+		if (errno)
+			g_exit_code = check_error(ecmd->argv[0]);
 		free(full_path);
 	}
 	else
+	{
 		execve(ecmd->argv[0], ecmd->argv, custom_environ);
-	error_str = ft_strjoin("-minishell: ", ecmd->argv[0]);	
-	perror(error_str);
-	free(error_str);
-	if (errno == ENOENT)
-		g_exit_code = 127;
-	else
-		g_exit_code = 1;
+		error_str = ft_strjoin("-minishell: ", ecmd->argv[0]);	
+		perror(error_str);
+		free(error_str);
+		if (errno)
+			g_exit_code = check_error(ecmd->argv[0]);
+	}
 }
 
 int	exec_cmd(struct s_cmd *cmd, char **custom_environ)

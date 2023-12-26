@@ -17,27 +17,6 @@ int	get_alphanumeric_token(char **s, char *es, const char *whitespace,
 	return ('a');
 }
 
-int	handle_quotes(char **s, char *es, char quote)
-{
-	(*s)++;
-	while (*s < es && **s != quote)
-		(*s)++;
-	if (*s < es)
-	{
-		ft_printf("Next: %c\n", **s + 1);
-		**s = '\0';
-		return (quote);
-	}
-	else
-	{
-		ft_printf("Missing closing quote\n");
-		// **s = '\0';
-		// (*s)++;
-		// return 0;
-		return quote;
-	}
-}
-
 int	process_symbol_or_alpha(char **s, char *es, const char *whitespace,
 		const char *symbols)
 {
@@ -75,13 +54,7 @@ int	get_token(char **ps, char *es, char **q, char **eq)
 	if (q)
 		*q = s;
 	ret = *s;
-	if (*s == '\'' || *s == '\"')
-	{
-		ret = handle_quotes(&s, es, *s);
-		if(ret == -1)
-			return ret;
-	}
-	else if (*s == 0)
+	if (*s == 0)
 		(void)s;
 	else
 		ret = process_symbol_or_alpha(&s, es, whitespace, symbols);

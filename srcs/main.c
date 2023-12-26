@@ -20,7 +20,7 @@ void execute_command(char *new_buf, char **custom_env)
 		signal(SIGINT, SIG_DFL);
 		cmd = parsecmd(new_buf);
 		free(new_buf);
-		if (cmd->flag == true)
+		if(cmd->flag != 1)
 			runcmd(cmd, custom_env);
 		ft_free_char_arr(custom_env);
 		free_cmd(cmd);
@@ -146,7 +146,12 @@ void process_input(char **custom_env)
 		buf = readline("minishell# ");
 		new_buf = read_and_trim_line(buf);
 		if (!new_buf)
-			break;
+			break ;
+		if(check_for_quotes(new_buf) == NULL)
+		{
+			free(new_buf);
+			continue ;
+		}
 		if (ft_strcmp(new_buf, "exit") == 0 || ft_strncmp(new_buf, "exit ",
 														  5) == 0)
 		{

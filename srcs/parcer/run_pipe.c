@@ -11,24 +11,26 @@ void	handle_child_process(struct s_pipecmd *pcmd, int fd_pipe[2], char **env)
 	exit(g_exit_code);
 }
 
-void	handle_parent_process(struct s_pipecmd *pcmd, int fd_pipe[2], int p_id,
+void	handle_parent_process(struct s_pipecmd *pcmd, int fd_pipe[2],
 		char **env)
 {
-	int	status;
-
 	close(fd_pipe[1]);
 	dup2(fd_pipe[0], STDIN_FILENO);
 	close(fd_pipe[0]);
-	waitpid(p_id, &status, 0);
-	if (WIFEXITED(status))
-		g_exit_code = WEXITSTATUS(status);
 	runcmd(pcmd->right, env);
 }
 
-void	create_pipe_process(struct s_pipecmd *pcmd, int fd_pipe[2], char **env)
+void	pipe_command(struct s_pipecmd *pcmd, char **env)
 {
+	int	fd_pipe[2];
 	int	p_id;
+	// int	status;
 
+	if (pipe(fd_pipe) == -1)
+	{
+		perror("pipe");
+		exit(1);
+	}
 	p_id = fork();
 	if (p_id < 0)
 	{
@@ -38,17 +40,9 @@ void	create_pipe_process(struct s_pipecmd *pcmd, int fd_pipe[2], char **env)
 	else if (p_id == 0)
 		handle_child_process(pcmd, fd_pipe, env);
 	else
-		handle_parent_process(pcmd, fd_pipe, p_id, env);
-}
-
-void	pipe_command(struct s_pipecmd *pcmd, char **env)
-{
-	int	fd_pipe[2];
-
-	if (pipe(fd_pipe) < 0)
 	{
-		perror("pipe");
-		exit(1);
+		handle_parent_process(pcmd, fd_pipe, env);
+		// if (WIFEXITED(status))
+		// g_exit_code = WEXITSTATUS(status);
 	}
-	create_pipe_process(pcmd, fd_pipe, env);
 }
