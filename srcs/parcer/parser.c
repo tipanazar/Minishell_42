@@ -62,7 +62,7 @@ void	parseexec_middleware(t_parseexec **parseexec_vars,
 											(*parseexec_vars)->eq);
 	else if ((*parseexec_vars)->tok != 'a')
 	{
-		// write(2, "syntax error\n", 13);
+		write(2, "syntax error\n", 13);
 		return ;
 	}
 	else
