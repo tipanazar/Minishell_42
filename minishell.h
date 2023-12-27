@@ -36,8 +36,8 @@ struct					s_cmd
 
 typedef struct 			s_export
 {
-	bool				*has_equal_sign;
-	char				*inside_quotes;
+	bool				has_equal_sign;
+	char				inside_quotes;
 	char				*quote_type;
 }						t_ValidationArgs;
 
@@ -94,7 +94,7 @@ char					*custom_getenv(char *name, char **custom_environ,
 							bool full_str);
 void					ft_cd(char *buf, char **custom_environ);
 void					unset(char *buf, char ***custom_environ);
-char					*find_command_in_path(char *command);
+char					*find_command_in_path(char *command, char **custom_environ);
 void					free_cmd(struct s_cmd *command);
 int						redirect_cmd(struct s_redircmd *rcmd,
 							char **custom_environ);
@@ -115,9 +115,9 @@ void					process_echo_command(struct s_echo_args *args);
 char					*export_validator(char *buf);
 char					**create_unset_arr(char *buf, char **custom_environ);
 bool					handle_space_and_equal(char *buf, int idx,
-							bool *has_equal_sign, char *inside_quotes);
+							bool *has_equal_sign, char inside_quotes);
 bool					check_quote_status(char *buf, int idx,
-							char *inside_quotes, char *quote_type);
+							char inside_quotes, char *quote_type);
 char					*validate_buffer(char *buf, t_ValidationArgs *args);
 int						update_env_var(char ***custom_environ, char *new_buf,
 							int idx);
