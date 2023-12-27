@@ -28,7 +28,9 @@ void execute_command(char *new_buf, char **custom_env)
 	}
 	else
 	{
-		wait(&r);
+		
+		// wait(&r);
+		waitpid(pid, &r, 0);
 		if (WIFSIGNALED(r) && WTERMSIG(r) == SIGQUIT)
 		{
 			write(STDOUT_FILENO, "Quit (core dumped)\n", 19);
@@ -37,6 +39,7 @@ void execute_command(char *new_buf, char **custom_env)
 		else if (WIFEXITED(r))
 			g_exit_code = WEXITSTATUS(r);
 	}
+	
 }
 
 char **clone_env(char **env)
@@ -143,10 +146,16 @@ void process_input(char **custom_env)
 
 	while (1)
 	{
+		
 		buf = readline("minishell# ");
 		new_buf = read_and_trim_line(buf);
 		if (!new_buf)
 			break ;
+		if(check_for_pipes(new_buf) == NULL)
+		{
+			free(new_buf);
+			continue ;
+		}
 		if(check_for_quotes(new_buf) == NULL)
 		{
 			free(new_buf);
@@ -174,6 +183,7 @@ void process_input(char **custom_env)
 		}
 		if (!handle_command(new_buf, &custom_env))
 			execute_command(new_buf, custom_env);
+		
 		free(new_buf);
 	}
 	rl_clear_history();

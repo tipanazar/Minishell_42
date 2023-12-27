@@ -24,7 +24,7 @@ void	pipe_command(struct s_pipecmd *pcmd, char **env)
 {
 	int	fd_pipe[2];
 	int	p_id;
-	// int	status;
+	int	status;
 
 	if (pipe(fd_pipe) == -1)
 	{
@@ -42,6 +42,7 @@ void	pipe_command(struct s_pipecmd *pcmd, char **env)
 	else
 	{
 		handle_parent_process(pcmd, fd_pipe, env);
+		waitpid(p_id, &status, 0);
 		// if (WIFEXITED(status))
 		// g_exit_code = WEXITSTATUS(status);
 	}

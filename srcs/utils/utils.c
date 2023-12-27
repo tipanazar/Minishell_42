@@ -19,6 +19,25 @@ bool	process_quotes1(const char *buffer, size_t index, size_t len,
 	return (process_quotes1(buffer, index + 1, len, quote_open, quote_type));
 }
 
+char	*check_for_pipes(char *buffer)
+{
+	int i = 0;
+
+	while(buffer && buffer[i] != '\0')
+	{
+		if(buffer[i] == '|')
+		{
+			if(buffer[i+1] == '\0' || (buffer[i] == '|' && i == 0))
+			{
+				write(2, "syntax error near unexpected token `|'\n", 40);
+				return (NULL);
+			}
+		}
+		i++;
+	}
+	return (buffer);
+}
+
 char	*check_for_quotes(char *buffer)
 {
 	size_t	len;

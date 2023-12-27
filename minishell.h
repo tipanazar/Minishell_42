@@ -125,5 +125,6 @@ void					export(char *buf, char ***custom_environ);
 void					add_new_env_var(char ***custom_environ, char *new_buf,
 							int idx);
 void					pwd(void);
+char					*check_for_pipes(char *buffer);
 
 #endif

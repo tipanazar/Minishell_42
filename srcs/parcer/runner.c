@@ -62,7 +62,7 @@ void	free_cmd(struct s_cmd *command)
 void	execute_command1(struct s_execcmd *ecmd, char **custom_environ)
 {
 	char	*full_path;
-	char 	*error_str;
+	// char 	*error_str;
 
 	full_path = find_command_in_path(ecmd->argv[0], custom_environ);
 	if (full_path)
@@ -75,9 +75,9 @@ void	execute_command1(struct s_execcmd *ecmd, char **custom_environ)
 	else
 	{
 		execve(ecmd->argv[0], ecmd->argv, custom_environ);
-		error_str = ft_strjoin("-minishell: ", ecmd->argv[0]);	
-		perror(error_str);
-		free(error_str);
+		// error_str = ft_strjoin("-minishell: ", ecmd->argv[0]);	
+		// perror(error_str);
+		// free(error_str);
 		if (errno)
 			g_exit_code = check_error(ecmd->argv[0]);
 	}

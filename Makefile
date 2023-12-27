@@ -1,5 +1,5 @@
 CC = cc
-CFLAGS = -Wall -Werror -Wextra
+CFLAGS = -Wall -Werror -Wextra -g
 LDFLAGS = -lreadline
 RM = rm -f
 
@@ -49,4 +49,4 @@ fclean: clean
 re: fclean all
 
 v:
-	make re && valgrind --leak-check=full --show-leak-kinds=all --suppressions="supp.supp" ./minishell
+	make re && valgrind --leak-check=full --show-leak-kinds=all --track-fds=yes --suppressions="supp.supp" ./minishell
