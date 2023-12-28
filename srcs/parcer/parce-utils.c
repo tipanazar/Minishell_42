@@ -1,16 +1,5 @@
 #include "../../minishell.h"
 
-int	getcmd(char *buf, int nbuf)
-{
-	if (isatty(0))
-		write(2, "minishell# ", 11);
-	ft_memset(buf, 0, nbuf);
-	ft_fgets(buf, nbuf, stdin);
-	if (buf[0] == 0)
-		return (-1);
-	return (0);
-}
-
 struct s_cmd	*execcmd(void)
 {
 	struct s_execcmd	*cmd;

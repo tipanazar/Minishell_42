@@ -31,12 +31,13 @@ typedef struct 			s_parseexec
 struct					s_cmd
 {
 	int					type;
+	int					flag;
 };
 
 typedef struct 			s_export
 {
-	bool				*has_equal_sign;
-	char				*inside_quotes;
+	bool				has_equal_sign;
+	char				inside_quotes;
 	char				*quote_type;
 }						t_ValidationArgs;
 
@@ -73,9 +74,10 @@ struct					s_pipecmd
 	struct s_cmd		*right;
 };
 
+char	*check_for_quotes(char *buffer);
 int						runcmd(struct s_cmd *cmd, char **env);
 int						fork1(void);
-int						getcmd(char *buf, int nbuf);
+int	exec_cmd(struct s_cmd *cmd, char **custom_environ);
 int						get_token(char **ps, char *es, char **q, char **eq);
 int						peek(char **ps, char *es, char *toks);
 char					*mkcopy(char *s, char *es);
@@ -93,12 +95,12 @@ char					*custom_getenv(char *name, char **custom_environ,
 							bool full_str);
 void					ft_cd(char *buf, char **custom_environ);
 void					unset(char *buf, char ***custom_environ);
-char					*find_command_in_path(char *command);
+char					*find_command_in_path(char *command, char **custom_environ);
 void					free_cmd(struct s_cmd *command);
-int						redirect_cmd(struct s_redircmd *rcmd,
+void					redirect_cmd(struct s_redircmd *rcmd,
 							char **custom_environ);
 void					pipe_command(struct s_pipecmd *pcmd, char **env);
-char					*read_and_trim_line(void);
+char					*read_and_trim_line(char *buf);
 void					ctrl_c_handler(int sig);
 bool					is_blank(const char *buf);
 void					echo(char *buf, char **custom_environ);
@@ -114,9 +116,9 @@ void					process_echo_command(struct s_echo_args *args);
 char					*export_validator(char *buf);
 char					**create_unset_arr(char *buf, char **custom_environ);
 bool					handle_space_and_equal(char *buf, int idx,
-							bool *has_equal_sign, char *inside_quotes);
+							bool *has_equal_sign, char inside_quotes);
 bool					check_quote_status(char *buf, int idx,
-							char *inside_quotes, char *quote_type);
+							char inside_quotes, char *quote_type);
 char					*validate_buffer(char *buf, t_ValidationArgs *args);
 int						update_env_var(char ***custom_environ, char *new_buf,
 							int idx);
@@ -124,5 +126,8 @@ void					export(char *buf, char ***custom_environ);
 void					add_new_env_var(char ***custom_environ, char *new_buf,
 							int idx);
 void					pwd(void);
+char					*check_for_pipes(char *buffer);
+bool handle_command(char *new_buf, char ***custom_env);
+int builtin_exit(char *buf);
 
 #endif

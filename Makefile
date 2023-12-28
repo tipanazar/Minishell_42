@@ -1,35 +1,40 @@
 CC = cc
-CFLAGS = -Wall -Werror -Wextra
+CFLAGS = -Wall -Werror -Wextra -g
 LDFLAGS = -lreadline
 RM = rm -f
 
 NAME = minishell
 LIBFTDIR = ./libft
 LIBFT = $(LIBFTDIR)/libft.a
-SRCS = srcs/main.c \
-srcs/parcer/runner.c \
-srcs/parcer/run_redirect.c \
-srcs/parcer/run_pipe.c \
-srcs/parcer/parce-utils.c \
-srcs/parcer/get-token.c \
-srcs/parcer/parser.c \
-srcs/utils/utils.c	  \
-srcs/utils/utils1.c	  \
-srcs/utils/builtins.c \
-srcs/utils/builtins2.c \
-srcs/utils/full_path.c \
-srcs/utils/echo_utils.c \
-srcs/utils/export.c \
+SRCDIR = srcs
+OBJDIR = objs
+SRCS = main.c \
+main_help.c    \
+parcer/runner.c \
+parcer/run_redirect.c \
+parcer/run_pipe.c \
+parcer/parce-utils.c \
+parcer/get-token.c \
+parcer/parser.c \
+utils/utils.c	  \
+utils/utils1.c	  \
+utils/builtins.c \
+utils/builtins2.c \
+utils/full_path.c \
+utils/echo_utils.c \
+utils/export.c
 
-
-
-OBJS = $(SRCS:.c=.o)
+OBJS = $(patsubst %.c,$(OBJDIR)/%.o,$(SRCS))
 
 all: $(NAME)
 
 $(NAME): $(LIBFT) $(OBJS)
 	@$(CC) $(OBJS) $(LIBFT) $(LDFLAGS) -o $(NAME)
 	@echo "\033[0;32m✅---COMPILING IS DONE---✅\033[0m"
+
+$(OBJDIR)/%.o: $(SRCDIR)/%.c
+	@mkdir -p $(@D)
+	@$(CC) $(CFLAGS) -c $< -o $@
 
 $(LIBFT):
 	@make -sC $(LIBFTDIR)
@@ -46,3 +51,4 @@ re: fclean all
 
 v:
 	make re && valgrind --leak-check=full --show-leak-kinds=all --suppressions="supp.supp" ./minishell
+	

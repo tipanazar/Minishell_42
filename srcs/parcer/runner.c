@@ -1,5 +1,26 @@
 #include "../../minishell.h"
 
+int	check_error(char *cmd)
+{
+	if (errno == EACCES)
+	{
+		write(2, cmd, strlen(cmd));
+		write(2, ": permission denied\n", 20);
+		return (126);
+	}
+	else if (errno == ENOENT)
+	{
+		write(2, cmd, strlen(cmd));
+		write(2, ": command not found\n", 20);
+		return (127);
+	}
+	else
+	{
+		perror(cmd);
+		return (127);
+	}
+}
+
 void	free_exec_cmd(struct s_execcmd *ecmd)
 {
 	int	i;
@@ -29,7 +50,7 @@ void	free_cmd(struct s_cmd *command)
 		free_cmd(pcmd->right);
 	}
 	else if (command->type == '>' || command->type == '<'
-		|| command->type == '+' || command->type == '-')
+			|| command->type == '+' || command->type == '-')
 	{
 		rcmd = (struct s_redircmd *)command;
 		free_cmd(rcmd->cmd);
@@ -40,21 +61,41 @@ void	free_cmd(struct s_cmd *command)
 
 void	execute_command1(struct s_execcmd *ecmd, char **custom_environ)
 {
+	pid_t	pid;
+	int		status;
 	char	*full_path;
 
-	full_path = find_command_in_path(ecmd->argv[0]);
-	if (full_path)
+	pid = fork();
+	if (pid < 0)
 	{
-		execve(full_path, ecmd->argv, custom_environ);
-		free(full_path);
+		perror("fork");
+		exit(1);
+	}
+	else if (pid == 0)
+	{
+		full_path = find_command_in_path(ecmd->argv[0], custom_environ);
+		if (full_path)
+		{
+			execve(full_path, ecmd->argv, custom_environ);
+			if (errno)
+				g_exit_code = check_error(ecmd->argv[0]);
+		}
+		else
+		{
+			execve(ecmd->argv[0], ecmd->argv, custom_environ);
+			if (errno)
+				g_exit_code = check_error(ecmd->argv[0]);
+		}
+		free_cmd((struct s_cmd*)ecmd);
+		ft_free_char_arr(custom_environ);
+		exit(g_exit_code);
 	}
 	else
-		execve(ecmd->argv[0], ecmd->argv, custom_environ);
-	perror("Command not found");
-	if (errno == ENOENT)
-		g_exit_code = 127;
-	else
-		g_exit_code = 1;
+	{
+		waitpid(pid, &status, 0);
+		if (WIFEXITED(status))
+			g_exit_code = WEXITSTATUS(status);
+	}
 }
 
 int	exec_cmd(struct s_cmd *cmd, char **custom_environ)
@@ -63,16 +104,19 @@ int	exec_cmd(struct s_cmd *cmd, char **custom_environ)
 	char				*buf;
 
 	ecmd = (struct s_execcmd *)cmd;
-	if (ecmd->argv[0] == 0)
-		exit(0);
-	buf = concat_args(ecmd->argv);
-	if (builtins(buf, custom_environ))
+	if (ecmd->argv[0] != NULL)
 	{
+		if (ecmd->argv[0] == 0)
+			exit(0);
+		buf = concat_args(ecmd->argv);
+		if (builtins(buf, custom_environ))
+		{
+			free(buf);
+			return (g_exit_code);
+		}
 		free(buf);
-		return (g_exit_code);
+		execute_command1(ecmd, custom_environ);
 	}
-	execute_command1(ecmd, custom_environ);
-	free(buf);
 	return (g_exit_code);
 }
 
@@ -80,8 +124,8 @@ int	runcmd(struct s_cmd *cmd, char **env)
 {
 	char	type;
 
-	if (cmd == 0)
-		exit(1);
+	// if (cmd == 0)
+	// 	exit(1);
 	type = cmd->type;
 	if (type == ' ')
 		exec_cmd(cmd, env);

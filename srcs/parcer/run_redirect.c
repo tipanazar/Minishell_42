@@ -47,6 +47,7 @@ int	handle_redirection(struct s_redircmd *rcmd, char **custom_environ,
 		int flags)
 {
 	int	fd_redirect;
+	int	saved_fd;
 
 	fd_redirect = open(rcmd->file, flags, 0666);
 	if (fd_redirect < 0)
@@ -55,14 +56,27 @@ int	handle_redirection(struct s_redircmd *rcmd, char **custom_environ,
 		g_exit_code = 1;
 		return (-1);
 	}
-	if (dup2(fd_redirect, rcmd->fd) < 0)
+	saved_fd = dup(rcmd->fd);
+	if (saved_fd < 0)
 	{
-		perror("dup2");
+		perror("dup");
 		close(fd_redirect);
 		g_exit_code = 1;
 		return (-1);
 	}
-	runcmd(rcmd->cmd, custom_environ);
+	if (dup2(fd_redirect, rcmd->fd) < 0)
+	{
+		perror("dup2");
+		close(fd_redirect);
+		close(saved_fd);
+		g_exit_code = 1;
+		return (-1);
+	}
+	if (rcmd->cmd)
+		runcmd(rcmd->cmd, custom_environ);
+	if (dup2(saved_fd, rcmd->fd) < 0)
+		perror("dup2");
+	close(saved_fd);
 	close(fd_redirect);
 	return (1);
 }
@@ -94,15 +108,15 @@ int	get_redirection_flags(char type)
 		return (-1);
 }
 
-int	redirect_cmd(struct s_redircmd *rcmd, char **custom_environ)
+void	redirect_cmd(struct s_redircmd *rcmd, char **custom_environ)
 {
 	int	flags;
 
 	flags = get_redirection_flags(rcmd->type);
 	if (flags == -1 && rcmd->type != '-')
-		return (-1);
+		return ;
 	if (rcmd->type == '-')
-		return (handle_double_redirect_left(rcmd, custom_environ));
+		handle_double_redirect_left(rcmd, custom_environ);
 	else
-		return (handle_redirection(rcmd, custom_environ, flags));
+		handle_redirection(rcmd, custom_environ, flags);
 }

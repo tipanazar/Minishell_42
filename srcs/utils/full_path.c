@@ -26,16 +26,14 @@ char	*search_command_in_dirs(char *temp, char *command)
 		if (!full_path)
 			return (NULL);
 		if (stat(full_path, &st) == 0 && (st.st_mode & S_IXUSR))
-		{
 			return (full_path);
-		}
 		free(full_path);
 		dir = ft_strtok(NULL, ":");
 	}
 	return (NULL);
 }
 
-char	*find_command_in_path(char *command)
+char	*find_command_in_path(char *command, char **custom_environ)
 {
 	struct stat	st;
 	char		*path;
@@ -48,7 +46,7 @@ char	*find_command_in_path(char *command)
 			return (ft_strdup(command));
 		return (NULL);
 	}
-	path = getenv("PATH");
+	path = custom_getenv("PATH", custom_environ, 0);
 	if (!path)
 		return (NULL);
 	temp = ft_strdup(path);

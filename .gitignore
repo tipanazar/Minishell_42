@@ -1,8 +1,0 @@
-*.o
-*.exe
-*.out
-*.a
-minishell
-.vscode/
-myenv/
-.idea/
