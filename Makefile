@@ -9,6 +9,7 @@ LIBFT = $(LIBFTDIR)/libft.a
 SRCDIR = srcs
 OBJDIR = objs
 SRCS = main.c \
+main_help.c    \
 parcer/runner.c \
 parcer/run_redirect.c \
 parcer/run_pipe.c \
@@ -49,4 +50,5 @@ fclean: clean
 re: fclean all
 
 v:
-	make re && valgrind --leak-check=full --show-leak-kinds=all --track-fds=yes --suppressions="supp.supp" ./minishell
+	make re && valgrind --leak-check=full --show-leak-kinds=all --suppressions="supp.supp" ./minishell
+	

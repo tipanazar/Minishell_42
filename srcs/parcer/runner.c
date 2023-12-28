@@ -61,25 +61,40 @@ void	free_cmd(struct s_cmd *command)
 
 void	execute_command1(struct s_execcmd *ecmd, char **custom_environ)
 {
+	pid_t	pid;
+	int		status;
 	char	*full_path;
-	// char 	*error_str;
 
-	full_path = find_command_in_path(ecmd->argv[0], custom_environ);
-	if (full_path)
+	pid = fork();
+	if (pid < 0)
 	{
-		execve(full_path, ecmd->argv, custom_environ);
-		if (errno)
-			g_exit_code = check_error(ecmd->argv[0]);
-		free(full_path);
+		perror("fork");
+		exit(1);
+	}
+	else if (pid == 0)
+	{
+		full_path = find_command_in_path(ecmd->argv[0], custom_environ);
+		if (full_path)
+		{
+			execve(full_path, ecmd->argv, custom_environ);
+			if (errno)
+				g_exit_code = check_error(ecmd->argv[0]);
+		}
+		else
+		{
+			execve(ecmd->argv[0], ecmd->argv, custom_environ);
+			if (errno)
+				g_exit_code = check_error(ecmd->argv[0]);
+		}
+		free_cmd((struct s_cmd*)ecmd);
+		ft_free_char_arr(custom_environ);
+		exit(g_exit_code);
 	}
 	else
 	{
-		execve(ecmd->argv[0], ecmd->argv, custom_environ);
-		// error_str = ft_strjoin("-minishell: ", ecmd->argv[0]);	
-		// perror(error_str);
-		// free(error_str);
-		if (errno)
-			g_exit_code = check_error(ecmd->argv[0]);
+		waitpid(pid, &status, 0);
+		if (WIFEXITED(status))
+			g_exit_code = WEXITSTATUS(status);
 	}
 }
 
@@ -89,16 +104,19 @@ int	exec_cmd(struct s_cmd *cmd, char **custom_environ)
 	char				*buf;
 
 	ecmd = (struct s_execcmd *)cmd;
-	if (ecmd->argv[0] == 0)
-		exit(0);
-	buf = concat_args(ecmd->argv);
-	if (builtins(buf, custom_environ))
+	if (ecmd->argv[0] != NULL)
 	{
+		if (ecmd->argv[0] == 0)
+			exit(0);
+		buf = concat_args(ecmd->argv);
+		if (builtins(buf, custom_environ))
+		{
+			free(buf);
+			return (g_exit_code);
+		}
 		free(buf);
-		return (g_exit_code);
+		execute_command1(ecmd, custom_environ);
 	}
-	execute_command1(ecmd, custom_environ);
-	free(buf);
 	return (g_exit_code);
 }
 
@@ -106,8 +124,8 @@ int	runcmd(struct s_cmd *cmd, char **env)
 {
 	char	type;
 
-	if (cmd == 0)
-		exit(1);
+	// if (cmd == 0)
+	// 	exit(1);
 	type = cmd->type;
 	if (type == ' ')
 		exec_cmd(cmd, env);

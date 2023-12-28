@@ -77,6 +77,7 @@ struct					s_pipecmd
 char	*check_for_quotes(char *buffer);
 int						runcmd(struct s_cmd *cmd, char **env);
 int						fork1(void);
+int	exec_cmd(struct s_cmd *cmd, char **custom_environ);
 int						get_token(char **ps, char *es, char **q, char **eq);
 int						peek(char **ps, char *es, char *toks);
 char					*mkcopy(char *s, char *es);
@@ -96,7 +97,7 @@ void					ft_cd(char *buf, char **custom_environ);
 void					unset(char *buf, char ***custom_environ);
 char					*find_command_in_path(char *command, char **custom_environ);
 void					free_cmd(struct s_cmd *command);
-int						redirect_cmd(struct s_redircmd *rcmd,
+void					redirect_cmd(struct s_redircmd *rcmd,
 							char **custom_environ);
 void					pipe_command(struct s_pipecmd *pcmd, char **env);
 char					*read_and_trim_line(char *buf);
@@ -126,5 +127,7 @@ void					add_new_env_var(char ***custom_environ, char *new_buf,
 							int idx);
 void					pwd(void);
 char					*check_for_pipes(char *buffer);
+bool handle_command(char *new_buf, char ***custom_env);
+int builtin_exit(char *buf);
 
 #endif
