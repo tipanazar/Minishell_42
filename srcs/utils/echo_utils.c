@@ -7,7 +7,7 @@ void	echo_n_handler(char *buf, int *idx, int *newline)
 	if (ft_strncmp(buf, "-n", 2) == 0)
 	{
 		*newline = 0;
-		*idx += 2;
+		*idx += 1;
 	}
 	else
 		*newline = 1;
