@@ -37,7 +37,7 @@ void	process_input(char **custom_env)
 
 	while (1)
 	{
-		buf = readline("My_Fuckingshell# ");
+		buf = readline("fuckingshell# ");
 		new_buf = read_and_trim_line(buf);
 		if (!new_buf)
 			break ;
