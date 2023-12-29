@@ -5,9 +5,7 @@ int		g_exit_code;
 void	execute_command(char *new_buf, char **custom_env)
 {
 	struct s_cmd	*cmd;
-
-	signal(SIGQUIT, SIG_DFL);
-	signal(SIGINT, SIG_DFL);
+	
 	cmd = parsecmd(new_buf);
 	free(new_buf);
 	if (cmd->flag != 1)

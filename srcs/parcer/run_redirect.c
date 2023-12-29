@@ -36,6 +36,7 @@ int	double_redirect_left(struct s_redircmd *rcmd)
 	{
 		perror("dup2");
 		close(pipefd[0]);
+		close(pipefd[1]);
 		g_exit_code = 1;
 		return (0);
 	}
@@ -83,16 +84,22 @@ int	handle_redirection(struct s_redircmd *rcmd, char **custom_environ,
 
 int	handle_double_redirect_left(struct s_redircmd *rcmd, char **custom_environ)
 {
+	int	original_stdin;
 	int	pipe_read_end;
 
+	original_stdin = dup(STDIN_FILENO);
 	pipe_read_end = double_redirect_left(rcmd);
 	if (pipe_read_end < 0)
 	{
 		perror("double_redirect_left");
+		dup2(original_stdin, STDIN_FILENO);
+		close(original_stdin);
 		g_exit_code = 1;
 		return (-1);
 	}
 	runcmd(rcmd->cmd, custom_environ);
+	dup2(original_stdin, STDIN_FILENO);
+	close(original_stdin);
 	return (1);
 }
 

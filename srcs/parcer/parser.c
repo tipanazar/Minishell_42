@@ -54,7 +54,7 @@ struct s_cmd	*parseredirs(struct s_cmd *cmd, char **ps, char *es)
 			cmd->flag = 1;
 			return (cmd);
 		}
-		if (tok == '<' || tok == '>' || tok == '+' || tok == '%')
+		if (tok == '<' || tok == '>' || tok == '+' || tok == '-')
 			cmd = redircmd(cmd, mkcopy(q, eq), tok);
 	}
 	return (cmd);

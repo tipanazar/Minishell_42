@@ -3,7 +3,6 @@
 void	echo_n_handler(char *buf, int *idx, int *newline)
 {
 	ft_trim_leading_spaces(buf);
-	ft_printf("buf: %s\n", buf);
 	if (ft_strncmp(buf, "-n", 2) == 0)
 	{
 		*newline = 0;

@@ -21,13 +21,14 @@ bool	process_quotes1(const char *buffer, size_t index, size_t len,
 
 char	*check_for_pipes(char *buffer)
 {
-	int i = 0;
+	int	i;
 
-	while(buffer && buffer[i] != '\0')
+	i = 0;
+	while (buffer && buffer[i] != '\0')
 	{
-		if(buffer[i] == '|')
+		if (buffer[i] == '|')
 		{
-			if(buffer[i+1] == '\0' || (buffer[i] == '|' && i == 0))
+			if (buffer[i + 1] == '\0' || (buffer[i] == '|' && i == 0))
 			{
 				write(2, "syntax error near unexpected token `|'\n", 40);
 				return (NULL);
@@ -64,23 +65,10 @@ char	*read_and_trim_line(char *buf)
 
 void	ctrl_c_handler(int sig)
 {
-	pid_t	pid;
-	int		status;
-
-	pid = waitpid(-1, &status, WNOHANG);
-	if (sig == SIGINT)
-	{
-		if (pid == -1)
-		{
-			g_exit_code = 130;
-			write(STDOUT_FILENO, "\n", 1);
-			rl_on_new_line();
-			rl_replace_line("", 0);
-			rl_redisplay();
-		}
-		else
-			write(STDOUT_FILENO, "\n", 1);
-	}
+	(void)sig;
+		g_exit_code = 130;
+		rl_on_new_line();
+		rl_redisplay();
 }
 
 bool	is_blank(const char *buf)

@@ -61,10 +61,16 @@ void	free_cmd(struct s_cmd *command)
 
 void	execute_command1(struct s_execcmd *ecmd, char **custom_environ)
 {
+	char	*full_path;
 	pid_t	pid;
 	int		status;
-	char	*full_path;
 
+	full_path = find_command_in_path(ecmd->argv[0], custom_environ);
+	if (!full_path && access(ecmd->argv[0], F_OK) != 0)
+	{
+		g_exit_code = check_error(ecmd->argv[0]);
+		return ;
+	}
 	pid = fork();
 	if (pid < 0)
 	{
@@ -73,22 +79,14 @@ void	execute_command1(struct s_execcmd *ecmd, char **custom_environ)
 	}
 	else if (pid == 0)
 	{
-		full_path = find_command_in_path(ecmd->argv[0], custom_environ);
 		if (full_path)
 		{
 			execve(full_path, ecmd->argv, custom_environ);
-			if (errno)
-				g_exit_code = check_error(ecmd->argv[0]);
+			free(full_path);
 		}
 		else
-		{
 			execve(ecmd->argv[0], ecmd->argv, custom_environ);
-			if (errno)
-				g_exit_code = check_error(ecmd->argv[0]);
-		}
-		free_cmd((struct s_cmd*)ecmd);
-		ft_free_char_arr(custom_environ);
-		exit(g_exit_code);
+		exit(errno);
 	}
 	else
 	{
@@ -96,6 +94,7 @@ void	execute_command1(struct s_execcmd *ecmd, char **custom_environ)
 		if (WIFEXITED(status))
 			g_exit_code = WEXITSTATUS(status);
 	}
+	free(full_path);
 }
 
 int	exec_cmd(struct s_cmd *cmd, char **custom_environ)
@@ -124,8 +123,8 @@ int	runcmd(struct s_cmd *cmd, char **env)
 {
 	char	type;
 
-	// if (cmd == 0)
-	// 	exit(1);
+	if (cmd == 0)
+		exit(1);
 	type = cmd->type;
 	if (type == ' ')
 		exec_cmd(cmd, env);
