@@ -5,8 +5,10 @@ int		g_exit_code;
 void	execute_command(char *new_buf, char **custom_env)
 {
 	struct s_cmd	*cmd;
-	
-	cmd = parsecmd(new_buf);
+
+	signal(SIGQUIT, SIG_DFL);
+	signal(SIGINT, SIG_DFL);
+	cmd = parsecmd(new_buf, custom_env);
 	free(new_buf);
 	if (cmd->flag != 1)
 		runcmd(cmd, custom_env);
@@ -33,9 +35,10 @@ void	process_input(char **custom_env)
 	char	*new_buf;
 	char	*buf;
 
+	g_exit_code = 0;
 	while (1)
 	{
-		buf = readline("My_Fuckingshell# ");
+		buf = readline("fuckingshell# ");
 		new_buf = read_and_trim_line(buf);
 		if (!new_buf)
 			break ;
@@ -82,7 +85,6 @@ int	main(int ac, char **av, char **env)
 
 	(void)ac;
 	(void)av;
-	g_exit_code = 0;
 	signal(SIGQUIT, SIG_IGN);
 	signal(SIGINT, ctrl_c_handler);
 	custom_env = clone_env(env);

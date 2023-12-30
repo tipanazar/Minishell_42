@@ -7,57 +7,70 @@ char	*move_past_whitespace(char *s, char *es, const char *whitespace)
 	return (s);
 }
 
-int	get_alphanumeric_token(char **s, char *es, const char *whitespace,
-		const char *symbols)
+void	skip_non_special_tokens(char **s, char *es)
 {
-	while (*s < es && !ft_strchr(whitespace, **s) && !ft_strchr(symbols, **s))
-		(*s)++;
-	if (*s < es)
-		**s = '\0';
-	return ('a');
+	while (*s < es && !ft_strchr(" \t\r\n\v", **s) && !ft_strchr("<|>", **s))
+	{
+		if (**s == '\"')
+		{
+			(*s)++;
+			while (*s < es && **s != '\"')
+				(*s)++;
+		}
+		else if (**s == '\'')
+		{
+			(*s)++;
+			while (*s < es && **s != '\'')
+				(*s)++;
+		}
+		if (*s < es)
+			(*s)++;
+	}
 }
 
-int	process_symbol_or_alpha(char **s, char *es, const char *whitespace,
-		const char *symbols)
+void	process_special_tokens(char **s, int *token)
 {
-	int	ret;
-
-	if (ft_strncmp(*s, ">>", 2) == 0 || ft_strncmp(*s, "<<", 2) == 0)
-	{
-		if (**s == '>')
-			ret = '+';
-		else
-			ret = '-';
-		*s += 2;
-	}
-	else if (**s == '|' || **s == '<' || **s == '>')
-	{
-		ret = **s;
+	if (*token == '|')
 		(*s)++;
+	else if (*token == ';')
+		(*s)++;
+	else if (*token == '>')
+	{
+		(*s)++;
+		if (**s == '>')
+		{
+			*token = '+';
+			(*s)++;
+		}
 	}
-	else
-		ret = get_alphanumeric_token(s, es, whitespace, symbols);
-	return (ret);
+	else if (*token == '<')
+	{
+		(*s)++;
+		if (**s == '<')
+		{
+			*token = '-';
+			(*s)++;
+		}
+	}
+	else if (*token != '\0')
+		*token = 'a';
 }
 
 int	get_token(char **ps, char *es, char **q, char **eq)
 {
 	char		*s;
 	const char	*whitespace;
-	const char	*symbols;
 	int			ret;
 
 	s = *ps;
 	whitespace = " \t\r\n\v";
-	symbols = "<|>";
 	s = move_past_whitespace(s, es, whitespace);
 	if (q)
 		*q = s;
 	ret = *s;
-	if (*s == 0)
-		(void)s;
-	else
-		ret = process_symbol_or_alpha(&s, es, whitespace, symbols);
+	process_special_tokens(&s, &ret);
+	if (ret == 'a')
+		skip_non_special_tokens(&s, es);
 	if (eq)
 		*eq = s;
 	*ps = move_past_whitespace(s, es, whitespace);

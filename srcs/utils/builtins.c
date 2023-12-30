@@ -90,7 +90,7 @@ int	builtins(char *buf, char **custom_environ)
 	}
 	if (ft_strncmp(buf, "echo ", 5) == 0 || ft_strcmp(buf, "echo") == 0)
 	{
-		echo(buf + 4, custom_environ);
+		echo(buf + 4);
 		return (1);
 	}
 	return (0);
