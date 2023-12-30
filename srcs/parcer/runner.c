@@ -110,6 +110,7 @@ int	exec_cmd(struct s_cmd *cmd, char **custom_environ)
 		if (builtins(ecmd->argv, custom_environ))
 			return (g_exit_code);
 		execute_command1(ecmd, custom_environ);
+		//! should we clear ecmd->argv?
 	}
 	return (g_exit_code);
 }

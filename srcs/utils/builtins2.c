@@ -2,12 +2,9 @@
 
 void	echo(char **buf_args)
 {
-	// int					idx;
-	int					newline;
+	int		newline;
 
-	// idx = 0;
 	newline = 1;
-	// ft_printf("%s", buf_args[0]);
 	echo_n_handler(buf_args[0], &newline);
 	ft_print_str_arr(buf_args + !newline, newline);
 	g_exit_code = 0;
