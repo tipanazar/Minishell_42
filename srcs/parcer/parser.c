@@ -47,7 +47,7 @@ struct s_cmd	*parseredirs(struct s_cmd *cmd, char **ps, char *es)
 			cmd->flag = false;
 			return cmd;
 		}
-		if (get_token(ps, es, &q, &eq) != 'a')
+		if (get_token(ps, es, &q, &eq) != 'a' && cmd->flag != 1)
 		{
 			write(2, "syntax error near unexpected token `newline'\n", 46);
 			g_exit_code = 2;
