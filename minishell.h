@@ -18,66 +18,65 @@
 # include <termcap.h>
 # include <unistd.h>
 
+extern int			g_exit_code;
 
-extern int				g_exit_code;
-
-typedef struct 			s_parseexec
+typedef struct s_parseexec
 {
-	char				*q;
-	char				*eq;
-	int					tok;
-}						t_parseexec;
+	char			*q;
+	char			*eq;
+	int				tok;
+}					t_parseexec;
 
-struct					s_cmd
+struct				s_cmd
 {
-	int					type;
-	int					flag;
+	int				type;
+	int				flag;
 };
 
-typedef struct 			s_export
+typedef struct s_export
 {
-	bool				has_equal_sign;
-	char				inside_quotes;
-	char				*quote_type;
-}						t_ValidationArgs;
+	bool			has_equal_sign;
+	char			inside_quotes;
+	char			*quote_type;
+}					t_ValidationArgs;
 
-struct					s_execcmd
+struct				s_execcmd
 {
-	int					type;
-	char				**argv;
-	int					argc;
-	int					max_args;
+	int				type;
+	char			**argv;
+	int				argc;
+	int				max_args;
 };
 
-struct					s_echo_args
+struct				s_echo_args
 {
-	char				*buf;
-	char				**custom_environ;
-	int					*idx;
-	int					*inside_sing_quotes;
-	int					newline;
+	char			*buf;
+	char			**custom_environ;
+	int				*idx;
+	int				*inside_sing_quotes;
+	int				newline;
 };
 
-struct					s_redircmd
+struct				s_redircmd
 {
-	int					type;
-	struct s_cmd		*cmd;
-	char				*file;
-	int					mode;
-	int					fd;
+	int				type;
+	struct s_cmd	*cmd;
+	char			*file;
+	int				mode;
+	int				fd;
 };
 
-struct					s_pipecmd
+struct				s_pipecmd
 {
-	int					type;
-	struct s_cmd		*left;
-	struct s_cmd		*right;
+	int				type;
+	struct s_cmd	*left;
+	struct s_cmd	*right;
 };
 
-// char	*check_for_quotes(char *buffer);
+char	*check_for_quotes(char *buffer);
 int						runcmd(struct s_cmd *cmd, char **env);
 int						fork1(void);
-int	exec_cmd(struct s_cmd *cmd, char **custom_environ);
+int						exec_cmd(struct s_cmd *cmd, char **custom_environ);
 int						get_token(char **ps, char *es, char **q, char **eq);
 int						peek(char **ps, char *es, char *toks);
 char					*mkcopy(char *s, char *es);
@@ -130,5 +129,6 @@ char					*check_for_pipes(char *buffer);
 bool handle_command(char *new_buf, char ***custom_env);
 int builtin_exit(char *buf);
 char	*parseexec_arg_process(char *q, char *eq, char **custom_env);
+int	handle_double_redirect_left(struct s_redircmd *rcmd, char **custom_environ);
 
 #endif

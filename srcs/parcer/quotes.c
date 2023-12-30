@@ -1,60 +1,32 @@
 #include "../../minishell.h"
 
-int	count_quotes(char *arg, char quote_type)
-{
-	int	quote_count;
-	int	i;
-	int	in_double_quotes;
+// int	count_quotes(char *arg, char quote_type)
+// {
+// 	int	quote_count;
+// 	int	i;
+// 	int	in_double_quotes;
 
-	in_double_quotes = 0;
-	quote_count = 0;
-	i = 0;
-	while (arg[i] != '\0')
-	{
-		if (arg[i] == '\"')
-		{
-			in_double_quotes = !in_double_quotes;
-		}
-		if (arg[i] == quote_type && (!in_double_quotes || quote_type == '\"'))
-			quote_count++;
-		i++;
-	}
-	return (quote_count);
-}
-
-char	*handle_odd_quotes(char *arg, int quote_count, char quote_type)
-{
-	char	*new_arg;
-	char	extra_input[256];
-	char	*temp_arg;
-	int	    len;
-
-	new_arg = arg;
-	temp_arg = NULL;
-	while (quote_count % 2 != 0)
-	{
-		extra_input[0] = '\0';
-		ft_printf("quote> ");
-		len = read(0, extra_input, 255);
-		if (extra_input[len - 1] == '\n')
-			extra_input[len - 1] = '\0';
-		quote_count += count_quotes(extra_input, quote_type);
-		temp_arg = ft_strdup(new_arg);
-		ft_strjoin(temp_arg, "\n");
-		ft_strjoin(temp_arg, extra_input);
-		if (new_arg != arg)
-			free(new_arg);
-		new_arg = temp_arg;
-	}
-	return (new_arg);
-}
+// 	in_double_quotes = 0;
+// 	quote_count = 0;
+// 	i = 0;
+// 	while (arg[i] != '\0')
+// 	{
+// 		if (arg[i] == '\"')
+// 		{
+// 			in_double_quotes = !in_double_quotes;
+// 		}
+// 		if (arg[i] == quote_type && (!in_double_quotes || quote_type == '\"'))
+// 			quote_count++;
+// 		i++;
+// 	}
+// 	return (quote_count);
+// }
 
 int	calculate_buf_if(int *i, int *in_double_quotes, char quote_type, char *arg)
 {
 	if (arg[(*i)] == '\"')
 		(*in_double_quotes) = !(*in_double_quotes);
-	if (arg[(*i)] == quote_type && (!(*in_double_quotes) || \
-	quote_type == '\"'))
+	if (arg[(*i)] == quote_type && (!(*in_double_quotes) || quote_type == '\"'))
 	{
 		(*i)++;
 		return (1);
@@ -100,7 +72,8 @@ char	*builtin_getenv(const char *var, char **envp)
 	i = 0;
 	while (envp[i])
 	{
-		if (!ft_strncmp(envp[i], var, ft_strlen(var)) && envp[i][ft_strlen(var)] == '=')
+		if (!ft_strncmp(envp[i], var, ft_strlen(var))
+			&& envp[i][ft_strlen(var)] == '=')
 		{
 			return (&envp[i][ft_strlen(var) + 1]);
 		}
@@ -163,8 +136,8 @@ int	calculate_buffer_size(char *arg, char quote_type, int in_quotes,
 		if (calculate_buf_if(&i, &in_double_quotes, quote_type, arg))
 			in_quotes = !in_quotes;
 		else if (arg[i] == '$' && ((!in_quotes && quote_type == '\'')
-				|| (in_quotes && quote_type == '\"'))
-			&& calculate_buf_var_code_error(&arg, &i, &size))
+						|| (in_quotes && quote_type == '\"'))
+						&& calculate_buf_var_code_error(&arg, &i, &size))
 		{
 			var_value = handle_env_var(arg, &i, &memory_allocated, envp);
 			calculate_buf_var_val(&var_value, &size, memory_allocated);
@@ -222,14 +195,16 @@ char	*replace_env_vars(char *arg, char q_ty, int in_q, char **envp)
 
 	result = malloc((calculate_buffer_size(arg, q_ty, 0, envp)) + 1);
 	if (!result)
+	{
 		return (NULL);
+	}
 	replace_env_vars_set(&i[0], &i[1], &ch_va[2]);
 	while (arg[i[0]] != '\0')
 	{
 		if (calculate_buf_if(&i[0], &ch_va[2], q_ty, arg))
 			in_q = !in_q;
 		else if (arg[i[0]] == '$' && ((!in_q && q_ty == '\'') || (in_q
-					&& q_ty == '\"')))
+						&& q_ty == '\"')))
 		{
 			if (replace_env_vars_exit_code(&ch_va[0], arg, &i[0], &var_val))
 				var_val = handle_env_var(arg, &i[0], &ch_va[1], envp);
@@ -239,27 +214,22 @@ char	*replace_env_vars(char *arg, char q_ty, int in_q, char **envp)
 		else
 			result[i[1]++] = arg[i[0]++];
 	}
-	return (replace_env_vars_return(&result, i[1]));
+	result[i[1]] = '\0';
+	return (result);
 }
 
 char	*handle_quotes(char *arg, char quote_type, char **envp)
 {
-	int		quote_count;
-	char	*new_arg;
 	char	*result;
 
-	quote_count = count_quotes(arg, quote_type);
-	new_arg = handle_odd_quotes(arg, quote_count, quote_type);
-	result = replace_env_vars(new_arg, quote_type, 0, envp);
-	if (new_arg != arg)
-		free(new_arg);
+	result = replace_env_vars(arg, quote_type, 0, envp);
 	return (result);
 }
 
 char	*parseexec_arg_process(char *q, char *eq, char **envp)
 {
-	char	*arg;
-	char	*processed_arg;
+	char *arg;
+	char *processed_arg;
 
 	arg = mkcopy(q, eq);
 	processed_arg = handle_quotes(arg, '\'', envp);

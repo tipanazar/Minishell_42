@@ -18,7 +18,6 @@ struct s_cmd	*parsecmd(char *s, char **custom_env)
 	return (cmd);
 }
 
-
 struct s_cmd	*parsepipe(char **ps, char *es, char **custom_env)
 {
 	struct s_cmd	*cmd;
@@ -45,23 +44,24 @@ struct s_cmd	*parseredirs(struct s_cmd *cmd, char **ps, char *es)
 		{
 			g_exit_code = 2;
 			cmd->flag = false;
-			return cmd;
+			return (cmd);
 		}
-		if (get_token(ps, es, &q, &eq) != 'a')
+		if (get_token(ps, es, &q, &eq) != 'a' && cmd->flag != 1)
 		{
 			write(2, "syntax error near unexpected token `newline'\n", 46);
 			g_exit_code = 2;
 			cmd->flag = 1;
 			return (cmd);
 		}
-		if (tok == '<' || tok == '>' || tok == '+' || tok == '%')
+		if (tok == '<' || tok == '>' || tok == '+' || tok == '-')
 			cmd = redircmd(cmd, mkcopy(q, eq), tok);
 	}
 	return (cmd);
 }
 
 void	parseexec_middleware(t_parseexec **parseexec_vars,
-							struct s_execcmd **cmd, char **custom_env)
+							struct s_execcmd **cmd,
+							char **custom_env)
 {
 	if ((*parseexec_vars)->tok != 'a')
 	{
@@ -69,13 +69,16 @@ void	parseexec_middleware(t_parseexec **parseexec_vars,
 		return ;
 	}
 	else
+	{
 		(*cmd)->argv[(*cmd)->argc] = parseexec_arg_process((*parseexec_vars)->q,
-											(*parseexec_vars)->eq, custom_env);
+															(*parseexec_vars)->eq,
+															custom_env);
+	}
 	(*cmd)->argc++;
 	if ((*cmd)->argc >= (*cmd)->max_args)
 	{
 		(*cmd)->max_args = (*cmd)->argc + 1;
-		(*cmd)->argv = realloc((*cmd)->argv, (*cmd)->max_args
+		(*cmd)->argv = ft_realloc((*cmd)->argv, (*cmd)->max_args
 				* sizeof(char *));
 	}
 }
