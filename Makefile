@@ -12,6 +12,7 @@ SRCS = main.c \
 main_help.c    \
 parcer/runner.c \
 parcer/run_redirect.c \
+parcer/run_heredoc.c \
 parcer/run_pipe.c \
 parcer/parce-utils.c \
 parcer/get-token.c \

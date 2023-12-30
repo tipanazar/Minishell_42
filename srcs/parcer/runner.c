@@ -69,16 +69,19 @@ void	execute_command1(struct s_execcmd *ecmd, char **custom_environ)
 	if (!full_path && access(ecmd->argv[0], F_OK) != 0)
 	{
 		g_exit_code = check_error(ecmd->argv[0]);
+		free(full_path);
 		return ;
 	}
 	pid = fork();
 	if (pid < 0)
 	{
 		perror("fork");
+		free(full_path);
 		exit(1);
 	}
 	else if (pid == 0)
 	{
+		signal(SIGQUIT, SIG_DFL);
 		if (full_path)
 		{
 			execve(full_path, ecmd->argv, custom_environ);
@@ -93,6 +96,11 @@ void	execute_command1(struct s_execcmd *ecmd, char **custom_environ)
 		waitpid(pid, &status, 0);
 		if (WIFEXITED(status))
 			g_exit_code = WEXITSTATUS(status);
+		if (WIFSIGNALED(status) && WTERMSIG(status) == SIGQUIT)
+		{
+			write(STDOUT_FILENO, "Quit (core dumped)\n", 19);
+			g_exit_code = 131;
+		}
 	}
 	free(full_path);
 }

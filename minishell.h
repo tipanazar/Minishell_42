@@ -127,5 +127,5 @@ void				pwd(void);
 char				*check_for_pipes(char *buffer);
 bool				handle_command(char *new_buf, char ***custom_env);
 int					builtin_exit(char *buf);
-
+int					handle_double_redirect_left(struct s_redircmd *rcmd, char **custom_environ);
 #endif

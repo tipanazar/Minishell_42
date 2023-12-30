@@ -65,10 +65,23 @@ char	*read_and_trim_line(char *buf)
 
 void	ctrl_c_handler(int sig)
 {
-	(void)sig;
-		g_exit_code = 130;
-		rl_on_new_line();
-		rl_redisplay();
+	pid_t	pid;
+	int		status;
+
+	pid = waitpid(-1, &status, WNOHANG);
+	if (sig == SIGINT)
+	{
+		if (pid == -1)
+		{
+			g_exit_code = 130;
+			write(STDOUT_FILENO, "\n", 1);
+			rl_on_new_line();
+			rl_replace_line("", 0);
+			rl_redisplay();
+		}
+		else
+			write(STDOUT_FILENO, "\n", 1);
+	}
 }
 
 bool	is_blank(const char *buf)

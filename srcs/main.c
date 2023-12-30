@@ -83,8 +83,8 @@ int	main(int ac, char **av, char **env)
 	(void)ac;
 	(void)av;
 	g_exit_code = 0;
-	signal(SIGINT, ctrl_c_handler);
 	signal(SIGQUIT, SIG_IGN);
+	signal(SIGINT, ctrl_c_handler);
 	custom_env = clone_env(env);
 	process_input(custom_env);
 	return (0);
