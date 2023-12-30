@@ -108,6 +108,11 @@ int	exec_cmd(struct s_cmd *cmd, char **custom_environ)
 	{
 		if (ecmd->argv[0] == 0)
 			exit(0);
+		int idx = -1;
+			while (ecmd->argv[++idx])
+	{
+		ft_printf("Arg: %s\n", ecmd->argv[idx]);
+	}	
 		buf = concat_args(ecmd->argv);
 		if (builtins(buf, custom_environ))
 		{

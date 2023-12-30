@@ -22,7 +22,8 @@ utils/builtins.c \
 utils/builtins2.c \
 utils/full_path.c \
 utils/echo_utils.c \
-utils/export.c
+utils/export.c	\
+parcer/quotes.c
 
 OBJS = $(patsubst %.c,$(OBJDIR)/%.o,$(SRCS))
 

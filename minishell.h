@@ -74,7 +74,7 @@ struct					s_pipecmd
 	struct s_cmd		*right;
 };
 
-char	*check_for_quotes(char *buffer);
+// char	*check_for_quotes(char *buffer);
 int						runcmd(struct s_cmd *cmd, char **env);
 int						fork1(void);
 int	exec_cmd(struct s_cmd *cmd, char **custom_environ);
@@ -82,12 +82,12 @@ int						get_token(char **ps, char *es, char **q, char **eq);
 int						peek(char **ps, char *es, char *toks);
 char					*mkcopy(char *s, char *es);
 struct s_cmd			*execcmd(void);
-struct s_cmd			*parsecmd(char *s);
+struct s_cmd			*parsecmd(char *s, char **custom_env);
 struct s_cmd			*redircmd(struct s_cmd *subcmd, char *file, int type);
 struct s_cmd			*pipecmd(struct s_cmd *left, struct s_cmd *right);
 struct s_cmd			*parseredirs(struct s_cmd *cmd, char **ps, char *es);
-struct s_cmd			*parsepipe(char **ps, char *es);
-struct s_cmd			*parseexec(char **ps, char *es);
+struct s_cmd			*parsepipe(char **ps, char *es, char **custom_env);
+struct s_cmd			*parseexec(char **ps, char *es, char **custom_env);
 char					*concat_args(char **args);
 int						builtins(char *buf, char **env);
 void					env(char **env);
@@ -103,7 +103,7 @@ void					pipe_command(struct s_pipecmd *pcmd, char **env);
 char					*read_and_trim_line(char *buf);
 void					ctrl_c_handler(int sig);
 bool					is_blank(const char *buf);
-void					echo(char *buf, char **custom_environ);
+void					echo(char *buf);
 void					echo_n_handler(char *buf, int *idx, int *newline);
 int						process_quotes(char *buf, int *idx,
 							int *inside_sing_quotes);
@@ -129,5 +129,6 @@ void					pwd(void);
 char					*check_for_pipes(char *buffer);
 bool handle_command(char *new_buf, char ***custom_env);
 int builtin_exit(char *buf);
+char	*parseexec_arg_process(char *q, char *eq, char **custom_env);
 
 #endif

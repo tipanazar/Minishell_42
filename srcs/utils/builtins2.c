@@ -1,22 +1,16 @@
 #include "../../minishell.h"
 
-void	echo(char *buf, char **custom_environ)
+void	echo(char *buf)
 {
 	int					idx;
-	int					inside_sing_quotes;
 	int					newline;
-	struct s_echo_args	args;
 
 	idx = 0;
-	inside_sing_quotes = 0;
 	newline = 1;
 	echo_n_handler(buf, &idx, &newline);
-	args.buf = buf;
-	args.custom_environ = custom_environ;
-	args.idx = &idx;
-	args.inside_sing_quotes = &inside_sing_quotes;
-	args.newline = newline;
-	process_echo_command(&args);
+	ft_printf("%s", buf + idx);
+	if(newline)
+		ft_printf("\n");
 	g_exit_code = 0;
 }
 

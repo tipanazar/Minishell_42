@@ -8,7 +8,7 @@ void	execute_command(char *new_buf, char **custom_env)
 
 	signal(SIGQUIT, SIG_DFL);
 	signal(SIGINT, SIG_DFL);
-	cmd = parsecmd(new_buf);
+	cmd = parsecmd(new_buf, custom_env);
 	free(new_buf);
 	if (cmd->flag != 1)
 		runcmd(cmd, custom_env);
@@ -46,11 +46,11 @@ void	process_input(char **custom_env)
 			free(new_buf);
 			continue ;
 		}
-		if (check_for_quotes(new_buf) == NULL)
-		{
-			free(new_buf);
-			continue ;
-		}
+		// if (check_for_quotes(new_buf) == NULL)
+		// {
+		// 	free(new_buf);
+		// 	continue ;
+		// }
 		if (ft_strcmp(new_buf, "exit") == 0 || ft_strncmp(new_buf, "exit ",
 				5) == 0)
 		{
