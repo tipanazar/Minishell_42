@@ -1,16 +1,15 @@
 #include "../../minishell.h"
 
-void	echo(char *buf)
+void	echo(char **buf_args)
 {
-	int					idx;
+	// int					idx;
 	int					newline;
 
-	idx = 0;
+	// idx = 0;
 	newline = 1;
-	echo_n_handler(buf, &idx, &newline);
-	ft_printf("%s", buf + idx);
-	if(newline)
-		ft_printf("\n");
+	// ft_printf("%s", buf_args[0]);
+	echo_n_handler(buf_args[0], &newline);
+	ft_print_str_arr(buf_args + !newline, newline);
 	g_exit_code = 0;
 }
 

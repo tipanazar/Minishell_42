@@ -75,22 +75,22 @@ void	unset(char *buf, char ***custom_environ)
 	g_exit_code = 0;
 }
 
-int	builtins(char *buf, char **custom_environ)
+int	builtins(char **buf_args, char **custom_environ)
 {
-	if (ft_strncmp(buf, "pwd ", 4) == 0 || ft_strcmp(buf, "pwd") == 0)
+	if (ft_strcmp(buf_args[0], "pwd") == 0)
 	{
 		pwd();
 		return (1);
 	}
-	if (ft_strncmp(buf, "env ", 4) == 0 || ft_strcmp(buf, "env") == 0)
+	if (ft_strcmp(buf_args[0], "env") == 0)
 	{
-		ft_print_str_arr(custom_environ);
+		ft_print_str_arr(custom_environ, true);
 		g_exit_code = 0;
 		return (1);
 	}
-	if (ft_strncmp(buf, "echo ", 5) == 0 || ft_strcmp(buf, "echo") == 0)
+	if (ft_strcmp(buf_args[0], "echo") == 0)
 	{
-		echo(buf + 4);
+		echo(buf_args + 1);
 		return (1);
 	}
 	return (0);

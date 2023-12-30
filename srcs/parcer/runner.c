@@ -101,25 +101,14 @@ void	execute_command1(struct s_execcmd *ecmd, char **custom_environ)
 int	exec_cmd(struct s_cmd *cmd, char **custom_environ)
 {
 	struct s_execcmd	*ecmd;
-	char				*buf;
 
 	ecmd = (struct s_execcmd *)cmd;
 	if (ecmd->argv[0] != NULL)
 	{
 		if (ecmd->argv[0] == 0)
 			exit(0);
-		int idx = -1;
-			while (ecmd->argv[++idx])
-	{
-		ft_printf("Arg: %s\n", ecmd->argv[idx]);
-	}	
-		buf = concat_args(ecmd->argv);
-		if (builtins(buf, custom_environ))
-		{
-			free(buf);
+		if (builtins(ecmd->argv, custom_environ))
 			return (g_exit_code);
-		}
-		free(buf);
 		execute_command1(ecmd, custom_environ);
 	}
 	return (g_exit_code);

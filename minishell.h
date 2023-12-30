@@ -89,7 +89,7 @@ struct s_cmd			*parseredirs(struct s_cmd *cmd, char **ps, char *es);
 struct s_cmd			*parsepipe(char **ps, char *es, char **custom_env);
 struct s_cmd			*parseexec(char **ps, char *es, char **custom_env);
 char					*concat_args(char **args);
-int						builtins(char *buf, char **env);
+int						builtins(char **buf_args, char **env);
 void					env(char **env);
 char					*custom_getenv(char *name, char **custom_environ,
 							bool full_str);
@@ -103,8 +103,8 @@ void					pipe_command(struct s_pipecmd *pcmd, char **env);
 char					*read_and_trim_line(char *buf);
 void					ctrl_c_handler(int sig);
 bool					is_blank(const char *buf);
-void					echo(char *buf);
-void					echo_n_handler(char *buf, int *idx, int *newline);
+void					echo(char **buf);
+void					echo_n_handler(char *buf, int *newline);
 int						process_quotes(char *buf, int *idx,
 							int *inside_sing_quotes);
 void					handle_variable_expansion(char *buf,

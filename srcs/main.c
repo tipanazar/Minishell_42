@@ -59,7 +59,6 @@ void	process_input(char **custom_env)
 			{
 				rl_clear_history();
 				ft_free_char_arr(custom_env);
-				ft_printf("Exit: %d\n", g_exit_code);
 				free(new_buf);
 				exit(g_exit_code);
 			}
