@@ -24,7 +24,7 @@ parcer/quotes.c	\
 builtins/export.c	\
 builtins/echo.c \
 builtins/builtins.c \
-builtins/unset.c \
+builtins/cd.c \
 
 OBJS = $(patsubst %.c,$(OBJDIR)/%.o,$(SRCS))
 
