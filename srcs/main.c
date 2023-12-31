@@ -2,13 +2,13 @@
 
 int		g_exit_code;
 
-void	execute_command(char *new_buf, char **custom_env)
+void	execute_command(char *new_buf, char ***custom_env)
 {
 	struct s_cmd	*cmd;
 
 	signal(SIGQUIT, SIG_DFL);
 	signal(SIGINT, SIG_DFL);
-	cmd = parsecmd(new_buf, custom_env);
+	cmd = parsecmd(new_buf, *custom_env);
 	free(new_buf);
 	if (cmd->flag != 1)
 		runcmd(cmd, custom_env);
@@ -30,7 +30,7 @@ char	**clone_env(char **env)
 	return (custom_env);
 }
 
-void	process_input(char **custom_env)
+void	process_input(char ***custom_env)
 {
 	char	*new_buf;
 	char	*buf;
@@ -59,7 +59,7 @@ void	process_input(char **custom_env)
 			if (!builtin_exit(new_buf + 4))
 			{
 				rl_clear_history();
-				ft_free_char_arr(custom_env);
+				ft_free_char_arr(*custom_env);
 				free(new_buf);
 				exit(g_exit_code);
 			}
@@ -71,11 +71,13 @@ void	process_input(char **custom_env)
 			free(new_buf);
 			continue ;
 		}
-		if (!handle_command(new_buf, &custom_env))
-			execute_command(new_buf, custom_env);
+		// if (!handle_command(new_buf, &custom_env))
+		if (ft_strlen(new_buf) && ft_isspace(new_buf[0]) == 0)
+			add_history(new_buf);
+		execute_command(new_buf, custom_env);
 	}
 	rl_clear_history();
-	ft_free_char_arr(custom_env);
+	ft_free_char_arr(*custom_env);
 }
 
 int	main(int ac, char **av, char **env)
@@ -87,6 +89,6 @@ int	main(int ac, char **av, char **env)
 	signal(SIGQUIT, SIG_IGN);
 	signal(SIGINT, ctrl_c_handler);
 	custom_env = clone_env(env);
-	process_input(custom_env);
+	process_input(&custom_env);
 	return (0);
 }

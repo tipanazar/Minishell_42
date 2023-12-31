@@ -86,30 +86,32 @@ char	*validate_buffer(char *buf, t_ValidationArgs *args)
 	return (final_validation_checks(buf, idx, args));
 }
 
-void	export(char *buf, char ***custom_environ)
+void	export(char **buf_arr, char ***custom_environ)
 {
-	char	*quote_type;
-	char	*new_buf;
-	int		idx;
+		ft_print_str_arr(buf_arr, true);
+	(void) custom_environ;
+	// char	*quote_type;
+	// char	*new_buf;
+	// int		idx;
 
-	quote_type = export_validator(buf);
-	if (!quote_type)
-		return ;
-	if (quote_type[0])
-		new_buf = ft_str_remove_chars(buf, quote_type);
-	else
-		new_buf = ft_strdup(buf);
-	free(quote_type);
-	idx = -1;
-	while ((*custom_environ)[++idx])
-	{
-		if (update_env_var(custom_environ, new_buf, idx))
-		{
-			free(new_buf);
-			return ;
-		}
-	}
-	add_new_env_var(custom_environ, new_buf, idx);
-	free(new_buf);
-	g_exit_code = 0;
+	// quote_type = export_validator(buf);
+	// if (!quote_type)
+	// 	return ;
+	// if (quote_type[0])
+	// 	new_buf = ft_str_remove_chars(buf, quote_type);
+	// else
+	// 	new_buf = ft_strdup(buf);
+	// free(quote_type);
+	// idx = -1;
+	// while ((*custom_environ)[++idx])
+	// {
+	// 	if (update_env_var(custom_environ, new_buf, idx))
+	// 	{
+	// 		free(new_buf);
+	// 		return ;
+	// 	}
+	// }
+	// add_new_env_var(custom_environ, new_buf, idx);
+	// free(new_buf);
+	// g_exit_code = 0;
 }

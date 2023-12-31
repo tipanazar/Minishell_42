@@ -57,25 +57,27 @@ void	ft_cd(char *buf, char **custom_environ)
 	free(new_buf);
 }
 
-void	unset(char *buf, char ***custom_environ)
+void	unset(char **buf_arr, char ***custom_environ)
 {
-	char	**to_delete;
-	int		idx;
+	ft_print_str_arr(buf_arr, true);
+	(void) custom_environ;
+	// char	**to_delete;
+	// int		idx;
 
-	to_delete = create_unset_arr(buf, *custom_environ);
-	if (!to_delete)
-		return ;
-	idx = 0;
-	while (to_delete[idx])
-	{
-		ft_remove_str_from_char_arr(custom_environ, to_delete[idx]);
-		idx++;
-	}
-	ft_free_char_arr(to_delete);
-	g_exit_code = 0;
+	// to_delete = create_unset_arr(buf, *custom_environ);
+	// if (!to_delete)
+	// 	return ;
+	// idx = 0;
+	// while (to_delete[idx])
+	// {
+	// 	ft_remove_str_from_char_arr(custom_environ, to_delete[idx]);
+	// 	idx++;
+	// }
+	// ft_free_char_arr(to_delete);
+	// g_exit_code = 0;
 }
 
-int	builtins(char **buf_args, char **custom_environ)
+int	builtins(char **buf_args, int argc, char ***custom_environ)
 {
 	if (ft_strcmp(buf_args[0], "pwd") == 0)
 	{
@@ -84,7 +86,7 @@ int	builtins(char **buf_args, char **custom_environ)
 	}
 	if (ft_strcmp(buf_args[0], "env") == 0)
 	{
-		ft_print_str_arr(custom_environ, true);
+		ft_print_str_arr(*custom_environ, true);
 		g_exit_code = 0;
 		return (1);
 	}
@@ -92,6 +94,27 @@ int	builtins(char **buf_args, char **custom_environ)
 	{
 		echo(buf_args + 1);
 		return (1);
+	}
+	if (ft_strcmp(buf_args[0], "export") == 0)
+	{
+		if (argc == 1)
+			ft_printf("-minishell: export: no arguments provided\n");
+		else
+			export(buf_args + 1, custom_environ);
+		return (true);
+	}
+	else if (ft_strcmp(buf_args[0], "unset") == 0)
+	{
+		unset(buf_args + 1, custom_environ);
+		return (true);
+	}
+	else if (ft_strcmp(buf_args[0], "cd") == 0)
+	{
+		if(argc > 2)
+			ft_printf("-minishell: cd: too many arguments\n");
+		else
+			ft_cd(buf_args[1], *custom_environ);
+		return (true);
 	}
 	return (0);
 }
