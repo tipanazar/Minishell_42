@@ -24,5 +24,4 @@ void	ft_print_str_arr(char **str)
 		ft_printf("%s\n", str[i]);
 		i++;
 	}
-	ft_printf("\n");
 }

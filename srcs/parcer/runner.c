@@ -23,15 +23,7 @@ int	check_error(char *cmd)
 
 void	free_exec_cmd(struct s_execcmd *ecmd)
 {
-	int	i;
-
-	i = 0;
-	while (ecmd->argv[i])
-	{
-		free(ecmd->argv[i]);
-		i++;
-	}
-	free(ecmd->argv);
+			ft_free_char_arr(ecmd->argv);
 }
 
 void	free_cmd(struct s_cmd *command)
@@ -105,31 +97,23 @@ void	execute_command1(struct s_execcmd *ecmd, char **custom_environ)
 	free(full_path);
 }
 
-int	exec_cmd(struct s_cmd *cmd, char **custom_environ)
+int	exec_cmd(struct s_cmd *cmd, char ***custom_environ)
 {
 	struct s_execcmd	*ecmd;
-	char				*buf;
 
 	ecmd = (struct s_execcmd *)cmd;
 	if (ecmd->argv[0] != NULL)
 	{
 		if (ecmd->argv[0] == 0)
 			exit(0);
-		int idx = -1;
-			while (ecmd->argv[++idx])
-		buf = concat_args(ecmd->argv);
-		if (builtins(buf, custom_environ))
-		{
-			free(buf);
+		if (builtins(ecmd->argv, ecmd->argc, custom_environ))
 			return (g_exit_code);
-		}
-		free(buf);
-		execute_command1(ecmd, custom_environ);
+		execute_command1(ecmd, *custom_environ);
 	}
 	return (g_exit_code);
 }
 
-int	runcmd(struct s_cmd *cmd, char **env)
+int	runcmd(struct s_cmd *cmd, char ***env)
 {
 	char	type;
 

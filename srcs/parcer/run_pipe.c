@@ -9,7 +9,7 @@ void	setup_pipe(int pipefd[])
 	}
 }
 
-pid_t	execute_left_command(struct s_pipecmd *pcmd, char **env, int pipefd[])
+pid_t	execute_left_command(struct s_pipecmd *pcmd, char ***env, int pipefd[])
 {
 	pid_t	left_pid;
 
@@ -26,13 +26,13 @@ pid_t	execute_left_command(struct s_pipecmd *pcmd, char **env, int pipefd[])
 		close(pipefd[1]);
 		runcmd(pcmd->left, env);
 		free_cmd((struct s_cmd *)pcmd);
-		ft_free_char_arr(env);
+		ft_free_char_arr(*env);
 		exit(EXIT_SUCCESS);
 	}
 	return (left_pid);
 }
 
-pid_t	execute_right_command(struct s_pipecmd *pcmd, char **env, int pipefd[])
+pid_t	execute_right_command(struct s_pipecmd *pcmd, char ***env, int pipefd[])
 {
 	pid_t	right_pid;
 
@@ -49,13 +49,13 @@ pid_t	execute_right_command(struct s_pipecmd *pcmd, char **env, int pipefd[])
 		close(pipefd[0]);
 		runcmd(pcmd->right, env);
 		free_cmd((struct s_cmd *)pcmd);
-		ft_free_char_arr(env);
+		ft_free_char_arr(*env);
 		exit(EXIT_SUCCESS);
 	}
 	return (right_pid);
 }
 
-void	pipe_command(struct s_pipecmd *pcmd, char **env)
+void	pipe_command(struct s_pipecmd *pcmd, char ***env)
 {
 	int		pipefd[2];
 	pid_t	left_pid;

@@ -19,12 +19,12 @@ parcer/get-token.c \
 parcer/parser.c \
 utils/utils.c	  \
 utils/utils1.c	  \
-utils/builtins.c \
-utils/builtins2.c \
 utils/full_path.c \
-utils/echo_utils.c \
-utils/export.c	\
-parcer/quotes.c
+parcer/quotes.c	\
+builtins/export.c	\
+builtins/echo.c \
+builtins/builtins.c \
+builtins/cd.c \
 
 OBJS = $(patsubst %.c,$(OBJDIR)/%.o,$(SRCS))
 

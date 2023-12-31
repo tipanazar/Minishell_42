@@ -50,7 +50,7 @@ int	double_redirect_left(struct s_redircmd *rcmd)
 	return (1);
 }
 
-int	handle_double_redirect_left(struct s_redircmd *rcmd, char **custom_environ)
+int	handle_double_redirect_left(struct s_redircmd *rcmd, char ***custom_environ)
 {
 	int	original_stdin;
 	int	pipe_read_end;

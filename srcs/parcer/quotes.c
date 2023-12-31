@@ -1,27 +1,5 @@
 #include "../../minishell.h"
 
-// int	count_quotes(char *arg, char quote_type)
-// {
-// 	int	quote_count;
-// 	int	i;
-// 	int	in_double_quotes;
-
-// 	in_double_quotes = 0;
-// 	quote_count = 0;
-// 	i = 0;
-// 	while (arg[i] != '\0')
-// 	{
-// 		if (arg[i] == '\"')
-// 		{
-// 			in_double_quotes = !in_double_quotes;
-// 		}
-// 		if (arg[i] == quote_type && (!in_double_quotes || quote_type == '\"'))
-// 			quote_count++;
-// 		i++;
-// 	}
-// 	return (quote_count);
-// }
-
 int	calculate_buf_if(int *i, int *in_double_quotes, char quote_type, char *arg)
 {
 	if (arg[(*i)] == '\"')
@@ -228,12 +206,14 @@ char	*handle_quotes(char *arg, char quote_type, char **envp)
 
 char	*parseexec_arg_process(char *q, char *eq, char **envp)
 {
-	char *arg;
-	char *processed_arg;
+	char	*arg;
+	char	*processed_arg_sing;
+	char	*processed_arg_doub;
 
 	arg = mkcopy(q, eq);
-	processed_arg = handle_quotes(arg, '\'', envp);
-	processed_arg = handle_quotes(processed_arg, '\"', envp);
+	processed_arg_sing = handle_quotes(arg, '\'', envp);
+	processed_arg_doub = handle_quotes(processed_arg_sing, '\"', envp);
 	free(arg);
-	return (processed_arg);
+	free(processed_arg_sing);
+	return (processed_arg_doub);
 }
