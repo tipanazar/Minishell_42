@@ -1,89 +1,78 @@
 #include "../../minishell.h"
 
-char *move_past_whitespace(char *s, char *es, const char *whitespace)
+char	*move_past_whitespace(char *s, char *es, const char *whitespace)
 {
 	while (s < es && ft_strchr(whitespace, *s))
 		s++;
 	return (s);
 }
 
-char get_symbol_token(char **s)
+void	skip_non_special_tokens(char **s, char *es)
 {
-	char ret;
-
-	ret = **s;
-	(*s)++;
-	return (ret);
+	while (*s < es && !ft_strchr(" \t\r\n\v", **s) && !ft_strchr("<|>", **s))
+	{
+		if (**s == '\"')
+		{
+			(*s)++;
+			while (*s < es && **s != '\"')
+				(*s)++;
+		}
+		else if (**s == '\'')
+		{
+			(*s)++;
+			while (*s < es && **s != '\'')
+				(*s)++;
+		}
+		if (*s < es)
+			(*s)++;
+	}
 }
 
-char get_alphanumeric_token(char **s, char *es, const char *whitespace,
-							const char *symbols)
+void	process_special_tokens(char **s, int *token)
 {
-	char ret;
-
-	ret = 'a';
-	while (*s < es && !ft_strchr(whitespace, **s) && !ft_strchr(symbols, **s))
+	if (*token == '|')
 		(*s)++;
-	return (ret);
+	else if (*token == ';')
+		(*s)++;
+	else if (*token == '>')
+	{
+		(*s)++;
+		if (**s == '>')
+		{
+			*token = '+';
+			(*s)++;
+		}
+	}
+	else if (*token == '<')
+	{
+		(*s)++;
+		if (**s == '<')
+		{
+			*token = '-';
+			(*s)++;
+		}
+	}
+	else if (*token != '\0')
+		*token = 'a';
 }
 
-int get_token(char **ps, char *es, char **q, char **eq)
+int	get_token(char **ps, char *es, char **q, char **eq)
 {
-	char *s;
-	int ret;
-	const char *whitespace;
-	const char *symbols;
+	char		*s;
+	const char	*whitespace;
+	int			ret;
 
 	s = *ps;
 	whitespace = " \t\r\n\v";
-	symbols = "<|>";
 	s = move_past_whitespace(s, es, whitespace);
-
 	if (q)
 		*q = s;
 	ret = *s;
-
-	if (*s == '\'' || *s == '\"')
-	{
-		char quote = *s;
-		s++;
-		while (s < es && *s != quote)
-			s++;
-		if (s < es)
-		{
-			*s = '\0';   // Replace closing quote with null terminator
-			ret = quote; // Return the quote type as the token
-		}
-		else
-		{
-			ft_printf("Missing closing quote\n");
-			exit(-1);
-		}
-	}
-	else
-	 if (*s == 0)
-		(void)s;
-	else 
-	if (ft_strncmp(s, ">>", 2) == 0)
-	{
-		ret = '+';
-		s += 2;
-	}
-	else if (ft_strncmp(s, "<<", 2) == 0)
-	{
-		ret = '-';
-		s += 2;
-	}
-	else if (*s == '|' || *s == '<' || *s == '>')
-		ret = get_symbol_token(&s);
-	else
-		ret = get_alphanumeric_token(&s, es, whitespace, symbols);
-
+	process_special_tokens(&s, &ret);
+	if (ret == 'a')
+		skip_non_special_tokens(&s, es);
 	if (eq)
 		*eq = s;
-
-	s = move_past_whitespace(s, es, whitespace);
-	*ps = s;
-
-	return ret;
+	*ps = move_past_whitespace(s, es, whitespace);
+	return (ret);
 }

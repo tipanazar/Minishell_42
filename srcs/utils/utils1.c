@@ -67,10 +67,10 @@ char *concat_args(char **args)
 	return (str);
 }
 
-char *custom_getenv(char *name, char **custom_environ, bool full_str)
+char	*custom_getenv(char *name, char **custom_environ, bool full_str)
 {
-	int idx;
-	int len;
+	int	idx;
+	int	len;
 
 	idx = -1;
 	len = ft_strlen(name);

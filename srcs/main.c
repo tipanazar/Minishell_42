@@ -1,137 +1,48 @@
 #include "../minishell.h"
 
-void ctrl_c_handler(int sig)
+int		g_exit_code;
+
+void	execute_command(char *new_buf, char **custom_env)
 {
-	(void)sig;
-	rl_on_new_line();
-	ft_printf("minishell#\n");
-	rl_replace_line("", 0);
-	rl_on_new_line();
-	rl_redisplay();
+	struct s_cmd	*cmd;
+
+	signal(SIGQUIT, SIG_DFL);
+	signal(SIGINT, SIG_DFL);
+	cmd = parsecmd(new_buf, custom_env);
+	free(new_buf);
+	if (cmd->flag != 1)
+		runcmd(cmd, custom_env);
+	free_cmd(cmd);
 }
 
-bool is_blank(const char *buf)
+char	**clone_env(char **env)
 {
-	if (!buf)
-		return (true);
-	while (*buf)
-	{
-		if (!ft_isspace(*buf))
-			return (false);
-		buf++;
-	}
-	return (true);
-}
+	char	**custom_env;
+	int		idx;
 
-// void add_argument(struct s_execcmd *cmd, char *arg)
-// {
-// 	if (cmd->argv == NULL)
-// 	{
-// 		cmd->argv = malloc(INITIAL_MAXARGS * sizeof(char *));
-// 		cmd->max_args = INITIAL_MAXARGS;
-// 		cmd->argc = 0;
-// 	}
-// 	else if (cmd->argc >= cmd->max_args)
-// 	{
-// 		cmd->max_args *= 2;
-// 		cmd->argv = ft_realloc(cmd->argv, cmd->max_args * sizeof(char *));
-// 	}
-// 	cmd->argv[cmd->argc] = ft_strdup(arg);
-// 	cmd->argc++;
-// } //? not used...
-
-// void free_arguments(struct s_execcmd *cmd)
-// {
-// 	for (int i = 0; i < cmd->argc; i++)
-// 	{
-// 		free(cmd->argv[i]);
-// 	}
-// 	free(cmd->argv);
-// } //? not used...
-
-// int main(void) {
-//     char *test = strdup("test \"strin'g'");
-//     printf("before: %s\n", test);
-//     test = ft_str_remove_chars(&test, "\"'");
-//     printf("after: %s\n", test);
-//     free(test);
-
-//     return 0;
-// } //? to test ft_str_remove_chars
-
-// void ft_move(char **str)
-// {
-// 	char *move;
-// 	move = *str;
-// 	move += ft_strlen(*str) ;
-// 	*str = ft_strdup(move);
-// }
-
-// int main(void)
-// {
-// 	char *new;
-// 	new = ft_strtrim("    	test \"strin'g'   ", "\f\t ");
-// 	ft_printf("Before: %s;\n", new);
-// 	ft_move(&new);
-// 	printf("After: %s;\n", new);
-// 	free(new);
-
-// 	return 0;
-// } //? to test ft_strtrim
-
-// int main(int ac, char **av, char **env)
-// {
-// 	(void)ac;
-// 	(void)av;
-// 	int idx = -1;
-// 	char **custom_environ = (char **)malloc(sizeof(char *) * (4));
-// 	while (++idx < 3)
-// 		custom_environ[idx] = ft_strdup(env[idx]);
-// 	custom_environ[idx] = NULL;
-
-// 	ft_printf("Before:\n");
-// 	ft_print_str_arr(custom_environ);
-// 	ft_remove_str_from_char_arr(&custom_environ, "SHELL=/bin/bash");
-// 	ft_remove_str_from_char_arr(&custom_environ, "SHELL=/bin/bash");
-// 	ft_remove_str_from_char_arr(&custom_environ, "WSL2_GUI_APPS_ENABLED=1");
-// 	ft_remove_str_from_char_arr(&custom_environ, "WSL_DISTRO_NAME=Ubuntu-22.04");
-// 	printf("After:\n");
-// 	ft_print_str_arr(custom_environ);
-
-// 	ft_free_char_arr(custom_environ);
-
-// 	return 0;
-// } //? to test ft_remove_str_from_char_arr
-
-int main(int ac, char **av, char **env)
-{
-	(void)ac;
-	(void)av;
-	struct s_cmd *cmd;
-	char *buf;
-	char *new_buf;
-	int r;
-	int idx = -1;
-	char **custom_environ = (char **)malloc(sizeof(char *) * (ft_strarrlen(env) + 1));
-	if (!custom_environ)
-	{
-		perror("Memory allocation failed");
-		return (1);
-	}
+	idx = -1;
+	custom_env = (char **)malloc(sizeof(char *) * (ft_strarrlen(env) + 1));
+	if (!custom_env)
+		return (NULL);
 	while (env[++idx])
-		custom_environ[idx] = ft_strdup(env[idx]);
-	custom_environ[idx] = NULL;
+		custom_env[idx] = ft_strdup(env[idx]);
+	custom_env[idx] = NULL;
+	return (custom_env);
+}
 
-	signal(SIGINT, ctrl_c_handler);
-	signal(SIGQUIT, SIG_IGN);
+void	process_input(char **custom_env)
+{
+	char	*new_buf;
+	char	*buf;
+
+	g_exit_code = 0;
 	while (1)
 	{
-		buf = readline("minishell# ");
-		if (!buf)
-			break;
-		new_buf = ft_strtrim(buf, "\t\n\v\f ");
-		free(buf);
-		if (ft_strncmp(new_buf, "exit ", 5) == 0 || ft_strcmp(new_buf, "exit") == 0)
+		buf = readline("fuckingshell# ");
+		new_buf = read_and_trim_line(buf);
+		if (!new_buf)
+			break ;
+		if (check_for_pipes(new_buf) == NULL)
 		{
 			free(new_buf);
 			break;
@@ -161,17 +72,46 @@ int main(int ac, char **av, char **env)
 			free(new_buf);
 			continue;
 		}
-		if (fork1() == 0)
+		if (check_for_quotes(new_buf) == NULL)
 		{
-			cmd = parsecmd(new_buf);
 			free(new_buf);
-			runcmd(cmd, custom_environ); //? волграйнд дивно працює, можливо треба вбити процесс при виході з builtins?
-			continue;
+			continue ;
 		}
-		wait(&r);
-		free(new_buf);
+		if (ft_strcmp(new_buf, "exit") == 0 || ft_strncmp(new_buf, "exit ",
+				5) == 0)
+		{
+			ft_printf("logout\n");
+			if (!builtin_exit(new_buf + 4))
+			{
+				rl_clear_history();
+				ft_free_char_arr(custom_env);
+				free(new_buf);
+				exit(g_exit_code);
+			}
+			free(new_buf);
+			continue ;
+		}
+		if (is_blank(new_buf))
+		{
+			free(new_buf);
+			continue ;
+		}
+		if (!handle_command(new_buf, &custom_env))
+			execute_command(new_buf, custom_env);
 	}
 	rl_clear_history();
-	ft_free_char_arr(custom_environ);
+	ft_free_char_arr(custom_env);
+}
+
+int	main(int ac, char **av, char **env)
+{
+	char	**custom_env;
+
+	(void)ac;
+	(void)av;
+	signal(SIGQUIT, SIG_IGN);
+	signal(SIGINT, ctrl_c_handler);
+	custom_env = clone_env(env);
+	process_input(custom_env);
 	return (0);
 }

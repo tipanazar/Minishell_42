@@ -68,6 +68,7 @@ SRCS =  $(SRC_FOLDER)ft_isalnum.c      \
 		$(SRC_FOLDER)ft_strarrlen.c \
 		$(SRC_FOLDER)ft_str_remove_chars.c \
 		$(SRC_FOLDER)ft_remove_str_from_char_arr.c \
+		$(SRC_FOLDER)ft_atoi.c \
 
 OBJS = $(SRCS:.c=.o)
 
