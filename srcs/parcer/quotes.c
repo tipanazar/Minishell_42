@@ -1,27 +1,5 @@
 #include "../../minishell.h"
 
-// int	count_quotes(char *arg, char quote_type)
-// {
-// 	int	quote_count;
-// 	int	i;
-// 	int	in_double_quotes;
-
-// 	in_double_quotes = 0;
-// 	quote_count = 0;
-// 	i = 0;
-// 	while (arg[i] != '\0')
-// 	{
-// 		if (arg[i] == '\"')
-// 		{
-// 			in_double_quotes = !in_double_quotes;
-// 		}
-// 		if (arg[i] == quote_type && (!in_double_quotes || quote_type == '\"'))
-// 			quote_count++;
-// 		i++;
-// 	}
-// 	return (quote_count);
-// }
-
 int	calculate_buf_if(int *i, int *in_double_quotes, char quote_type, char *arg)
 {
 	if (arg[(*i)] == '\"')
