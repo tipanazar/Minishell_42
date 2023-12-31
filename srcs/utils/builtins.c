@@ -59,7 +59,7 @@ void	ft_cd(char *buf, char **custom_environ)
 
 void	unset(char **buf_arr, char ***custom_environ)
 {
-	ft_print_str_arr(buf_arr, true);
+	ft_print_str_arr(buf_arr);
 	(void) custom_environ;
 	// char	**to_delete;
 	// int		idx;
@@ -86,7 +86,7 @@ int	builtins(char **buf_args, int argc, char ***custom_environ)
 	}
 	if (ft_strcmp(buf_args[0], "env") == 0)
 	{
-		ft_print_str_arr(*custom_environ, true);
+		ft_print_str_arr(*custom_environ);
 		g_exit_code = 0;
 		return (1);
 	}

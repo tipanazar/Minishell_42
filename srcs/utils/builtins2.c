@@ -1,68 +1,28 @@
 #include "../../minishell.h"
 
-void	echo(char **buf_args)
+void echo(char **buf_args)
 {
-	int		newline;
-
+	int newline;
+	int idx = -1;
 	newline = 1;
 	echo_n_handler(buf_args[0], &newline);
-	ft_print_str_arr(buf_args + !newline, newline);
+	while (buf_args[++idx])
+	{
+		if(buf_args[idx + 1])
+			ft_printf("%s ", buf_args[idx]);
+		else
+			ft_printf("%s", buf_args[idx]);
+	}
+	if (newline)
+		ft_printf("\n");
 	g_exit_code = 0;
 }
 
-char	*export_validator(char *buf)
+char **create_unset_arr(char *buf, char **custom_environ)
 {
-	t_ValidationArgs	*args;
-	char				*result;
-
-	args = (t_ValidationArgs *)malloc(sizeof(t_ValidationArgs));
-	args->quote_type = (char *)malloc(sizeof(char) * 2);
-	if (!args || !args->quote_type)
-	{
-		perror("Memory allocation failed");
-		g_exit_code = 1;
-		exit(1);
-	}
-	args->has_equal_sign = false;
-	args->inside_quotes = 0;
-	args->quote_type[0] = 0;
-	result = validate_buffer(buf, args);
-	free(args);
-	return (result);
-}
-
-int	update_env_var(char ***custom_environ, char *new_buf, int idx)
-{
-	char	**splitted_environ;
-	char	**splitted_new_buf;
-	int		is_updated;
-
-	splitted_environ = ft_split((*custom_environ)[idx], '=');
-	splitted_new_buf = ft_split(new_buf, '=');
-	is_updated = 0;
-	if (ft_strcmp(splitted_environ[0], splitted_new_buf[0]) == 0)
-	{
-		free((*custom_environ)[idx]);
-		(*custom_environ)[idx] = ft_strdup(new_buf);
-		is_updated = 1;
-	}
-	ft_free_char_arr(splitted_environ);
-	ft_free_char_arr(splitted_new_buf);
-	return (is_updated);
-}
-
-void	add_new_env_var(char ***custom_environ, char *new_buf, int idx)
-{
-	(*custom_environ) = realloc((*custom_environ), (idx + 2) * sizeof(char *));
-	(*custom_environ)[idx] = ft_strdup(new_buf);
-	(*custom_environ)[idx + 1] = NULL;
-}
-
-char	**create_unset_arr(char *buf, char **custom_environ)
-{
-	char	*token;
-	char	**to_delete;
-	int		idx;
+	char *token;
+	char **to_delete;
+	int idx;
 
 	to_delete = NULL;
 	idx = 0;

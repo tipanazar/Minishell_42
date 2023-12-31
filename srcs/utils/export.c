@@ -1,117 +1,74 @@
 #include "../../minishell.h"
 
-char	*final_validation_checks(char *buf, int idx, t_ValidationArgs *args)
+int	update_env_var(char ***custom_environ, char *new_buf, int idx)
 {
-	if (!(args)->has_equal_sign && (buf[idx - 1] == '\'' || buf[idx
-				- 1] == '\"'))
+	char	**splitted_environ;
+	char	**splitted_new_buf;
+	int		is_updated;
+
+	splitted_environ = ft_split((*custom_environ)[idx], '=');
+	splitted_new_buf = ft_split(new_buf, '=');
+	is_updated = 0;
+	if (ft_strcmp(splitted_environ[0], splitted_new_buf[0]) == 0)
 	{
-		ft_printf("Heredoc??\n");
-		free((args)->quote_type);
-		return (NULL);
+		free((*custom_environ)[idx]);
+		(*custom_environ)[idx] = ft_strdup(new_buf);
+		is_updated = 1;
 	}
-	if (!(args)->has_equal_sign || (args)->inside_quotes)
-	{
-		ft_printf("Heredoc??\n");
-		free((args)->quote_type);
-		return (NULL);
-	}
-	return ((args)->quote_type);
+	ft_free_char_arr(splitted_environ);
+	ft_free_char_arr(splitted_new_buf);
+	return (is_updated);
 }
 
-bool	handle_space_and_equal(char *buf, int idx, bool *has_equal_sign,
-		char inside_quotes)
-{
-	if (!ft_isspace(buf[idx]) && ft_isspace(buf[idx + 1]) && !inside_quotes
-		&& *has_equal_sign)
-	{
-		*has_equal_sign = true;
-		while (buf[++idx])
-			buf[idx] = '\0';
-		return (false);
-	}
-	if ((ft_isspace(buf[idx]) || ft_isdigit(buf[idx])) && buf[idx + 1] == '='
-		&& !(*has_equal_sign))
-	{
-		ft_printf("-minishell: export: `%s': not a valid identifier\n", buf
-			+ idx + 1);
-		return (false);
-	}
-	if (buf[idx] == '=')
-		*has_equal_sign = true;
-	return (true);
+void upd_or_add_var(char ***custom_environ, char *buf) {
+	int idx = -1;
+	while ((*custom_environ)[++idx])
+		if (update_env_var(custom_environ, buf, idx))
+			return;
+	(*custom_environ) = realloc((*custom_environ), (idx + 2) * sizeof(char *));
+	(*custom_environ)[idx] = ft_strdup(buf);
+	(*custom_environ)[idx + 1] = NULL;
 }
 
-bool	check_quote_status(char *buf, int idx, char inside_quotes,
-		char *quote_type)
+bool export_validator(char *buf, bool *stop_flag)
 {
-	if (buf[idx] == '\'' || buf[idx] == '\"')
-	{
-		if (!inside_quotes)
-			inside_quotes = buf[idx];
-		else if (inside_quotes == buf[idx])
-		{
-			quote_type[0] = buf[idx];
-			quote_type[1] = '\0';
-			inside_quotes = 0;
-		}
-		else if (inside_quotes && inside_quotes != buf[idx] && !buf[idx + 1])
-		{
-			ft_printf("Heredoc??\n");
-			return (false);
-		}
-	}
-	return (true);
-}
+	bool has_equal_sign;
 
-char	*validate_buffer(char *buf, t_ValidationArgs *args)
-{
-	int	idx;
-
-	idx = -1;
+	has_equal_sign = false;
+	int idx = -1;
+	if (!ft_strchr(buf, '='))
+		return true;
 	while (buf[++idx])
 	{
-		if (!check_quote_status(buf, idx, (args)->inside_quotes,
-				(args)->quote_type))
+		if ((ft_isspace(buf[idx]) || ft_isdigit(buf[idx])) && buf[idx + 1] == '=' && !(has_equal_sign))
 		{
-			free((args)->quote_type);
-			return (NULL);
+			ft_printf("-minishell: export: `%s': not a valid identifier\n", buf + idx + 1);
+			*stop_flag = 1;
+			return (true);
 		}
-		if (!handle_space_and_equal(buf, idx, &(args)->has_equal_sign,
-				(args)->inside_quotes))
-		{
-			free((args)->quote_type);
-			return (NULL);
-		}
+		if (buf[idx] == '=')
+			has_equal_sign = true;
 	}
-	return (final_validation_checks(buf, idx, args));
+	return false;
 }
 
-void	export(char **buf_arr, char ***custom_environ)
+void export(char **buf_arr, char ***custom_environ)
 {
-		ft_print_str_arr(buf_arr, true);
-	(void) custom_environ;
-	// char	*quote_type;
-	// char	*new_buf;
-	// int		idx;
+	// ft_print_str_arr(buf_arr, true);
+	// 	ft_printf("%s\n",buf_arr[0]);
+	// (void) custom_environ;
+	int f_idx = -1;
+	bool stop_flag = 0;
 
-	// quote_type = export_validator(buf);
-	// if (!quote_type)
-	// 	return ;
-	// if (quote_type[0])
-	// 	new_buf = ft_str_remove_chars(buf, quote_type);
-	// else
-	// 	new_buf = ft_strdup(buf);
-	// free(quote_type);
-	// idx = -1;
-	// while ((*custom_environ)[++idx])
-	// {
-	// 	if (update_env_var(custom_environ, new_buf, idx))
-	// 	{
-	// 		free(new_buf);
-	// 		return ;
-	// 	}
-	// }
-	// add_new_env_var(custom_environ, new_buf, idx);
-	// free(new_buf);
-	// g_exit_code = 0;
+	while (buf_arr[++f_idx])
+	{
+		if (export_validator(buf_arr[f_idx], &stop_flag) == 0)
+			upd_or_add_var(custom_environ, buf_arr[f_idx]);
+		if (stop_flag)
+		{
+			g_exit_code = 1;
+			return;
+		}
+	}
+	g_exit_code = 0;
 }
