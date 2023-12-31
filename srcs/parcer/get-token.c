@@ -48,7 +48,7 @@ void	process_special_tokens(char **s, int *token)
 		(*s)++;
 		if (**s == '<')
 		{
-			*token = '%';
+			*token = '-';
 			(*s)++;
 		}
 	}

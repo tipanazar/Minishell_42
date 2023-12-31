@@ -35,6 +35,7 @@ void	process_input(char **custom_env)
 	char	*new_buf;
 	char	*buf;
 
+	g_exit_code = 0;
 	while (1)
 	{
 		buf = readline("fuckingshell# ");
@@ -46,11 +47,11 @@ void	process_input(char **custom_env)
 			free(new_buf);
 			continue ;
 		}
-		// if (check_for_quotes(new_buf) == NULL)
-		// {
-		// 	free(new_buf);
-		// 	continue ;
-		// }
+		if (check_for_quotes(new_buf) == NULL)
+		{
+			free(new_buf);
+			continue ;
+		}
 		if (ft_strcmp(new_buf, "exit") == 0 || ft_strncmp(new_buf, "exit ",
 				5) == 0)
 		{
@@ -83,9 +84,8 @@ int	main(int ac, char **av, char **env)
 
 	(void)ac;
 	(void)av;
-	g_exit_code = 0;
-	signal(SIGINT, ctrl_c_handler);
 	signal(SIGQUIT, SIG_IGN);
+	signal(SIGINT, ctrl_c_handler);
 	custom_env = clone_env(env);
 	process_input(custom_env);
 	return (0);
