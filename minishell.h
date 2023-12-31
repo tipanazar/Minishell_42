@@ -66,7 +66,6 @@ struct				s_pipecmd
 	struct s_cmd	*right;
 };
 
-char	*check_for_quotes(char *buffer);
 int						runcmd(struct s_cmd *cmd, char ***env);
 int						fork1(void);
 int						exec_cmd(struct s_cmd *cmd, char ***custom_environ);
@@ -96,7 +95,6 @@ char					*read_and_trim_line(char *buf);
 void					ctrl_c_handler(int sig);
 bool					is_blank(const char *buf);
 void					echo(char **buf);
-void					echo_n_handler(char *buf, int *newline);
 int						process_quotes(char *buf, int *idx,
 							int *inside_sing_quotes);
 void					handle_variable_expansion(char *buf,

@@ -1,5 +1,23 @@
 #include "../../minishell.h"
 
+
+void	pwd(void)
+{
+	char	dir[2000];
+
+	if (getcwd(dir, sizeof(dir)) != NULL)
+	{
+		ft_printf("%s\n", dir);
+		g_exit_code = 0;
+	}
+	else
+	{
+		perror("pwd");
+		g_exit_code = 1;
+	}
+}
+
+
 void	change_to_home_directory(char **custom_environ)
 {
 	char	*home_dir;
@@ -55,26 +73,6 @@ void	ft_cd(char *buf, char **custom_environ)
 	else
 		change_to_specified_directory(new_buf);
 	free(new_buf);
-}
-
-void	unset(char **buf_arr, char ***custom_environ)
-{
-	ft_print_str_arr(buf_arr);
-	(void) custom_environ;
-	// char	**to_delete;
-	// int		idx;
-
-	// to_delete = create_unset_arr(buf, *custom_environ);
-	// if (!to_delete)
-	// 	return ;
-	// idx = 0;
-	// while (to_delete[idx])
-	// {
-	// 	ft_remove_str_from_char_arr(custom_environ, to_delete[idx]);
-	// 	idx++;
-	// }
-	// ft_free_char_arr(to_delete);
-	// g_exit_code = 0;
 }
 
 int	builtins(char **buf_args, int argc, char ***custom_environ)

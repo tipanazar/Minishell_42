@@ -42,7 +42,7 @@ bool export_validator(char *buf, bool *stop_flag)
 	{
 		if ((ft_isspace(buf[idx]) || ft_isdigit(buf[idx])) && buf[idx + 1] == '=' && !(has_equal_sign))
 		{
-			ft_printf("-minishell: export: `%s': not a valid identifier\n", buf + idx + 1);
+			ft_printf("-minishell: export: `%s': not a valid identifier\n", buf);
 			*stop_flag = 1;
 			return (true);
 		}
@@ -54,9 +54,6 @@ bool export_validator(char *buf, bool *stop_flag)
 
 void export(char **buf_arr, char ***custom_environ)
 {
-	// ft_print_str_arr(buf_arr, true);
-	// 	ft_printf("%s\n",buf_arr[0]);
-	// (void) custom_environ;
 	int f_idx = -1;
 	bool stop_flag = 0;
 

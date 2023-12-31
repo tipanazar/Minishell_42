@@ -1,33 +1,5 @@
 #include "../minishell.h"
 
-// bool handle_command(char *new_buf, char ***custom_env)
-// {
-// 	if (ft_strlen(new_buf) && ft_isspace(new_buf[0]) == 0)
-// 		add_history(new_buf);
-// 	if (ft_strcmp(new_buf, "export") == 0 || ft_strncmp(new_buf, "export ",
-// 														7) == 0)
-// 	{
-// 		if (ft_strncmp(new_buf, "export ", 7))
-// 			ft_printf("-minishell: export: no arguments provided\n");
-// 		else
-// 			export(new_buf + 7, custom_env);
-// 		return (true);
-// 	}
-// 	else if (ft_strcmp(new_buf, "unset") == 0 || ft_strncmp(new_buf, "unset ",
-// 															6) == 0)
-// 	{
-// 		unset(new_buf + 5, custom_env);
-// 		return (true);
-// 	}
-// 	else if (ft_strcmp(new_buf, "cd") == 0 || ft_strncmp(new_buf, "cd ",
-// 														 3) == 0)
-// 	{
-// 		ft_cd(new_buf + 2, *custom_env);
-// 		return (true);
-// 	}
-// 	return (false);
-// }
-
 int is_valid_number(char *str)
 {
 	if (!str)

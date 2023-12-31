@@ -47,11 +47,6 @@ void	process_input(char ***custom_env)
 			free(new_buf);
 			continue ;
 		}
-		if (check_for_quotes(new_buf) == NULL)
-		{
-			free(new_buf);
-			continue ;
-		}
 		if (ft_strcmp(new_buf, "exit") == 0 || ft_strncmp(new_buf, "exit ",
 				5) == 0)
 		{
