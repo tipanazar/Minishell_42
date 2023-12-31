@@ -73,7 +73,7 @@ struct				s_pipecmd
 	struct s_cmd	*right;
 };
 
-char	*check_for_quotes(char *buffer);
+char					*check_for_quotes(char *buffer);
 int						runcmd(struct s_cmd *cmd, char **env);
 int						fork1(void);
 int						exec_cmd(struct s_cmd *cmd, char **custom_environ);
