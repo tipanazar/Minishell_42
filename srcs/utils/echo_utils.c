@@ -1,27 +1,18 @@
 #include "../../minishell.h"
 
-void	echo_n_handler(char *buf, int *idx, int *newline)
+void	echo_n_handler(char *buf, int *newline)
 {
-	ft_trim_leading_spaces(buf);
+	int idx = 2;
 	if (ft_strncmp(buf, "-n", 2) == 0)
 	{
 		*newline = 0;
-		*idx += 1;
+		while (buf[idx] == 'n')
+			(idx)++;	
+		if (buf[idx] != '\0')
+			*newline = 1;
 	}
 	else
 		*newline = 1;
-	if (*newline == 0)
-	{
-		(*idx)++;
-		while (buf[*idx] == 'n')
-			(*idx)++;	
-		if (!ft_isspace(buf[*idx]) && buf[*idx] != '\0')
-		{
-			*newline = 1;
-			*idx = 0;
-		}
-		ft_trim_leading_spaces(buf + *idx);
-	}
 }
 
 // int		process_quotes(char *buf, int *idx, int *inside_sing_quotes)

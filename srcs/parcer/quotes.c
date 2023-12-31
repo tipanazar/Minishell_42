@@ -228,12 +228,14 @@ char	*handle_quotes(char *arg, char quote_type, char **envp)
 
 char	*parseexec_arg_process(char *q, char *eq, char **envp)
 {
-	char *arg;
-	char *processed_arg;
+	char	*arg;
+	char	*processed_arg_sing;
+	char	*processed_arg_doub;
 
 	arg = mkcopy(q, eq);
-	processed_arg = handle_quotes(arg, '\'', envp);
-	processed_arg = handle_quotes(processed_arg, '\"', envp);
+	processed_arg_sing = handle_quotes(arg, '\'', envp);
+	processed_arg_doub = handle_quotes(processed_arg_sing, '\"', envp);
 	free(arg);
-	return (processed_arg);
+	free(processed_arg_sing);
+	return (processed_arg_doub);
 }

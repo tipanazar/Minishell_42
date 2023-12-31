@@ -97,7 +97,7 @@ int					ft_isspace(char ch);
 void				ft_trim_leading_spaces(char *str);
 char				*ft_strtok(char *str, const char *delim);
 void				*ft_realloc(void *ptr, size_t new_size);
-void				ft_print_str_arr(char **str);
+void				ft_print_str_arr(char **str, bool new_line);
 int					ft_strarrlen(char **arr);
 char				*ft_str_remove_chars(char *str,
 						const char *chars_to_remove);

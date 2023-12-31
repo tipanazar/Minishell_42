@@ -83,6 +83,29 @@ void	parseexec_middleware(t_parseexec **parseexec_vars,
 	}
 }
 
+// void	parseexec_middleware(t_parseexec **parseexec_vars,
+// 							struct s_execcmd **cmd)
+// {
+// 	if ((*parseexec_vars)->tok == '\'' || (*parseexec_vars)->tok == '\"')
+// 		(*cmd)->argv[(*cmd)->argc] = mkcopy((*parseexec_vars)->q,
+// 											(*parseexec_vars)->eq);
+// 	else if ((*parseexec_vars)->tok != 'a')
+// 	{
+// 		write(2, "syntax error\n", 13);
+// 		return ;
+// 	}
+// 	else
+// 		(*cmd)->argv[(*cmd)->argc] = mkcopy((*parseexec_vars)->q,
+// 											(*parseexec_vars)->eq);
+// 	(*cmd)->argc++;
+// 	if ((*cmd)->argc >= (*cmd)->max_args)
+// 	{
+// 		(*cmd)->max_args = (*cmd)->argc + 1;
+// 		(*cmd)->argv = realloc((*cmd)->argv, (*cmd)->max_args
+// 				* sizeof(char *));
+// 	}
+// }
+
 struct s_cmd	*parseexec(char **ps, char *es, char **custom_env)
 {
 	struct s_cmd		*ret;
@@ -103,6 +126,8 @@ struct s_cmd	*parseexec(char **ps, char *es, char **custom_env)
 		if (parseexec_vars->tok == 0)
 			break ;
 		parseexec_middleware(&parseexec_vars, &cmd, custom_env);
+		// (void) custom_env;
+		// parseexec_middleware(&parseexec_vars, &cmd);
 		ret = parseredirs(ret, ps, es);
 	}
 	free(parseexec_vars);

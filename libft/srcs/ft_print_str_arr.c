@@ -12,7 +12,7 @@
 
 #include "../libft.h"
 
-void	ft_print_str_arr(char **str)
+void	ft_print_str_arr(char **str, bool new_line)
 {
 	int	i;
 
@@ -21,8 +21,9 @@ void	ft_print_str_arr(char **str)
 		return ;
 	while (str[i])
 	{
-		ft_printf("%s\n", str[i]);
+		ft_printf("%s", str[i]);
 		i++;
 	}
-	ft_printf("\n");
+	if (new_line)
+		ft_printf("\n");
 }
