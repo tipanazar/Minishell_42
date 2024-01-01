@@ -196,14 +196,6 @@ char	*replace_env_vars(char *arg, char q_ty, int in_q, char **envp)
 	return (result);
 }
 
-char	*handle_quotes(char *arg, char quote_type, char **envp)
-{
-	char	*result;
-
-	result = replace_env_vars(arg, quote_type, 0, envp);
-	return (result);
-}
-
 char	*parseexec_arg_process(char *q, char *eq, char **envp)
 {
 	char	*arg;
@@ -211,8 +203,8 @@ char	*parseexec_arg_process(char *q, char *eq, char **envp)
 	char	*processed_arg_doub;
 
 	arg = mkcopy(q, eq);
-	processed_arg_sing = handle_quotes(arg, '\'', envp);
-	processed_arg_doub = handle_quotes(processed_arg_sing, '\"', envp);
+	processed_arg_sing = replace_env_vars(arg, '\'', 0, envp);
+	processed_arg_doub = replace_env_vars(arg, '\"', 0, envp);
 	free(arg);
 	free(processed_arg_sing);
 	return (processed_arg_doub);
