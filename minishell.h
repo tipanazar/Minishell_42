@@ -102,7 +102,7 @@ void					process_variables(char *buf, char **custom_environ,
 							int *idx, int inside_sing_quotes);
 void					process_echo_command(struct s_echo_args *args);
 char					**create_unset_arr(char *buf, char **custom_environ);
-void					export(char **buf_arr, char ***custom_environ);
+void					export(char **buf_arr, char ***custom_environ, int argc);
 void					pwd(void);
 char					*check_for_pipes(char *buffer);
 // bool handle_command(char *new_buf, char ***custom_env);

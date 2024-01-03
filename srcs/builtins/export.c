@@ -53,11 +53,16 @@ bool export_validator(char *buf, bool *stop_flag)
 	return false;
 }
 
-void export(char **buf_arr, char ***custom_environ)
+void export(char **buf_arr, char ***custom_environ, int argc)
 {
 	int f_idx = -1;
 	bool stop_flag = 0;
-
+	if(argc == 1)
+	{
+		while((*custom_environ)[++f_idx])
+			ft_printf("declare -x %s\n", (*custom_environ)[f_idx]);
+		return;
+	}
 	while (buf_arr[++f_idx])
 		if (export_validator(buf_arr[f_idx], &stop_flag) == 0)
 			upd_or_add_var(custom_environ, buf_arr[f_idx]);
