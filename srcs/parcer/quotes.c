@@ -39,27 +39,6 @@ int	calculate_buf_var_code_error(char **arg, int *i, int *size)
 	return (1);
 }
 
-char	*builtin_getenv(const char *var, char **envp)
-{
-	int	i;
-
-	if (var == NULL)
-	{
-		return (NULL);
-	}
-	i = 0;
-	while (envp[i])
-	{
-		if (!ft_strncmp(envp[i], var, ft_strlen(var))
-			&& envp[i][ft_strlen(var)] == '=')
-		{
-			return (&envp[i][ft_strlen(var) + 1]);
-		}
-		i++;
-	}
-	return (NULL);
-}
-
 char	*handle_env_var(char *arg, int *i, int *memory_allocated, char **envp)
 {
 	char	var_name[256];
@@ -76,7 +55,7 @@ char	*handle_env_var(char *arg, int *i, int *memory_allocated, char **envp)
 		*memory_allocated = 1;
 		return (ft_strdup("$"));
 	}
-	env_value = builtin_getenv(var_name, envp);
+	env_value = custom_getenv(var_name, envp, false);
 	if (env_value != NULL)
 	{
 		*memory_allocated = 1;
