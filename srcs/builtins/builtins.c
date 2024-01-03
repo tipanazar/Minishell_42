@@ -40,10 +40,7 @@ int builtins_part2(char **buf_args, int argc, char ***custom_environ)
 	}
 	if (ft_strcmp(buf_args[0], "export") == 0)
 	{
-		if (argc == 1)
-			ft_printf("-minishell: export: no arguments provided\n");
-		else
-			export(buf_args + 1, custom_environ);
+		export(buf_args + 1, custom_environ, argc);
 		return (1);
 	}
 	if (ft_strcmp(buf_args[0], "cd") == 0)

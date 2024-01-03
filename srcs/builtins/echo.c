@@ -21,6 +21,8 @@ void echo(char **buf_args)
 	int idx = -1;
 	newline = 1;
 	echo_n_handler(buf_args[0], &newline);
+	if(newline == 0)
+		idx++;
 	while (buf_args[++idx])
 	{
 		if (buf_args[idx + 1])

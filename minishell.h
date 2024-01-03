@@ -95,8 +95,6 @@ char					*read_and_trim_line(char *buf);
 void					ctrl_c_handler(int sig);
 bool					is_blank(const char *buf);
 void					echo(char **buf);
-int						process_quotes(char *buf, int *idx,
-							int *inside_sing_quotes);
 void					handle_variable_expansion(char *buf,
 							char **custom_environ,
 							int *idx);
@@ -104,7 +102,7 @@ void					process_variables(char *buf, char **custom_environ,
 							int *idx, int inside_sing_quotes);
 void					process_echo_command(struct s_echo_args *args);
 char					**create_unset_arr(char *buf, char **custom_environ);
-void					export(char **buf_arr, char ***custom_environ);
+void					export(char **buf_arr, char ***custom_environ, int argc);
 void					pwd(void);
 char					*check_for_pipes(char *buffer);
 // bool handle_command(char *new_buf, char ***custom_env);
