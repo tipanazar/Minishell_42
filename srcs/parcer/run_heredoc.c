@@ -111,7 +111,7 @@ char *process_heredoc(char *buf, char **custom_environ)
 			{
 				idx++;
 				substr = ft_itoa(g_exit_code);
-				s_idx += ft_strlen(substr) + 1;
+				s_idx += ft_strlen(substr);
 				ft_strcat(new_buf, substr);
 				free(substr);
 			}
