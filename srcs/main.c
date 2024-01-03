@@ -56,19 +56,19 @@ void	process_input(char **custom_env)
 			add_history(new_buf);
 		if (ft_strcmp(new_buf, "export") == 0 || ft_strncmp(new_buf, "export ", 7) == 0)
 		{
-			export(new_buf + 7, &custom_environ);
+			export(new_buf + 7, &custom_env);
 			free(new_buf);
 			continue;
 		}
 		if (ft_strcmp(new_buf, "unset") == 0 || ft_strncmp(new_buf, "unset ", 6) == 0)
 		{
-			unset(new_buf + 5, &custom_environ);
+			unset(new_buf + 5, &custom_env);
 			free(new_buf);
 			continue;
 		}
 		if (ft_strcmp(new_buf, "cd") == 0 || ft_strncmp(new_buf, "cd ", 3) == 0)
 		{
-			ft_cd(new_buf + 2, custom_environ);
+			ft_cd(new_buf + 2, custom_env);
 			free(new_buf);
 			continue;
 		}
