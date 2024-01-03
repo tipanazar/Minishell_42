@@ -85,25 +85,29 @@ void calculate_buf_var_val(char **var_value, int *size, int memory_allocated)
 int calculate_buffer_size(char *arg, char quote_type, bool in_quotes,
 						  char **envp)
 {
-	char *var_value;
-	int i;
-	int size;
-	int memory_allocated;
-	int in_double_quotes;
-	int in_single_quotes;
-
-	calculate_buf_change_nums(&i, &size, &in_double_quotes, &in_single_quotes, 1);
+	char *var_value = NULL;
+	int i = 0;
+	int size = 0;
+	int memory_allocated = 0;
+	int in_double_quotes = 0;
+	int in_single_quotes = 0;
+	bool in_q = in_quotes;
+	// calculate_buf_change_nums(&i, &size, &in_double_quotes, &in_single_quotes, 1);
 	while (arg[i] != '\0')
 	{
 		if (calculate_buf_if(&i, &in_double_quotes, &in_single_quotes, quote_type, arg))
-			in_quotes = !in_quotes;
-		else if (arg[i] == '$' && ((!in_quotes && quote_type == '\'') || (in_quotes && quote_type == '\"')) && calculate_buf_var_code_error(&arg, &i, &size))
+			in_q = !in_q;
+		else if (arg[i] == '$' && ((!in_q && quote_type == '\'') || (in_q && quote_type == '\"')) && calculate_buf_var_code_error(&arg, &i, &size))
 		{
 			var_value = handle_env_var(arg, &i, &memory_allocated, envp);
 			calculate_buf_var_val(&var_value, &size, memory_allocated);
 		}
 		else
-			calculate_buf_change_nums(&i, &size, &in_double_quotes, &in_single_quotes, 2);
+		{
+			size++;
+			i++;
+		}
+			// calculate_buf_change_nums(&i, &size, &in_double_quotes, &in_single_quotes, 2);
 	}
 	return (size + 1);
 }
@@ -180,8 +184,7 @@ char *quotes_env_errors(char *arg, char q_ty, int in_q, char **envp)
 	char *result;
 	int i[2];
 	int ch_va[4];
-	// ft_printf("Arg: %s\nQ_ty: %c\n", arg, q_ty);
-	result = malloc((calculate_buffer_size(arg, q_ty, false, envp)) + 1);
+	result = (char *)malloc(calculate_buffer_size(arg, q_ty, false, envp) + 1);
 	// result = malloc(6);
 	if (!result)
 		return (NULL);
