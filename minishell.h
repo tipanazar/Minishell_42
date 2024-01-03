@@ -95,8 +95,6 @@ char					*read_and_trim_line(char *buf);
 void					ctrl_c_handler(int sig);
 bool					is_blank(const char *buf);
 void					echo(char **buf);
-int						process_quotes(char *buf, int *idx,
-							int *inside_sing_quotes);
 void					handle_variable_expansion(char *buf,
 							char **custom_environ,
 							int *idx);
