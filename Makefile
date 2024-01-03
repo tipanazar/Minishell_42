@@ -9,7 +9,7 @@ LIBFT = $(LIBFTDIR)/libft.a
 SRCDIR = srcs
 OBJDIR = objs
 SRCS = main.c \
-main_help.c    \
+exit.c    \
 parcer/runner.c \
 parcer/run_redirect.c \
 parcer/run_heredoc.c \
