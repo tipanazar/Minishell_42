@@ -10,8 +10,10 @@ void	execute_command(char *new_buf, char **custom_env)
 	signal(SIGINT, SIG_DFL);
 	cmd = parsecmd(new_buf, custom_env);
 	free(new_buf);
-	if (cmd->flag != 1)
+	if (cmd->flag != 1 && g_exit_code != 7777)
 		runcmd(cmd, custom_env);
+	if(g_exit_code == 7777)
+		g_exit_code = 2;
 	free_cmd(cmd);
 }
 

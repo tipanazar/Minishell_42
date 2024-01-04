@@ -129,7 +129,7 @@ int	runcmd(struct s_cmd *cmd, char **env)
 	else
 	{
 		ft_printf("unknown runcmd\n");
-		exit(1);
+		return -1;
 	}
 	return (1);
 }

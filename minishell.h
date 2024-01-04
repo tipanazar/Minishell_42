@@ -27,26 +27,12 @@ typedef struct s_parseexec
 	int				tok;
 }					t_parseexec;
 
-struct				s_cmd
-{
-	int				type;
-	int				flag;
-};
-
 typedef struct s_export
 {
 	bool			has_equal_sign;
 	char			inside_quotes;
 	char			*quote_type;
 }					t_ValidationArgs;
-
-struct				s_execcmd
-{
-	int				type;
-	char			**argv;
-	int				argc;
-	int				max_args;
-};
 
 struct				s_echo_args
 {
@@ -55,6 +41,20 @@ struct				s_echo_args
 	int				*idx;
 	int				*inside_sing_quotes;
 	int				newline;
+};
+
+struct				s_cmd
+{
+	int				type;
+	int				flag;
+};
+
+struct				s_execcmd
+{
+	int				type;
+	char			**argv;
+	int				argc;
+	int				max_args;
 };
 
 struct				s_redircmd

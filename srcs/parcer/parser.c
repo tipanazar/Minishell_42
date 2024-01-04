@@ -66,6 +66,7 @@ void	parseexec_middleware(t_parseexec **parseexec_vars,
 	if ((*parseexec_vars)->tok != 'a')
 	{
 		write(2, "syntax error\n", 13);
+		g_exit_code = 7777;
 		return ;
 	}
 	else
