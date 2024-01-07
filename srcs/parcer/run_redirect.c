@@ -38,7 +38,7 @@ int	setup_redirection(struct s_redircmd *rcmd, int flags, int *saved_fd)
 	return (0);
 }
 
-int	execute_and_restore(struct s_redircmd *rcmd, char **custom_environ,
+int	execute_and_restore(struct s_redircmd *rcmd, char ***custom_environ,
 		int saved_fd)
 {
 	if (rcmd->cmd)
@@ -53,7 +53,7 @@ int	execute_and_restore(struct s_redircmd *rcmd, char **custom_environ,
 	return (1);
 }
 
-int	handle_redirection(struct s_redircmd *rcmd, char **custom_environ,
+int	handle_redirection(struct s_redircmd *rcmd, char ***custom_environ,
 		int flags)
 {
 	int	saved_fd;
@@ -65,7 +65,7 @@ int	handle_redirection(struct s_redircmd *rcmd, char **custom_environ,
 	return (execute_and_restore(rcmd, custom_environ, saved_fd));
 }
 
-void	redirect_cmd(struct s_redircmd *rcmd, char **custom_environ)
+void	redirect_cmd(struct s_redircmd *rcmd, char ***custom_environ)
 {
 	int	flags;
 

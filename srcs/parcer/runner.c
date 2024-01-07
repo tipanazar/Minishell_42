@@ -23,7 +23,7 @@ int	check_error(char *cmd)
 
 void	free_exec_cmd(struct s_execcmd *ecmd)
 {
-			ft_free_char_arr(ecmd->argv);
+	ft_free_char_arr(ecmd->argv);
 }
 
 void	free_cmd(struct s_cmd *command)
@@ -97,7 +97,7 @@ void	execute_command1(struct s_execcmd *ecmd, char **custom_environ)
 	free(full_path);
 }
 
-int	exec_cmd(struct s_cmd *cmd, char **custom_environ)
+int	exec_cmd(struct s_cmd *cmd, char ***custom_environ)
 {
 	struct s_execcmd	*ecmd;
 
@@ -105,20 +105,26 @@ int	exec_cmd(struct s_cmd *cmd, char **custom_environ)
 	if (ecmd->argv[0] != NULL)
 	{
 		if (ecmd->argv[0] == 0)
+		{
+			dprintf(2, "I am here \n");
 			exit(0);
-		if (builtins(ecmd->argv, custom_environ))
+		}
+		if (builtins(ecmd->argv, ecmd->argc, custom_environ))
 			return (g_exit_code);
-		execute_command1(ecmd, custom_environ);
+		execute_command1(ecmd, *custom_environ);
 	}
 	return (g_exit_code);
 }
 
-int	runcmd(struct s_cmd *cmd, char **env)
+int	runcmd(struct s_cmd *cmd, char ***env)
 {
 	char	type;
 
 	if (cmd == 0)
+	{
+		dprintf(2, "I am here \n");
 		exit(1);
+	}
 	type = cmd->type;
 	if (type == ' ')
 		exec_cmd(cmd, env);
@@ -129,7 +135,7 @@ int	runcmd(struct s_cmd *cmd, char **env)
 	else
 	{
 		ft_printf("unknown runcmd\n");
-		return -1;
+		return (-1);
 	}
 	return (1);
 }

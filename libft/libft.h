@@ -97,12 +97,13 @@ int					ft_isspace(char ch);
 void				ft_trim_leading_spaces(char *str);
 char				*ft_strtok(char *str, const char *delim);
 void				*ft_realloc(void *ptr, size_t new_size);
-void				ft_print_str_arr(char **str, bool new_line);
+void				ft_print_str_arr(char **str);
 int					ft_strarrlen(char **arr);
 char				*ft_str_remove_chars(char *str,
 						const char *chars_to_remove);
 void				ft_remove_str_from_char_arr(char ***arr,
 						const char *target);
 int					ft_atoi(char *str);
+void				ft_strcat(char *s1, const char *s2);
 
 #endif

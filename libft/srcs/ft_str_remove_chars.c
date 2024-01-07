@@ -39,8 +39,6 @@ char	*ft_str_remove_chars(char *str, const char *chars_to_remove)
 	if (ft_strlen(str) == 0 || ft_strlen(chars_to_remove) == 0)
 		return (NULL);
 	chars_to_keep = count_chars_to_keep(str, chars_to_remove);
-	if (chars_to_keep == 0)
-		return (NULL);
 	new_str = (char *)malloc(sizeof(char) * (chars_to_keep + 1));
 	if (!new_str)
 		return (NULL);
